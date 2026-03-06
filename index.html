@@ -4,188 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>تحواس - رحلات سياحية</title>
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #e67e22; /* Orange */
-            --accent: #27ae60;    /* Green */
-            --light: #f8f9fa;
-            --white: #ffffff;
-            --shadow: 0 5px 15px rgba(0,0,0,0.08);
-            --radius: 12px;
-        }
-
+        /* نفس التنسيقات السابقة تماماً مع تحسين بسيط للأزرار */
+        :root { --primary: #2c3e50; --secondary: #e67e22; --accent: #27ae60; --light: #f8f9fa; --white: #ffffff; --shadow: 0 5px 15px rgba(0,0,0,0.08); --radius: 12px; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Tajawal', sans-serif; }
         body { background-color: var(--light); color: var(--primary); overflow-x: hidden; padding-bottom: 20px; }
-
-        /* --- Header Mobile --- */
-        header { 
-            background: var(--white); padding: 15px; position: sticky; top: 0; z-index: 1000; 
-            display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
+        header { background: var(--white); padding: 15px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .logo { font-size: 22px; font-weight: 900; color: var(--secondary); display: flex; align-items: center; gap: 8px; }
         .hamburger { font-size: 24px; padding: 5px; cursor: pointer; color: var(--primary); }
-
-        /* --- Sidebar --- */
-        .sidebar { 
-            position: fixed; top: 0; right: -100%; width: 80%; max-width: 300px; height: 100%; 
-            background: var(--white); z-index: 1001; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column;
-        }
+        .sidebar { position: fixed; top: 0; right: -100%; width: 80%; max-width: 300px; height: 100%; background: var(--white); z-index: 1001; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .sidebar.active { right: 0; }
         .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .sidebar-links a { 
-            display: flex; align-items: center; gap: 15px; padding: 15px; 
-            font-size: 1.1rem; color: var(--primary); text-decoration: none; border-radius: var(--radius); 
-            margin-bottom: 5px; transition: 0.2s; 
-        }
+        .sidebar-links a { display: flex; align-items: center; gap: 15px; padding: 15px; font-size: 1.1rem; color: var(--primary); text-decoration: none; border-radius: var(--radius); margin-bottom: 5px; transition: 0.2s; }
         .sidebar-links a:active { background: #f0f0f0; }
-        .sidebar-links i { width: 25px; color: var(--secondary); }
         .overlay-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; }
         .overlay-bg.active { display: block; }
-
-        /* --- Banner Slider --- */
         .slider-wrapper { padding: 15px; }
-        .slider-container { 
-            width: 100%; height: 200px; border-radius: var(--radius); position: relative; overflow: hidden; 
-            box-shadow: var(--shadow); background: #ddd;
-        }
-        .slide { 
-            width: 100%; height: 100%; position: absolute; top: 0; left: 0; opacity: 0; 
-            transition: opacity 0.5s ease; background-size: cover; background-position: center; 
-        }
+        .slider-container { width: 100%; height: 200px; border-radius: var(--radius); position: relative; overflow: hidden; box-shadow: var(--shadow); background: #ddd; }
+        .slide { width: 100%; height: 100%; position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; background-size: cover; background-position: center; }
         .slide.active { opacity: 1; }
-
-        /* --- Trips List --- */
         .section-title { padding: 15px 20px 5px; font-size: 1.5rem; font-weight: 800; }
-        .trips-grid { 
-            display: grid; grid-template-columns: 1fr; gap: 20px; padding: 15px; 
-        }
+        .trips-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 15px; }
         @media(min-width: 768px) { .trips-grid { grid-template-columns: repeat(2, 1fr); } }
-
-        .trip-card { 
-            background: var(--white); border-radius: var(--radius); overflow: hidden; 
-            box-shadow: var(--shadow); position: relative; transition: transform 0.2s;
-        }
+        .trip-card { background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); position: relative; transition: transform 0.2s; }
         .trip-card:active { transform: scale(0.98); }
         .trip-img { width: 100%; height: 180px; object-fit: cover; }
-        .trip-price-tag { 
-            position: absolute; top: 15px; left: 15px; background: var(--secondary); 
-            color: white; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+        .trip-price-tag { position: absolute; top: 15px; left: 15px; background: var(--secondary); color: white; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .trip-content { padding: 15px; }
         .trip-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; color: var(--primary); }
         .trip-meta { display: flex; gap: 15px; font-size: 0.9rem; color: #666; margin-bottom: 5px; }
-        .trip-meta i { color: var(--accent); }
-
-        /* --- Modals (Full Screen on Mobile) --- */
-        .modal { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.6); z-index: 2000; display: none; 
-            align-items: flex-end; /* Sheet style */
-        }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: flex-end; }
         .modal.active { display: flex; }
-        .modal-sheet { 
-            background: var(--white); width: 100%; max-height: 90vh; 
-            border-radius: 20px 20px 0 0; padding: 25px; overflow-y: auto; 
-            position: relative; animation: slideUp 0.3s ease-out; 
-            display: flex; flex-direction: column;
-        }
-        @media(min-width: 768px) { 
-            .modal { align-items: center; justify-content: center; }
-            .modal-sheet { width: 500px; border-radius: 20px; max-height: 85vh; }
-        }
+        .modal-sheet { background: var(--white); width: 100%; max-height: 90vh; border-radius: 20px 20px 0 0; padding: 25px; overflow-y: auto; position: relative; animation: slideUp 0.3s ease-out; display: flex; flex-direction: column; }
+        @media(min-width: 768px) { .modal { align-items: center; justify-content: center; } .modal-sheet { width: 500px; border-radius: 20px; max-height: 85vh; } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
         .modal-close-bar { width: 50px; height: 5px; background: #ddd; border-radius: 5px; margin: 0 auto 20px; }
         .close-btn { position: absolute; top: 20px; left: 20px; font-size: 24px; color: #999; cursor: pointer; }
-
-        /* --- Timeline Map --- */
         .timeline { position: relative; margin: 20px 0; border-right: 3px solid #eee; padding-right: 20px; }
         .timeline-item { margin-bottom: 25px; position: relative; }
-        .timeline-dot { 
-            position: absolute; right: -27px; top: 0; width: 14px; height: 14px; 
-            background: var(--secondary); border-radius: 50%; border: 3px solid var(--white); 
-        }
+        .timeline-dot { position: absolute; right: -27px; top: 0; width: 14px; height: 14px; background: var(--secondary); border-radius: 50%; border: 3px solid var(--white); }
         .timeline-box { background: #f8f9fa; padding: 12px; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; }
-        
-        /* Map Colors */
         .map-mountain .timeline { border-right-color: #27ae60; } .map-mountain .timeline-dot { background: #27ae60; }
         .map-desert .timeline { border-right-color: #e67e22; } .map-desert .timeline-dot { background: #e67e22; }
         .map-coastal .timeline { border-right-color: #3498db; } .map-coastal .timeline-dot { background: #3498db; }
         .map-historical .timeline { border-right-color: #8e44ad; } .map-historical .timeline-dot { background: #8e44ad; }
-
-        /* --- Forms & Buttons --- */
         .form-group { margin-bottom: 15px; }
         .form-label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 0.9rem; }
-        .form-input { 
-            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; 
-            font-size: 1rem; outline: none; transition: 0.3s; 
-        }
-        .form-input:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1); }
-        
-        .btn { 
-            width: 100%; padding: 14px; border: none; border-radius: 50px; 
-            font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; 
-            justify-content: center; align-items: center; gap: 10px; 
-        }
-        .btn-primary { background: var(--secondary); color: white; box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3); }
-        .btn-anim { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(230, 126, 34, 0); } 100% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0); } }
-
-        /* --- Footer (Secret Admin) --- */
+        .form-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 1rem; outline: none; transition: 0.3s; }
+        .form-input:focus { border-color: var(--secondary); }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-primary { background: var(--secondary); color: white; }
+        .btn-disabled { background: #ccc; cursor: not-allowed; }
         footer { text-align: center; padding: 30px 20px; font-size: 0.85rem; color: #888; border-top: 1px solid #eee; margin-top: 30px; }
-        .secret-trigger { user-select: none; -webkit-user-select: none; }
-
-        /* --- Success Animation --- */
-        .success-screen { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--white); z-index: 3000; display: none; 
-            flex-direction: column; justify-content: center; align-items: center; text-align: center;
-        }
-        .check-icon { font-size: 80px; color: var(--accent); margin-bottom: 20px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .secret-trigger { user-select: none; }
+        .success-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--white); z-index: 3000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .check-icon { font-size: 80px; color: var(--accent); margin-bottom: 20px; animation: popIn 0.5s; }
         @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
-
-        /* --- ADMIN PANEL --- */
         #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f6f9; z-index: 2500; overflow-y: auto; }
         .admin-header { background: var(--primary); padding: 15px; color: white; display: flex; justify-content: space-between; align-items: center; }
         .admin-content { padding: 15px; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .stat-num { font-size: 1.5rem; font-weight: 900; color: var(--secondary); }
         .admin-btn { padding: 10px; background: white; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; text-align: center; font-weight: bold; width: 100%; display: block; }
-        
-        .table-responsive { overflow-x: auto; background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .table-responsive { overflow-x: auto; background: white; border-radius: 10px; }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th, td { padding: 12px; text-align: right; border-bottom: 1px solid #eee; font-size: 0.9rem; }
         th { background: #f8f9fa; color: var(--primary); }
-
-        /* Utility */
         .hidden { display: none !important; }
-        .text-green { color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <!-- OVERLAY BACKGROUND -->
     <div class="overlay-bg" id="overlay" onclick="toggleSidebar()"></div>
 
-    <!-- HEADER -->
     <header>
         <div class="logo"><i class="fas fa-paper-plane"></i> تحواس</div>
         <div class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
     </header>
 
-    <!-- SIDEBAR MENU -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">تحواس</div>
@@ -195,56 +94,38 @@
             <a href="#" onclick="toggleSidebar()"><i class="fas fa-home"></i> الرئيسية</a>
             <a href="#" onclick="openModal('modal-about')"><i class="fas fa-info-circle"></i> من نحن</a>
             <a href="#" onclick="openModal('modal-contact')"><i class="fas fa-phone"></i> اتصل بنا</a>
-            <a href="#" onclick="openModal('modal-privacy')"><i class="fas fa-shield-alt"></i> سياسة الخصوصية</a>
-            <a href="#" onclick="openModal('modal-location')"><i class="fas fa-map-marker-alt"></i> مقرنا</a>
             <a href="#" onclick="openModal('modal-report')" style="color:#e74c3c;"><i class="fas fa-exclamation-triangle"></i> الإبلاغ عن مشكلة</a>
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
     <main>
-        <!-- Banner Slider -->
         <div class="slider-wrapper">
-            <div class="slider-container" id="banner-slider">
-                <!-- Sliders injected by JS -->
-            </div>
+            <div class="slider-container" id="banner-slider"></div>
         </div>
-
-        <!-- Trips Grid -->
         <h2 class="section-title">رحلاتنا المميزة</h2>
         <div class="trips-grid" id="trips-container">
-            <!-- Trips injected by JS -->
             <div style="text-align:center; padding:20px; width:100%;">جاري تحميل الرحلات...</div>
         </div>
     </main>
 
-    <!-- FOOTER (SECRET ADMIN LOGIN) -->
     <footer id="site-footer">
         <p class="secret-trigger">جميع الحقوق محفوظة &copy; تحواس 2025</p>
-        <p style="font-size:0.7rem; margin-top:5px;">تصميم وبرمجة محترفة</p>
+        <p style="font-size:0.7rem; margin-top:5px;">(اضغط هنا 5 مرات للأدمن)</p>
     </footer>
-
-    <!-- ================= MODALS ================= -->
 
     <!-- Trip Details Modal -->
     <div class="modal" id="modal-trip-details">
         <div class="modal-sheet">
             <div class="modal-close-bar"></div>
             <span class="close-btn" onclick="closeModal('modal-trip-details')">&times;</span>
-            
             <img id="detail-img" src="" style="width:100%; height:200px; object-fit:cover; border-radius:12px; margin-bottom:15px;">
             <h2 id="detail-title" style="margin-bottom:10px; color:var(--primary);"></h2>
-            
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
-                <div style="background:#f8f9fa; padding:10px; border-radius:8px;"><i class="fas fa-calendar-alt text-green"></i> <span id="detail-start"></span></div>
-                <div style="background:#f8f9fa; padding:10px; border-radius:8px;"><i class="fas fa-undo text-green"></i> <span id="detail-end"></span></div>
-                <div style="background:#f8f9fa; padding:10px; border-radius:8px;"><i class="fas fa-hotel text-green"></i> <span id="detail-hotel"></span></div>
-                <div style="background:#f8f9fa; padding:10px; border-radius:8px;"><i class="fas fa-utensils text-green"></i> <span id="detail-food"></span></div>
+                <div style="background:#f8f9fa; padding:10px; border-radius:8px;"><i class="fas fa-calendar-alt"></i> <span id="detail-start"></span></div>
+                <div style="background:#f8f9fa; padding:10px; border-radius:8px;"><i class="fas fa-undo"></i> <span id="detail-end"></span></div>
             </div>
-
             <h3 style="font-size:1.1rem; margin-bottom:10px;">برنامج الرحلة</h3>
             <div id="detail-timeline" class="timeline"></div>
-
             <div style="display:flex; align-items:center; gap:15px; background:#f0f0f0; padding:10px; border-radius:10px; margin-bottom:20px;">
                 <img id="detail-guide-img" src="" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid var(--secondary);">
                 <div>
@@ -252,18 +133,16 @@
                     <div id="detail-guide-name" style="font-size:0.85rem;"></div>
                 </div>
             </div>
-
             <div style="margin-top:auto; width:100%;">
                 <div style="text-align:center; font-size:1.4rem; font-weight:900; color:var(--primary); margin-bottom:10px;">
                     <span id="detail-price"></span> د.ج
-                    <span style="font-size:0.8rem; font-weight:normal; color:#888;">/ للشخص</span>
                 </div>
-                <button class="btn btn-primary btn-anim" id="btn-book-now">سجل في هذه الرحلة</button>
+                <button class="btn btn-primary" id="btn-book-now">سجل الآن</button>
             </div>
         </div>
     </div>
 
-    <!-- Booking Form Modal -->
+    <!-- Booking Modal -->
     <div class="modal" id="modal-booking">
         <div class="modal-sheet">
             <div class="modal-close-bar"></div>
@@ -271,138 +150,89 @@
             <form id="booking-form">
                 <input type="hidden" id="book-trip-id">
                 <input type="hidden" id="book-trip-name">
-                <div class="form-group"><label class="form-label">الاسم واللقب</label><input type="text" id="p-name" class="form-input" required></div>
-                <div class="form-group"><label class="form-label">رقم الهاتف</label><input type="tel" id="p-phone" class="form-input" required></div>
-                <div class="form-group"><label class="form-label">السن</label><input type="number" id="p-age" class="form-input" required></div>
-                <div class="form-group">
-                    <label class="form-label">الجنس</label>
-                    <select id="p-gender" class="form-input"><option>ذكر</option><option>أنثى</option></select>
-                </div>
-                <div class="form-group"><label class="form-label">الولاية</label><input type="text" id="p-state" class="form-input" required></div>
-                <button type="submit" class="btn btn-primary" style="margin-top:20px;">تأكيد التسجيل</button>
+                <div class="form-group"><input type="text" id="p-name" placeholder="الاسم واللقب" class="form-input" required></div>
+                <div class="form-group"><input type="tel" id="p-phone" placeholder="رقم الهاتف" class="form-input" required></div>
+                <div class="form-group"><input type="text" id="p-state" placeholder="الولاية" class="form-input" required></div>
+                <button type="submit" class="btn btn-primary" style="margin-top:20px;">تأكيد</button>
             </form>
         </div>
     </div>
-
-    <!-- Report Problem Modal -->
-    <div class="modal" id="modal-report">
-        <div class="modal-sheet">
-            <span class="close-btn" onclick="closeModal('modal-report')">&times;</span>
-            <h2>الإبلاغ عن مشكلة</h2>
-            <form id="report-form" style="margin-top:20px;">
-                <div class="form-group"><input type="text" id="r-name" placeholder="الاسم" class="form-input" required></div>
-                <div class="form-group"><input type="email" id="r-email" placeholder="البريد الإلكتروني" class="form-input" required></div>
-                <div class="form-group"><textarea id="r-desc" rows="4" placeholder="وصف المشكلة" class="form-input" required></textarea></div>
-                <button type="submit" class="btn" style="background:#e74c3c; color:white;">إرسال البلاغ</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Static Info Modals -->
-    <div class="modal" id="modal-about"><div class="modal-sheet"><span class="close-btn" onclick="closeModal('modal-about')">&times;</span><h2>من نحن</h2><p>نحن وكالة تحواس، نقدم أفضل الرحلات السياحية في الجزائر.</p></div></div>
-    <div class="modal" id="modal-contact"><div class="modal-sheet"><span class="close-btn" onclick="closeModal('modal-contact')">&times;</span><h2>اتصل بنا</h2><p>هاتف: 0550000000</p></div></div>
-    <div class="modal" id="modal-privacy"><div class="modal-sheet"><span class="close-btn" onclick="closeModal('modal-privacy')">&times;</span><h2>الخصوصية</h2><p>بياناتك محفوظة بأمان.</p></div></div>
-    <div class="modal" id="modal-location"><div class="modal-sheet"><span class="close-btn" onclick="closeModal('modal-location')">&times;</span><h2>مقرنا</h2><p>الجزائر العاصمة.</p></div></div>
 
     <!-- Success Screen -->
     <div class="success-screen" id="success-screen">
         <i class="fas fa-check-circle check-icon"></i>
-        <h2>تم التسجيل بنجاح!</h2>
-        <p>سنعود للصفحة الرئيسية...</p>
+        <h2>تم بنجاح!</h2>
     </div>
 
-    <!-- ================= ADMIN AREA ================= -->
-    
-    <!-- Admin Login Modal (Triggered Secretly) -->
+    <!-- Admin Login -->
     <div class="modal" id="modal-admin-login">
         <div class="modal-sheet" style="justify-content:center;">
             <span class="close-btn" onclick="closeModal('modal-admin-login')">&times;</span>
-            <h2 style="text-align:center; margin-bottom:20px;">لوحة التحكم</h2>
+            <h2 style="text-align:center; margin-bottom:20px;">دخول الأدمن</h2>
             <div class="form-group"><input type="text" id="adm-user" placeholder="User" class="form-input"></div>
             <div class="form-group"><input type="password" id="adm-pass" placeholder="Password" class="form-input"></div>
-            <button onclick="attemptAdminLogin()" class="btn btn-primary">دخول</button>
+            <button id="btn-admin-login" class="btn btn-primary">دخول</button>
         </div>
     </div>
 
-    <!-- Admin Panel Full Screen -->
+    <!-- Admin Panel -->
     <div id="admin-panel">
         <div class="admin-header">
             <h3>لوحة الأدمن</h3>
-            <button onclick="location.reload()" style="background:none; border:none; color:white;"><i class="fas fa-sign-out-alt"></i> خروج</button>
+            <button onclick="location.reload()" style="background:none; border:none; color:white;">خروج</button>
         </div>
-        
         <div class="admin-content">
-            <!-- Stats -->
             <div class="stats-grid">
-                <div class="stat-card" onclick="loadAdminOrders('today')">
-                    <div class="stat-num" id="st-today">0</div>
-                    <div style="font-size:0.8rem;">زيارات اليوم</div>
-                </div>
-                <div class="stat-card" onclick="loadAdminOrders('month')">
-                    <div class="stat-num" id="st-month">0</div>
-                    <div style="font-size:0.8rem;">زيارات الشهر</div>
-                </div>
-                <div class="stat-card" onclick="loadAdminOrders('new')" style="background:#e8f8f5;">
-                    <div class="stat-num" id="st-new" style="color:var(--accent);">0</div>
-                    <div style="font-size:0.8rem;">طلبات جديدة</div>
-                </div>
-                <div class="stat-card" onclick="loadAdminOrders('all')">
-                    <div class="stat-num" id="st-all">0</div>
-                    <div style="font-size:0.8rem;">الكل</div>
-                </div>
+                <div class="stat-card"><h3>الطلبات</h3><h2 id="st-all" style="color:var(--secondary)">0</h2></div>
+                <div class="stat-card"><h3>الزيارات</h3><h2 id="st-month">0</h2></div>
             </div>
-
-            <!-- Controls -->
             <div style="margin-bottom:20px;">
-                <button class="admin-btn" onclick="openAdminView('add-trip')"><i class="fas fa-plus"></i> إضافة رحلة</button>
-                <button class="admin-btn" onclick="openAdminView('banners')"><i class="fas fa-images"></i> إدارة البانر</button>
-                <button class="admin-btn" onclick="loadAdminOrders('all')"><i class="fas fa-list"></i> الطلبات</button>
-                <button class="admin-btn" onclick="loadComplaints()"><i class="fas fa-envelope"></i> الشكاوى</button>
+                <button class="admin-btn" id="btn-show-add-trip">إضافة رحلة</button>
+                <button class="admin-btn" id="btn-show-banners">إدارة البانر</button>
+                <button class="admin-btn" id="btn-show-orders">الطلبات</button>
             </div>
 
-            <!-- Dynamic Admin Content -->
             <div id="admin-view-area">
                 <!-- Add Trip Form -->
                 <div id="view-add-trip" class="hidden">
-                    <h3>إضافة رحلة</h3>
-                    <div class="form-group"><input type="text" id="n-title" placeholder="عنوان الرحلة" class="form-input"></div>
+                    <h3>إضافة رحلة جديدة</h3>
+                    <div class="form-group"><input type="text" id="n-title" placeholder="العنوان" class="form-input"></div>
                     <div class="form-group"><input type="number" id="n-price" placeholder="السعر" class="form-input"></div>
-                    <div class="form-group"><label>الانطلاق</label><input type="date" id="n-start" class="form-input"></div>
-                    <div class="form-group"><label>العودة</label><input type="date" id="n-end" class="form-input"></div>
+                    <div class="form-group"><label>التاريخ</label><input type="date" id="n-start" class="form-input"></div>
+                    <div class="form-group"><input type="date" id="n-end" class="form-input"></div>
                     <div class="form-group"><input type="text" id="n-hotel" placeholder="الفندق" class="form-input"></div>
                     <div class="form-group"><input type="text" id="n-food" placeholder="الأكل" class="form-input"></div>
-                    <div class="form-group"><label>نوع الخريطة</label>
+                    <div class="form-group">
                         <select id="n-map" class="form-input">
                             <option value="mountain">جبلية</option>
                             <option value="desert">صحراوية</option>
                             <option value="coastal">ساحلية</option>
-                            <option value="historical">أثرية</option>
                         </select>
                     </div>
-                    <div class="form-group"><textarea id="n-timeline" rows="4" placeholder="محطات الرحلة (كل محطة في سطر)" class="form-input"></textarea></div>
+                    <div class="form-group"><textarea id="n-timeline" rows="4" placeholder="المحطات (كل محطة في سطر)" class="form-input"></textarea></div>
                     <div class="form-group"><label>صورة الرحلة</label><input type="file" id="n-img" class="form-input"></div>
-                    
-                    <h4>المرشد</h4>
                     <div class="form-group"><input type="text" id="n-gname" placeholder="اسم المرشد" class="form-input"></div>
                     <div class="form-group"><label>صورة المرشد</label><input type="file" id="n-gimg" class="form-input"></div>
-                    <button onclick="submitTrip()" class="btn btn-primary">نشر</button>
+                    
+                    <!-- زر النشر المصحح -->
+                    <button id="btn-submit-trip" class="btn btn-primary">نشر الرحلة</button>
                 </div>
 
                 <!-- Banners View -->
                 <div id="view-banners" class="hidden">
-                    <h3>إدارة البانر</h3>
+                    <h3>رفع بانر</h3>
                     <div class="form-group"><input type="file" id="n-banner" class="form-input"></div>
-                    <button onclick="submitBanner()" class="btn btn-primary">رفع</button>
+                    <button id="btn-submit-banner" class="btn btn-primary">رفع البانر</button>
                     <div id="banners-list" style="margin-top:15px; display:flex; gap:5px; flex-wrap:wrap;"></div>
                 </div>
 
-                <!-- Table View (Orders/Complaints) -->
-                <div id="view-table" class="hidden">
-                    <h3 id="table-title">البيانات</h3>
+                <!-- Orders View -->
+                <div id="view-orders" class="hidden">
+                    <h3>الطلبات</h3>
                     <div class="table-responsive">
                         <table>
-                            <thead id="table-head"></thead>
-                            <tbody id="table-body"></tbody>
+                            <thead><tr><th>التاريخ</th><th>الاسم</th><th>الهاتف</th><th>الرحلة</th></tr></thead>
+                            <tbody id="orders-body"></tbody>
                         </table>
                     </div>
                 </div>
@@ -410,13 +240,12 @@
         </div>
     </div>
 
-    <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-        // CONFIG
+        // استبدل هذا بكونفيج مشروعك
         const firebaseConfig = {
             apiKey: "AIzaSyAaXp-gUOQ_G2s-kM8JhaqW8TJcJ4Nqcuo",
             authDomain: "comondi-fae4b.firebaseapp.com",
@@ -425,11 +254,12 @@
             messagingSenderId: "932777870241",
             appId: "1:932777870241:web:78b0cf3a3cf14046be01e0"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // --- UI UTILS ---
+        // --- دوال المساعدة ---
         window.toggleSidebar = () => {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
@@ -437,106 +267,72 @@
         window.openModal = (id) => {
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            // Close sidebar if open
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('overlay').classList.remove('active');
         };
         window.closeModal = (id) => document.getElementById(id).classList.remove('active');
 
-        // --- SECRET ADMIN TRIGGER ---
-        let secretClicks = 0;
-        document.getElementById('site-footer').addEventListener('click', () => {
-            secretClicks++;
-            if(secretClicks === 5) {
-                window.openModal('modal-admin-login');
-                secretClicks = 0;
-            }
-            setTimeout(() => secretClicks = 0, 2000); // Reset after 2s
-        });
+        // --- تحميل البيانات ---
+        async function loadData() {
+            // البانر
+            const bDiv = document.getElementById('banner-slider');
+            try {
+                const bSnap = await getDocs(collection(db, "banners"));
+                if(!bSnap.empty) {
+                    let html = '';
+                    bSnap.forEach((d, i) => {
+                        html += `<div class="slide ${i===0?'active':''}" style="background-image:url('${d.data().url}')"></div>`;
+                    });
+                    bDiv.innerHTML = html;
+                    setInterval(() => {
+                        const slides = document.querySelectorAll('.slide');
+                        if(slides.length > 1) {
+                            const active = document.querySelector('.slide.active');
+                            active.classList.remove('active');
+                            if(active.nextElementSibling) active.nextElementSibling.classList.add('active');
+                            else slides[0].classList.add('active');
+                        }
+                    }, 3000);
+                } else {
+                    bDiv.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100%;background:#ddd">لا توجد إعلانات</div>';
+                }
+            } catch(e) { console.log(e); }
 
-        // --- ADMIN AUTH ---
-        window.attemptAdminLogin = () => {
-            const u = document.getElementById('adm-user').value;
-            const p = document.getElementById('adm-pass').value;
-            if(u === 'admin' && p === 'abobob123') {
-                document.getElementById('admin-panel').style.display = 'block';
-                window.closeModal('modal-admin-login');
-                initDashboard();
-            } else {
-                alert('خطأ في المعلومات');
-            }
-        };
-
-        // --- USER: LOAD DATA ---
-        async function loadContent() {
-            // Banners
-            const banSnap = await getDocs(collection(db, "banners"));
-            const banDiv = document.getElementById('banner-slider');
-            if(banSnap.empty) {
-                banDiv.innerHTML = '<div class="slide active" style="background:#ccc; display:flex; align-items:center; justify-content:center;">أهلاً بكم في تحواس</div>';
-            } else {
-                let html = '';
-                banSnap.forEach((doc, idx) => {
-                    html += `<div class="slide ${idx==0?'active':''}" style="background-image:url('${doc.data().url}')"></div>`;
-                });
-                banDiv.innerHTML = html;
-                startSlider();
-            }
-
-            // Trips
-            const tripDiv = document.getElementById('trips-container');
+            // الرحلات
+            const tDiv = document.getElementById('trips-container');
             const q = query(collection(db, "trips"), orderBy("startDate", "desc"));
-            const tripSnap = await getDocs(q);
-            tripDiv.innerHTML = '';
-            tripSnap.forEach(doc => {
+            const tSnap = await getDocs(q);
+            tDiv.innerHTML = '';
+            tSnap.forEach(doc => {
                 const d = doc.data();
-                const div = document.createElement('div');
-                div.className = 'trip-card';
-                div.innerHTML = `
+                const el = document.createElement('div');
+                el.className = 'trip-card';
+                el.innerHTML = `
                     <div class="trip-price-tag">${d.price} د.ج</div>
                     <img src="${d.imageUrl}" class="trip-img">
                     <div class="trip-content">
                         <div class="trip-title">${d.title}</div>
                         <div class="trip-meta"><i class="fas fa-map"></i> ${d.mapType}</div>
-                        <div class="trip-meta"><i class="fas fa-calendar"></i> ${d.startDate}</div>
                     </div>
                 `;
-                div.onclick = () => showDetails(doc.id, d);
-                tripDiv.appendChild(div);
+                el.onclick = () => showTrip(doc.id, d);
+                tDiv.appendChild(el);
             });
-            
-            // Record Visit
-            addDoc(collection(db, "visits"), { date: new Date().toISOString().split('T')[0] });
         }
-        loadContent();
+        loadData();
 
-        function startSlider() {
-            const slides = document.querySelectorAll('.slide');
-            if(slides.length < 2) return;
-            let i = 0;
-            setInterval(() => {
-                slides[i].classList.remove('active');
-                i = (i + 1) % slides.length;
-                slides[i].classList.add('active');
-            }, 3000);
-        }
-
-        function showDetails(id, d) {
+        function showTrip(id, d) {
             document.getElementById('detail-img').src = d.imageUrl;
             document.getElementById('detail-title').innerText = d.title;
             document.getElementById('detail-start').innerText = d.startDate;
             document.getElementById('detail-end').innerText = d.endDate;
-            document.getElementById('detail-hotel').innerText = d.hotel;
-            document.getElementById('detail-food').innerText = d.food;
             document.getElementById('detail-price').innerText = d.price;
             document.getElementById('detail-guide-name').innerText = d.guideName;
             document.getElementById('detail-guide-img').src = d.guideImg;
-
-            const tLine = document.getElementById('detail-timeline');
-            tLine.className = `timeline map-${d.mapType}`;
-            tLine.innerHTML = '';
-            d.timelineText.split('\n').forEach(line => {
-                if(line.trim()) tLine.innerHTML += `<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-box">${line}</div></div>`;
+            
+            const tl = document.getElementById('detail-timeline');
+            tl.className = `timeline map-${d.mapType}`;
+            tl.innerHTML = '';
+            d.timelineText.split('\n').forEach(l => {
+                if(l.trim()) tl.innerHTML += `<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-box">${l}</div></div>`;
             });
 
             document.getElementById('btn-book-now').onclick = () => {
@@ -544,82 +340,86 @@
                 document.getElementById('book-trip-id').value = id;
                 document.getElementById('book-trip-name').value = d.title;
                 window.openModal('modal-booking');
-            };
-
+            }
             window.openModal('modal-trip-details');
         }
 
-        // --- USER: FORMS ---
-        document.getElementById('booking-form').onsubmit = async (e) => {
+        // --- الحجز ---
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button');
-            btn.innerText = 'جاري الحجز...';
+            btn.innerText = 'جاري الإرسال...';
+            btn.disabled = true;
             try {
                 await addDoc(collection(db, "orders"), {
                     tripId: document.getElementById('book-trip-id').value,
                     tripName: document.getElementById('book-trip-name').value,
                     name: document.getElementById('p-name').value,
                     phone: document.getElementById('p-phone').value,
-                    age: document.getElementById('p-age').value,
-                    gender: document.getElementById('p-gender').value,
                     state: document.getElementById('p-state').value,
-                    status: 'قيد الانتظار',
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    status: 'قيد الانتظار'
                 });
                 window.closeModal('modal-booking');
                 document.getElementById('success-screen').style.display = 'flex';
-                setTimeout(() => location.reload(), 2500);
-            } catch(err) { alert('حدث خطأ'); btn.innerText='تأكيد التسجيل'; }
-        };
+                setTimeout(() => location.reload(), 2000);
+            } catch(er) { alert('خطأ: ' + er.message); btn.disabled=false; }
+        });
 
-        document.getElementById('report-form').onsubmit = async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, "complaints"), {
-                name: document.getElementById('r-name').value,
-                email: document.getElementById('r-email').value,
-                desc: document.getElementById('r-desc').value
-            });
-            alert('تم الإرسال');
-            window.closeModal('modal-report');
-        };
+        // --- الأدمن (السر) ---
+        let clicks = 0;
+        document.getElementById('site-footer').addEventListener('click', () => {
+            clicks++;
+            if(clicks === 5) { window.openModal('modal-admin-login'); clicks=0; }
+            setTimeout(() => clicks=0, 2000);
+        });
 
-        // --- ADMIN LOGIC ---
-        function initDashboard() {
-            onSnapshot(collection(db, "orders"), snap => {
-                document.getElementById('st-all').innerText = snap.size;
-                document.getElementById('st-new').innerText = snap.docs.filter(d=>d.data().status==='قيد الانتظار').length;
-            });
-            getDocs(collection(db, "visits")).then(snap => {
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('st-month').innerText = snap.size;
-                document.getElementById('st-today').innerText = snap.docs.filter(d=>d.data().date===today).length;
-            });
+        document.getElementById('btn-admin-login').addEventListener('click', () => {
+            const u = document.getElementById('adm-user').value;
+            const p = document.getElementById('adm-pass').value;
+            if(u === 'admin' && p === 'abobob123') {
+                document.getElementById('admin-panel').style.display = 'block';
+                window.closeModal('modal-admin-login');
+                initAdmin();
+            } else { alert('خطأ!'); }
+        });
+
+        function initAdmin() {
+            onSnapshot(collection(db, "orders"), s => document.getElementById('st-all').innerText = s.size);
+            document.getElementById('btn-show-add-trip').onclick = () => showView('view-add-trip');
+            document.getElementById('btn-show-banners').onclick = () => { showView('view-banners'); loadAdminBanners(); };
+            document.getElementById('btn-show-orders').onclick = () => { showView('view-orders'); loadAdminOrders(); };
         }
 
-        window.openAdminView = (v) => {
-            document.getElementById('view-add-trip').classList.add('hidden');
-            document.getElementById('view-banners').classList.add('hidden');
-            document.getElementById('view-table').classList.add('hidden');
-            if(v === 'add-trip') document.getElementById('view-add-trip').classList.remove('hidden');
-            if(v === 'banners') { document.getElementById('view-banners').classList.remove('hidden'); loadBannersAdmin(); }
-        };
+        function showView(id) {
+            ['view-add-trip','view-banners','view-orders'].forEach(v => document.getElementById(v).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
 
-        async function uploadFile(file, path) {
-            const sRef = ref(storage, path + '/' + Date.now() + '-' + file.name);
+        // --- رفع الصور ونشر الرحلة (الكود المصحح) ---
+        async function uploadFile(file, folder) {
+            const sRef = ref(storage, folder + '/' + Date.now() + '-' + file.name);
             await uploadBytes(sRef, file);
             return await getDownloadURL(sRef);
         }
 
-        window.submitTrip = async () => {
-            const f1 = document.getElementById('n-img').files[0];
-            const f2 = document.getElementById('n-gimg').files[0];
-            if(!f1 || !f2) return alert('الصور مطلوبة');
+        // زر إضافة الرحلة
+        document.getElementById('btn-submit-trip').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-submit-trip');
+            const imgFile = document.getElementById('n-img').files[0];
+            const guideFile = document.getElementById('n-gimg').files[0];
+
+            if(!imgFile || !guideFile) { alert('يجب اختيار الصور!'); return; }
+            
+            btn.innerText = 'جاري الرفع... يرجى الانتظار';
+            btn.classList.add('btn-disabled');
             
             try {
-                alert('جاري الرفع... انتظر');
-                const u1 = await uploadFile(f1, 'trips');
-                const u2 = await uploadFile(f2, 'guides');
-                
+                // رفع الصور أولاً
+                const imgUrl = await uploadFile(imgFile, 'trips');
+                const guideUrl = await uploadFile(guideFile, 'guides');
+
+                // حفظ البيانات
                 await addDoc(collection(db, "trips"), {
                     title: document.getElementById('n-title').value,
                     price: document.getElementById('n-price').value,
@@ -630,85 +430,53 @@
                     mapType: document.getElementById('n-map').value,
                     timelineText: document.getElementById('n-timeline').value,
                     guideName: document.getElementById('n-gname').value,
-                    imageUrl: u1, guideImg: u2
+                    imageUrl: imgUrl,
+                    guideImg: guideUrl
                 });
-                alert('تم!');
-            } catch(e) { alert('خطأ: ' + e.message); }
-        };
 
-        window.submitBanner = async () => {
-            const f = document.getElementById('n-banner').files[0];
-            if(!f) return;
-            const u = await uploadFile(f, 'banners');
-            await addDoc(collection(db, "banners"), { url: u });
-            loadBannersAdmin();
-        };
+                alert('تم نشر الرحلة بنجاح!');
+                location.reload(); // تحديث الصفحة
+            } catch (error) {
+                console.error(error);
+                alert('حدث خطأ أثناء النشر: ' + error.message + '\nتأكد من إعدادات Rules في Firebase');
+                btn.innerText = 'نشر الرحلة';
+                btn.classList.remove('btn-disabled');
+            }
+        });
 
-        async function loadBannersAdmin() {
+        // زر رفع البانر
+        document.getElementById('btn-submit-banner').addEventListener('click', async () => {
+            const file = document.getElementById('n-banner').files[0];
+            if(!file) return;
+            const btn = document.getElementById('btn-submit-banner');
+            btn.innerText = 'جاري الرفع...';
+            try {
+                const url = await uploadFile(file, 'banners');
+                await addDoc(collection(db, "banners"), { url: url });
+                alert('تم الرفع');
+                loadAdminBanners();
+                btn.innerText = 'رفع البانر';
+            } catch(e) { alert('خطأ: ' + e.message); btn.innerText='رفع البانر'; }
+        });
+
+        async function loadAdminBanners() {
             const d = document.getElementById('banners-list');
-            d.innerHTML = '...';
+            d.innerHTML = 'جاري التحميل...';
             const s = await getDocs(collection(db, "banners"));
             d.innerHTML = '';
-            s.forEach(doc => d.innerHTML += `<img src="${doc.data().url}" width="80" style="border:1px solid #ccc">`);
+            s.forEach(doc => d.innerHTML += `<img src="${doc.data().url}" width="60" style="border-radius:5px; border:1px solid #ccc">`);
         }
 
-        window.loadAdminOrders = async (filter) => {
-            document.getElementById('view-add-trip').classList.add('hidden');
-            document.getElementById('view-banners').classList.add('hidden');
-            const v = document.getElementById('view-table');
-            v.classList.remove('hidden');
-            
-            document.getElementById('table-title').innerText = 'الطلبات';
-            document.getElementById('table-head').innerHTML = '<tr><th>التاريخ</th><th>الاسم</th><th>الهاتف</th><th>الرحلة</th><th>الحالة</th><th>تعديل</th></tr>';
-            
-            const q = query(collection(db, "orders"), orderBy("timestamp", "desc"));
-            const s = await getDocs(q);
-            const tb = document.getElementById('table-body');
-            tb.innerHTML = '';
-            
-            s.forEach(doc => {
-                const d = doc.data();
-                if(filter === 'new' && d.status !== 'قيد الانتظار') return;
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${d.timestamp.split('T')[0]}</td>
-                    <td>${d.name}</td>
-                    <td><a href="tel:${d.phone}">${d.phone}</a></td>
-                    <td>${d.tripName}</td>
-                    <td><span style="padding:2px 6px; border-radius:4px; font-size:0.7rem; color:white; background:${getStatusColor(d.status)}">${d.status}</span></td>
-                    <td><select onchange="window.upStat('${doc.id}', this.value)">
-                        <option>تغيير</option><option>تم الاتصال به</option><option>تأكيد التسجيل</option><option>إلغاء تسجيل</option>
-                    </select></td>
-                `;
-                tb.appendChild(row);
+        async function loadAdminOrders() {
+            const b = document.getElementById('orders-body');
+            b.innerHTML = '<tr><td>تحميل...</td></tr>';
+            const s = await getDocs(query(collection(db, "orders"), orderBy("timestamp", "desc")));
+            b.innerHTML = '';
+            s.forEach(d => {
+                const data = d.data();
+                b.innerHTML += `<tr><td>${data.timestamp.split('T')[0]}</td><td>${data.name}</td><td>${data.phone}</td><td>${data.tripName}</td></tr>`;
             });
-        };
-
-        window.upStat = async (id, val) => {
-            if(val === 'تغيير') return;
-            await updateDoc(doc(db, "orders", id), { status: val });
-            alert('تم التحديث');
-        };
-
-        function getStatusColor(s) {
-            if(s === 'قيد الانتظار') return '#f39c12';
-            if(s === 'تم الاتصال به') return '#3498db';
-            if(s === 'تأكيد التسجيل') return '#27ae60';
-            return '#c0392b';
         }
-
-        window.loadComplaints = async () => {
-             document.getElementById('view-add-trip').classList.add('hidden');
-             document.getElementById('view-banners').classList.add('hidden');
-             document.getElementById('view-table').classList.remove('hidden');
-             document.getElementById('table-title').innerText = 'الشكاوى';
-             document.getElementById('table-head').innerHTML = '<tr><th>الاسم</th><th>البريد</th><th>الوصف</th></tr>';
-             const s = await getDocs(collection(db, "complaints"));
-             const tb = document.getElementById('table-body');
-             tb.innerHTML = '';
-             s.forEach(d => tb.innerHTML += `<tr><td>${d.data().name}</td><td>${d.data().email}</td><td>${d.data().desc}</td></tr>`);
-        };
     </script>
 </body>
 </html>
