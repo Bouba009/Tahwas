@@ -3,594 +3,731 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحواس - Tahwas | اكتشف جمال الجزائر</title>
+    <title>تحواس - Tahwas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; overflow-x: hidden; scroll-behavior: smooth; }
+        :root { --main-color: #2563eb; }
+        body.font-ar { font-family: 'Tajawal', sans-serif; }
+        body.font-en { font-family: 'Poppins', sans-serif; }
+        
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--main-color); border-radius: 4px; }
 
-        /* --- MAP TERRAIN PATTERNS & THEMES --- */
-        .map-container {
-            position: relative; padding: 40px 20px; border-radius: 20px;
-            overflow: hidden; min-height: 600px; margin-top: 20px;
-            border: 8px solid white; box-shadow: inset 0 0 50px rgba(0,0,0,0.2), 0 10px 30px rgba(0,0,0,0.1);
+        /* --- SNAKE MAP STYLE --- */
+        .snake-map-container {
+            position: relative; padding: 40px 0; overflow: hidden;
         }
-
-        /* 1. SAHARA THEME */
-        .theme-sahara {
-            background-color: #fef3c7;
-            background-image: radial-gradient(#fbbf24 2px, transparent 2px);
-            background-size: 30px 30px;
-            border-color: #d97706;
+        .snake-line {
+            position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; margin-left: -2px;
+            background: repeating-linear-gradient(to bottom, #cbd5e1 0, #cbd5e1 10px, transparent 10px, transparent 20px);
+            z-index: 1;
         }
-        .theme-sahara .map-path-line { border-left: 6px dashed #d97706; }
-        .theme-sahara .map-point-dot { background: #d97706; border-color: #fff; }
-
-        /* 2. MOUNTAIN THEME */
-        .theme-mountain {
-            background-color: #dcfce7;
-            background-image: linear-gradient(135deg, #86efac 25%, transparent 25%), linear-gradient(225deg, #86efac 25%, transparent 25%);
-            background-size: 20px 20px;
-            border-color: #166534;
+        .snake-item {
+            position: relative; width: 50%; margin-bottom: 60px; clear: both; z-index: 2;
         }
-        .theme-mountain .map-path-line { border-left: 6px dashed #15803d; }
-        .theme-mountain .map-point-dot { background: #15803d; border-color: #fff; }
+        /* Right & Left Logic (LTR/RTL agnostic logic handled via CSS classes) */
+        .snake-item.left { float: left; padding-right: 50px; text-align: right; }
+        .snake-item.right { float: right; padding-left: 50px; text-align: left; }
 
-        /* 3. COASTAL THEME */
-        .theme-coastal {
-            background-color: #e0f2fe;
-            background-image: radial-gradient(circle, #7dd3fc 2px, transparent 2.5px);
-            background-size: 30px 30px;
-            border-color: #0284c7;
+        /* RTL Specific Flips */
+        html[dir="rtl"] .snake-item.left { text-align: left; padding-left: 0; padding-right: 50px; } 
+        html[dir="rtl"] .snake-item.right { text-align: right; padding-right: 0; padding-left: 50px; }
+
+        /* The Card */
+        .snake-card {
+            background: white; border-radius: 15px; padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative;
+            border: 2px solid #e2e8f0; transition: transform 0.3s;
         }
-        .theme-coastal .map-path-line { border-left: 6px dashed #0284c7; }
-        .theme-coastal .map-point-dot { background: #0284c7; border-color: #fff; }
+        .snake-card:hover { transform: translateY(-5px); border-color: var(--main-color); }
 
-        /* 4. HISTORICAL THEME */
-        .theme-historical {
-            background-color: #f5f5f4;
-            background-image: repeating-linear-gradient(45deg, #e7e5e4 25%, transparent 25%, transparent 75%, #e7e5e4 75%, #e7e5e4);
-            background-size: 20px 20px;
-            border-color: #78716c;
+        /* Location Icon on the line */
+        .snake-dot {
+            position: absolute; top: 15px; width: 30px; height: 30px;
+            background: white; border: 4px solid var(--main-color); border-radius: 50%;
+            z-index: 10; display: flex; align-items: center; justify-content: center;
+            color: var(--main-color); font-size: 12px;
         }
-
-        /* --- MAP PATH LOGIC --- */
-        .map-timeline { position: relative; max-width: 600px; margin: 0 auto; padding-bottom: 50px; }
-        .map-path-line {
-            position: absolute; top: 0; bottom: 0; left: 50%; width: 0; margin-left: -3px; z-index: 1;
-        }
-        .map-item { position: relative; margin-bottom: 80px; width: 50%; clear: both; z-index: 5; }
-        .map-item:nth-child(odd) { float: left; text-align: left; padding-right: 50px; }
-        .map-item:nth-child(even) { float: right; text-align: right; padding-left: 50px; }
-
-        .map-point-dot {
-            content: ''; position: absolute; top: 20px; width: 20px; height: 20px;
-            border-radius: 50%; z-index: 10; border-width: 4px; border-style: solid;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            animation: pulse 2s infinite;
-        }
-        .map-item:nth-child(odd) .map-point-dot { right: -10px; }
-        .map-item:nth-child(even) .map-point-dot { left: -10px; }
-
-        .map-content {
-            background: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: inline-block;
-            transition: transform 0.3s; position: relative;
-        }
-        .map-content:hover { transform: scale(1.05); }
-
-        .deco-float { position: absolute; font-size: 3rem; animation: float 6s ease-in-out infinite; z-index: 2; opacity: 0.9; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-
-        /* Slider in Modal */
-        .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 350px; }
-        .modal-slide { min-width: 100%; height: 100%; scroll-snap-align: center; object-fit: cover; }
+        .snake-item.left .snake-dot { right: -15px; }
+        .snake-item.right .snake-dot { left: -15px; }
         
-        /* Register Button Animation */
-        .btn-register-pulse { animation: glowing 2s infinite; }
-        @keyframes glowing { 0% { box-shadow: 0 0 5px #2563eb; } 50% { box-shadow: 0 0 20px #2563eb; } 100% { box-shadow: 0 0 5px #2563eb; } }
+        /* Specific Themes */
+        .theme-sahara .snake-card { border-bottom: 4px solid #d97706; }
+        .theme-mountain .snake-card { border-bottom: 4px solid #166534; }
+        .theme-coastal .snake-card { border-bottom: 4px solid #0284c7; }
+
+        /* Slider */
+        .snap-x { scroll-snap-type: x mandatory; }
+        .snap-center { scroll-snap-align: center; }
+
+        /* Floating Register Button */
+        .btn-glow { animation: pulse-blue 2s infinite; }
+        @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
 
     <!-- Navbar -->
     <header class="bg-white shadow-md fixed w-full z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-3xl font-black text-blue-600">تحواس<span class="text-orange-500">.</span></h1>
-            <nav class="hidden md:flex gap-6 font-bold text-gray-600">
-                <a href="#" onclick="location.reload()" class="hover:text-blue-600">الرئيسية</a>
-                <a href="#trips-section" class="hover:text-blue-600">رحلات</a>
-                <button onclick="document.getElementById('report-modal').style.display='flex'" class="text-red-500">مشكلة؟</button>
-            </nav>
+            <div class="flex items-center gap-4">
+                <i class="fas fa-bars text-2xl cursor-pointer md:hidden" onclick="toggleSidebar()"></i>
+                <!-- Dynamic Logo -->
+                <img id="site-logo" src="" alt="Logo" class="h-10 hidden"> 
+                <h1 id="site-title-text" class="text-3xl font-black text-blue-600">تحواس<span class="text-orange-500">.</span></h1>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- Lang Switcher -->
+                <select id="lang-switch" onchange="changeLang(this.value)" class="border rounded p-1 text-sm bg-gray-100">
+                    <option value="ar">🇺🇪 العربية</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                </select>
+
+                <nav class="hidden md:flex gap-6 font-bold text-gray-600 text-sm">
+                    <a href="#" class="hover:text-blue-600" data-key="home">الرئيسية</a>
+                    <a href="#trips-section" class="hover:text-blue-600" data-key="trips">رحلات</a>
+                    <a href="#about-sec" class="hover:text-blue-600" data-key="about">من نحن</a>
+                    <a href="#contact-sec" class="hover:text-blue-600" data-key="contact">اتصل بنا</a>
+                    <button onclick="openModal('report-modal')" class="text-red-500" data-key="report">! مشكلة</button>
+                </nav>
+            </div>
         </div>
     </header>
 
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 pt-20 px-6">
+        <button onclick="toggleSidebar()" class="absolute top-4 left-4 text-2xl"><i class="fas fa-times"></i></button>
+        <ul class="space-y-4 font-bold text-lg">
+            <li><a href="#" onclick="toggleSidebar()" data-key="home">الرئيسية</a></li>
+            <li><a href="#trips-section" onclick="toggleSidebar()" data-key="trips">رحلات</a></li>
+            <li><a href="#about-sec" onclick="toggleSidebar()" data-key="about">من نحن</a></li>
+            <li><a href="#policy-sec" onclick="toggleSidebar()" data-key="policy">سياسة الخصوصية</a></li>
+            <li><a href="#location-sec" onclick="toggleSidebar()" data-key="location">مقرنا</a></li>
+            <li><a href="#contact-sec" onclick="toggleSidebar()" data-key="contact">اتصل بنا</a></li>
+        </ul>
+    </div>
+
     <!-- Main Content -->
     <div id="user-app" class="pt-16">
-        <!-- Main Slider -->
-        <div id="hero-slider" class="relative h-[400px] bg-gray-200 overflow-hidden">
-             <div class="absolute inset-0 flex items-center justify-center text-gray-500"><i class="fas fa-spinner fa-spin fa-2x"></i></div>
+        <!-- Hero Slider -->
+        <div id="hero-slider" class="relative h-[450px] bg-gray-200 overflow-hidden">
+             <!-- JS Injected -->
         </div>
 
-        <!-- Trips Grid -->
-        <section id="trips-section" class="container mx-auto px-4 py-12">
-            <h2 class="text-4xl font-black text-center mb-10 text-gray-800">أحدث العروض السياحية</h2>
+        <!-- Trips -->
+        <section id="trips-section" class="container mx-auto px-4 py-16">
+            <h2 class="text-4xl font-black text-center mb-2" data-key="latest_offers">أحدث العروض</h2>
+            <div class="h-1 w-20 bg-blue-600 mx-auto rounded mb-10"></div>
             <div id="trips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </section>
-        
+
+        <!-- Static Content Sections -->
+        <section id="about-sec" class="bg-white py-12 border-t">
+            <div class="container mx-auto px-4 text-center">
+                <h3 class="text-2xl font-bold mb-4" data-key="about">من نحن</h3>
+                <p id="about-text" class="text-gray-600 max-w-2xl mx-auto">...</p>
+            </div>
+        </section>
+
+        <section id="policy-sec" class="bg-gray-100 py-12">
+            <div class="container mx-auto px-4 text-center">
+                <h3 class="text-2xl font-bold mb-4" data-key="policy">سياسة الخصوصية</h3>
+                <p id="policy-text" class="text-gray-600 max-w-2xl mx-auto">...</p>
+            </div>
+        </section>
+
+        <section id="location-sec" class="bg-white py-12">
+            <div class="container mx-auto px-4 text-center">
+                <h3 class="text-2xl font-bold mb-4" data-key="location">مقرنا</h3>
+                <p id="location-text" class="text-gray-600">...</p>
+            </div>
+        </section>
+
         <!-- Footer -->
-        <footer class="bg-slate-900 text-white py-8 text-center mt-12 relative">
-            <p>جميع الحقوق محفوظة © تحواس 2024</p>
-            <!-- رابط احتياطي للأدمن -->
-            <a href="#admin" onclick="forceAdminCheck()" class="text-slate-800 hover:text-slate-700 text-xs absolute bottom-2 right-2">Admin</a>
+        <footer id="contact-sec" class="bg-slate-900 text-white py-10 text-center relative">
+            <h3 class="text-xl font-bold mb-4" data-key="contact">اتصل بنا</h3>
+            <p id="contact-text" class="mb-4">...</p>
+            <p class="text-sm opacity-50">© Tahwas 2024</p>
+            <a href="#admin" onclick="forceAdmin()" class="absolute bottom-2 right-2 text-xs opacity-20 hover:opacity-100">Admin</a>
         </footer>
     </div>
 
-    <!-- TRIP DETAILS MODAL -->
-    <div id="trip-modal" class="fixed inset-0 bg-black/95 z-[60] hidden overflow-y-auto backdrop-blur-sm">
-        <button onclick="closeTripModal()" class="fixed top-5 left-5 z-[70] bg-white text-red-600 rounded-full p-3 shadow-lg hover:scale-110 transition"><i class="fas fa-times fa-lg"></i></button>
+    <!-- TRIP DETAILS MODAL (Snake Map) -->
+    <div id="trip-modal" class="fixed inset-0 bg-black/95 z-[70] hidden overflow-y-auto backdrop-blur-md">
+        <button onclick="closeModal('trip-modal')" class="fixed top-6 left-6 z-[80] bg-white text-red-600 rounded-full p-3 shadow-lg hover:scale-110 transition"><i class="fas fa-times fa-lg"></i></button>
         
-        <div class="min-h-screen flex justify-center md:p-8 p-0">
-            <div id="trip-modal-content" class="bg-white w-full max-w-6xl md:rounded-3xl shadow-2xl overflow-hidden relative animate__animated animate__fadeInUp">
-                <!-- Content injected by JS -->
+        <div class="min-h-screen flex justify-center md:py-10 p-0">
+            <div id="trip-content" class="bg-gray-50 w-full max-w-6xl md:rounded-3xl shadow-2xl overflow-hidden relative animate__animated animate__fadeInUp">
+                <!-- Content injected via JS -->
             </div>
         </div>
     </div>
 
     <!-- BOOKING MODAL -->
     <div id="booking-modal" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate__animated animate__zoomIn border-4 border-blue-500">
-            <h3 class="text-2xl font-black mb-4 text-center text-blue-600">تأكيد الحجز</h3>
-            <form id="booking-form" class="space-y-3">
-                <input type="hidden" id="booking-trip-id">
-                <input type="hidden" id="booking-trip-name">
-                <input type="text" id="b-name" placeholder="الاسم واللقب" required class="w-full bg-gray-50 border p-3 rounded-lg">
-                <input type="tel" id="b-phone" placeholder="رقم الهاتف" required class="w-full bg-gray-50 border p-3 rounded-lg">
+        <div class="bg-white rounded-2xl w-full max-w-md p-8 shadow-2xl border-t-4 border-blue-600">
+            <h3 class="text-2xl font-black mb-6 text-center text-blue-800" data-key="book_now">حجز</h3>
+            <form id="booking-form" class="space-y-4">
+                <input type="hidden" id="b-trip-id">
+                <input type="hidden" id="b-trip-name">
+                <input type="text" id="b-name" class="w-full border bg-gray-50 p-3 rounded" placeholder="الاسم / Name / Nom" required>
+                <input type="tel" id="b-phone" class="w-full border bg-gray-50 p-3 rounded" placeholder="Tel" required>
                 <div class="flex gap-2">
-                    <input type="number" id="b-age" placeholder="السن" class="w-1/2 bg-gray-50 border p-3 rounded-lg">
-                    <input type="text" id="b-state" placeholder="الولاية" class="w-1/2 bg-gray-50 border p-3 rounded-lg">
+                    <input type="number" id="b-age" class="w-1/2 border bg-gray-50 p-3 rounded" placeholder="Age" required>
+                    <input type="text" id="b-state" class="w-1/2 border bg-gray-50 p-3 rounded" placeholder="Wilaya" required>
                 </div>
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700">سجل الآن</button>
+                <select id="b-gender" class="w-full border bg-gray-50 p-3 rounded">
+                    <option value="male">Male / ذكر</option>
+                    <option value="female">Female / أنثى</option>
+                </select>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-4 rounded hover:bg-blue-700" data-key="confirm">تأكيد</button>
             </form>
-            <button onclick="document.getElementById('booking-modal').classList.add('hidden')" class="w-full text-center text-gray-400 mt-2 text-sm">إلغاء</button>
         </div>
     </div>
 
     <!-- REPORT MODAL -->
     <div id="report-modal" class="fixed inset-0 bg-black/80 z-[90] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl w-full max-w-md p-6">
-            <h3 class="font-bold text-red-600 mb-4">الإبلاغ عن مشكلة</h3>
+            <h3 class="font-bold text-red-600 mb-4" data-key="report">إبلاغ عن مشكلة</h3>
             <form id="report-form" class="space-y-3">
-                <input id="r-name" type="text" placeholder="الاسم" class="w-full border p-2 rounded">
-                <textarea id="r-desc" placeholder="الوصف..." class="w-full border p-2 rounded h-24"></textarea>
-                <div class="flex gap-2">
-                    <button type="submit" class="w-full bg-red-500 text-white py-2 rounded">إرسال</button>
-                    <button type="button" onclick="document.getElementById('report-modal').style.display='none'" class="w-full bg-gray-200 py-2 rounded">إغلاق</button>
-                </div>
+                <input id="r-name" type="text" class="w-full border p-2 rounded" placeholder="Name">
+                <input id="r-email" type="email" class="w-full border p-2 rounded" placeholder="Email">
+                <textarea id="r-desc" class="w-full border p-2 rounded h-24" placeholder="Description..."></textarea>
+                <button type="submit" class="w-full bg-red-500 text-white py-2 rounded" data-key="send">إرسال</button>
             </form>
+            <button onclick="closeModal('report-modal')" class="w-full text-center mt-2 text-sm text-gray-500">Close</button>
         </div>
     </div>
 
-    <!-- ADMIN PANEL -->
-    <div id="admin-panel" class="hidden min-h-screen bg-gray-100 font-sans">
+    <!-- ================= ADMIN PANEL ================= -->
+    <div id="admin-panel" class="hidden min-h-screen bg-gray-100 font-sans" dir="rtl">
         <div id="admin-login" class="flex items-center justify-center min-h-screen bg-slate-900">
             <div class="bg-white p-8 rounded-xl shadow-2xl w-96 text-center">
-                <h2 class="text-3xl font-black mb-6">لوحة الإدارة</h2>
+                <h2 class="text-3xl font-black mb-6">لوحة التحكم</h2>
                 <input type="text" id="adm-user" placeholder="User: admin" class="w-full border p-3 rounded mb-3">
                 <input type="password" id="adm-pass" placeholder="Pass: abobob123" class="w-full border p-3 rounded mb-6">
-                <button onclick="loginAdmin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700">دخول</button>
+                <button onclick="adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700">دخول</button>
                 <button onclick="location.href='index.html'" class="text-xs text-gray-400 mt-4 underline">العودة للموقع</button>
             </div>
         </div>
 
-        <div id="admin-dashboard" class="hidden flex">
-            <aside class="w-64 bg-slate-900 text-white min-h-screen fixed right-0 h-full overflow-y-auto z-10 p-4">
-                <div class="text-center mb-8 border-b border-slate-700 pb-4">
-                    <h2 class="text-2xl font-black">لوحة التحكم</h2>
+        <div id="admin-dash" class="hidden flex">
+            <!-- Sidebar Admin -->
+            <aside class="w-64 bg-slate-900 text-white min-h-screen fixed right-0 h-full overflow-y-auto p-4 z-10">
+                <div class="mb-8 text-center border-b border-gray-700 pb-4">
+                    <h2 class="text-xl font-bold">Admin Panel</h2>
                 </div>
-                <nav class="space-y-2">
-                    <button onclick="showSection('stats')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-chart-line"></i> الإحصائيات</button>
-                    <button onclick="showSection('add')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-plus"></i> إضافة رحلة</button>
-                    <button onclick="showSection('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-trash"></i> حذف الرحلات</button>
-                    <button onclick="showSection('banners')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-images"></i> البانرات</button>
-                    <button onclick="showSection('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الحجوزات</button>
-                    <button onclick="logout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> خروج</button>
+                <nav class="space-y-2 text-sm">
+                    <button onclick="showAdm('stats')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-chart-line"></i> الإحصائيات</button>
+                    <button onclick="showAdm('add')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-plus"></i> إضافة رحلة</button>
+                    <button onclick="showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-trash"></i> حذف الرحلات</button>
+                    <button onclick="showAdm('banners')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-images"></i> البانرات</button>
+                    <button onclick="showAdm('content')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-edit"></i> المحتوى واللغات</button>
+                    <button onclick="showAdm('settings')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-cog"></i> إعدادات الموقع</button>
+                    <button onclick="adminLogout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> خروج</button>
                 </nav>
             </aside>
 
             <main class="mr-64 flex-1 p-8 bg-gray-100 min-h-screen">
+                
                 <!-- Stats -->
-                <div id="sec-stats" class="admin-sec">
+                <div id="sec-stats" class="adm-sec">
                     <h2 class="text-3xl font-bold mb-6">الإحصائيات</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow border-r-4 border-blue-500">
-                            <p class="text-gray-500 font-bold">زيارات اليوم</p>
-                            <p class="text-4xl font-black text-blue-600 mt-2" id="stat-day">0</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded shadow border-r-4 border-blue-500">
+                            <p class="text-gray-500">زيارات اليوم</p>
+                            <p class="text-4xl font-bold text-blue-600" id="stat-day">0</p>
                         </div>
-                        <div class="bg-white p-6 rounded-xl shadow border-r-4 border-indigo-500">
-                            <p class="text-gray-500 font-bold">زيارات الشهر</p>
-                            <p class="text-4xl font-black text-indigo-600 mt-2" id="stat-month">0</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow border-r-4 border-green-500">
-                            <p class="text-gray-500 font-bold">طلبات الحجز</p>
-                            <p class="text-4xl font-black text-green-600 mt-2" id="stat-req">0</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow border-r-4 border-orange-500">
-                            <p class="text-gray-500 font-bold">الرحلات النشطة</p>
-                            <p class="text-4xl font-black text-orange-600 mt-2" id="stat-trips">0</p>
+                        <div class="bg-white p-6 rounded shadow border-r-4 border-indigo-500">
+                            <p class="text-gray-500">زيارات الشهر</p>
+                            <p class="text-4xl font-bold text-indigo-600" id="stat-month">0</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Add Trip -->
-                <div id="sec-add" class="admin-sec hidden">
+                <!-- Add Trip (Multi-Language) -->
+                <div id="sec-add" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">إضافة رحلة جديدة</h2>
-                    <form id="add-trip-form" class="bg-white p-8 rounded-xl shadow-lg space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input id="nt-title" type="text" placeholder="عنوان الرحلة" class="border p-3 rounded" required>
-                            <input id="nt-price" type="number" placeholder="السعر (دج)" class="border p-3 rounded" required>
+                    <form id="form-add-trip" class="bg-white p-6 rounded shadow space-y-6">
+                        
+                        <!-- Languages Tabs -->
+                        <div class="border p-4 rounded bg-gray-50 space-y-4">
+                            <h3 class="font-bold border-b pb-2">1. معلومات الرحلة (3 لغات)</h3>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-bold text-green-700">العربية (AR)</label>
+                                    <input id="t-title-ar" type="text" placeholder="العنوان بالعربية" class="w-full border p-2 rounded" required>
+                                    <textarea id="t-prog-ar" placeholder="البرنامج: محطة1، محطة2..." class="w-full border p-2 rounded h-20"></textarea>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-bold text-blue-700">Français (FR)</label>
+                                    <input id="t-title-fr" type="text" placeholder="Titre en Français" class="w-full border p-2 rounded" required>
+                                    <textarea id="t-prog-fr" placeholder="Programme: Stop1, Stop2..." class="w-full border p-2 rounded h-20"></textarea>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="block text-xs font-bold text-purple-700">English (EN)</label>
+                                    <input id="t-title-en" type="text" placeholder="Title in English" class="w-full border p-2 rounded" required>
+                                    <textarea id="t-prog-en" placeholder="Program: Stop1, Stop2..." class="w-full border p-2 rounded h-20"></textarea>
+                                </div>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-3 gap-4 bg-blue-50 p-4 rounded border border-blue-100">
-                            <div><label class="text-xs font-bold">تاريخ الانطلاق</label><input id="nt-start" type="date" class="w-full border p-2 rounded"></div>
-                            <div><label class="text-xs font-bold">تاريخ العودة</label><input id="nt-end" type="date" class="w-full border p-2 rounded"></div>
-                            <div>
-                                <label class="text-xs font-bold">وسيلة النقل</label>
-                                <select id="nt-transport" class="w-full border p-2 rounded">
-                                    <option value="حافلة سياحية">🚌 حافلة سياحية مريحة</option>
-                                    <option value="طائرة">✈️ طائرة</option>
-                                    <option value="قطار">🚆 قطار</option>
+
+                        <!-- Logistics -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="border p-4 rounded">
+                                <label class="block font-bold mb-2">التواريخ</label>
+                                <div class="flex gap-2">
+                                    <div class="w-1/2">
+                                        <span class="text-xs">تاريخ الانطلاق / Departure</span>
+                                        <input id="t-date-start" type="date" class="w-full border p-2 rounded" required>
+                                    </div>
+                                    <div class="w-1/2">
+                                        <span class="text-xs">تاريخ العودة / Return</span>
+                                        <input id="t-date-end" type="date" class="w-full border p-2 rounded" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border p-4 rounded">
+                                <label class="block font-bold mb-2">تفاصيل أخرى</label>
+                                <input id="t-price" type="number" placeholder="السعر (دج)" class="w-full border p-2 rounded mb-2" required>
+                                <select id="t-transport" class="w-full border p-2 rounded mb-2">
+                                    <option value="bus">🚌 حافلة / Bus</option>
+                                    <option value="plane">✈️ طائرة / Plane</option>
+                                </select>
+                                <select id="t-theme" class="w-full border p-2 rounded">
+                                    <option value="mountain">جبلية (Mountain)</option>
+                                    <option value="sahara">صحراوية (Sahara)</option>
+                                    <option value="coastal">ساحلية (Coastal)</option>
+                                    <option value="historical">أثرية (History)</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <select id="nt-theme" class="border p-3 rounded">
-                                <option value="mountain">🏔️ جبلية (عشب وثلوج)</option>
-                                <option value="sahara">🐪 صحراوية (رمال وجمال)</option>
-                                <option value="coastal">🌊 ساحلية (بحر وشاطئ)</option>
-                                <option value="historical">🏛️ أثرية</option>
-                            </select>
-                            <input id="nt-hotel" type="text" placeholder="اسم الفندق" class="border p-3 rounded">
-                        </div>
-                        <textarea id="nt-program" placeholder="أدخل محطات الخريطة مفصولة بفاصلة (مثال: الانطلاق، استراحة، الوصول، العشاء)" class="w-full border p-3 rounded h-24"></textarea>
-                        
-                        <div class="border p-4 rounded bg-gray-50">
-                            <label class="font-bold block mb-2">1. الصورة الرئيسية</label>
-                            <input id="nt-main-img" type="file" accept="image/*" class="w-full mb-4">
-                            <label class="font-bold block mb-2">2. صور السلايدر (يمكن تحديد أكثر من صورة)</label>
-                            <input id="nt-gallery" type="file" accept="image/*" multiple class="w-full">
+
+                        <!-- Images -->
+                        <div class="border p-4 rounded bg-blue-50">
+                            <h3 class="font-bold mb-2">الصور</h3>
+                            <div class="mb-4">
+                                <label class="block text-sm">الصورة الرئيسية (Main)</label>
+                                <input id="t-img-main" type="file" accept="image/*" class="w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm">5 صور ثانوية (Secondary)</label>
+                                <div class="grid grid-cols-5 gap-2">
+                                    <input type="file" class="sub-img w-full text-xs">
+                                    <input type="file" class="sub-img w-full text-xs">
+                                    <input type="file" class="sub-img w-full text-xs">
+                                    <input type="file" class="sub-img w-full text-xs">
+                                    <input type="file" class="sub-img w-full text-xs">
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="flex gap-4">
-                            <input id="nt-guide-name" type="text" placeholder="اسم المرشد" class="border p-3 rounded w-1/2">
-                            <input id="nt-guide-img" type="file" class="border p-2 rounded w-1/2">
-                        </div>
-                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded hover:bg-green-700">نشر الرحلة</button>
+                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded hover:bg-green-700">حفظ ونشر الرحلة</button>
                     </form>
                 </div>
 
                 <!-- Manage Trips -->
-                <div id="sec-manage" class="admin-sec hidden">
+                <div id="sec-manage" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">إدارة الرحلات</h2>
-                    <div id="manage-list" class="grid grid-cols-1 gap-4"></div>
+                    <div id="manage-list" class="space-y-2"></div>
                 </div>
 
                 <!-- Banners -->
-                <div id="sec-banners" class="admin-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إدارة البانرات</h2>
-                    <div class="flex gap-4 mb-6">
-                        <input id="new-banner" type="file" class="border p-2 rounded w-full bg-white">
-                        <button onclick="addBanner()" class="bg-blue-600 text-white px-6 rounded font-bold">رفع</button>
+                <div id="sec-banners" class="adm-sec hidden">
+                    <h2 class="text-3xl font-bold mb-6">البانرات الإعلانية</h2>
+                    <div class="flex gap-4 mb-4">
+                        <input id="new-banner" type="file" class="border p-2 w-full">
+                        <button onclick="uploadBanner()" class="bg-blue-600 text-white px-4 rounded">رفع</button>
                     </div>
-                    <div id="banners-list" class="grid grid-cols-1 gap-4"></div>
+                    <div id="banner-list" class="grid grid-cols-2 gap-4"></div>
                 </div>
 
-                <!-- Requests -->
-                <div id="sec-requests" class="admin-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">الحجوزات</h2>
-                    <div id="req-list" class="bg-white rounded-xl shadow overflow-hidden"></div>
+                <!-- Content & Languages -->
+                <div id="sec-content" class="adm-sec hidden">
+                    <h2 class="text-3xl font-bold mb-6">إدارة المحتوى (3 لغات)</h2>
+                    <div class="space-y-6 bg-white p-6 rounded shadow">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div><label class="font-bold text-green-700">AR</label></div>
+                            <div><label class="font-bold text-blue-700">FR</label></div>
+                            <div><label class="font-bold text-purple-700">EN</label></div>
+                        </div>
+                        
+                        <!-- About -->
+                        <div>
+                            <h4 class="font-bold border-b mb-2">من نحن (About)</h4>
+                            <div class="grid grid-cols-3 gap-4">
+                                <textarea id="txt-about-ar" class="border p-2 w-full h-20"></textarea>
+                                <textarea id="txt-about-fr" class="border p-2 w-full h-20"></textarea>
+                                <textarea id="txt-about-en" class="border p-2 w-full h-20"></textarea>
+                            </div>
+                        </div>
+                        <!-- Policy -->
+                        <div>
+                            <h4 class="font-bold border-b mb-2">سياسة الخصوصية (Privacy)</h4>
+                            <div class="grid grid-cols-3 gap-4">
+                                <textarea id="txt-policy-ar" class="border p-2 w-full h-20"></textarea>
+                                <textarea id="txt-policy-fr" class="border p-2 w-full h-20"></textarea>
+                                <textarea id="txt-policy-en" class="border p-2 w-full h-20"></textarea>
+                            </div>
+                        </div>
+                        <!-- Contact/Location -->
+                        <div>
+                            <h4 class="font-bold border-b mb-2">مقرنا + اتصل بنا</h4>
+                            <div class="grid grid-cols-3 gap-4">
+                                <input id="txt-loc-ar" type="text" placeholder="المقر AR" class="border p-2 w-full">
+                                <input id="txt-loc-fr" type="text" placeholder="Loc FR" class="border p-2 w-full">
+                                <input id="txt-loc-en" type="text" placeholder="Loc EN" class="border p-2 w-full">
+                            </div>
+                            <div class="mt-2 grid grid-cols-3 gap-4">
+                                <input id="txt-con-ar" type="text" placeholder="اتصل بنا AR" class="border p-2 w-full">
+                                <input id="txt-con-fr" type="text" placeholder="Con FR" class="border p-2 w-full">
+                                <input id="txt-con-en" type="text" placeholder="Con EN" class="border p-2 w-full">
+                            </div>
+                        </div>
+                        <button onclick="saveContent()" class="w-full bg-blue-600 text-white font-bold py-2 rounded">حفظ التغييرات</button>
+                    </div>
                 </div>
+
+                <!-- Settings (Logo) -->
+                <div id="sec-settings" class="adm-sec hidden">
+                    <h2 class="text-3xl font-bold mb-6">إعدادات الموقع</h2>
+                    <div class="bg-white p-6 rounded shadow">
+                        <label class="block font-bold mb-2">تغيير اللوجو</label>
+                        <input id="site-logo-input" type="file" accept="image/*" class="border p-2 w-full mb-4">
+                        <button onclick="saveLogo()" class="bg-green-600 text-white px-6 py-2 rounded">حفظ اللوجو</button>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // --- LOCAL DATABASE ---
-        const DB = {
-            get: (k) => JSON.parse(localStorage.getItem('th_' + k) || '[]'),
-            set: (k, v) => localStorage.setItem('th_' + k, JSON.stringify(v)),
-            add: (k, item) => {
-                const data = DB.get(k);
-                item.id = Date.now().toString();
-                item.date = new Date().toISOString();
-                data.push(item);
-                DB.set(k, data);
-            },
-            del: (k, id) => {
-                const data = DB.get(k);
-                DB.set(k, data.filter(i => i.id !== id));
-            }
+        // --- TRANSLATION DICTIONARY ---
+        const LANG = {
+            ar: { home: "الرئيسية", trips: "رحلات", about: "من نحن", contact: "اتصل بنا", policy: "سياسة الخصوصية", location: "مقرنا", report: "ابلاغ عن مشكلة", latest_offers: "أحدث العروض", book_now: "حجز الآن", confirm: "تأكيد", send: "إرسال", price_unit: "دج", start: "انطلاق", end: "عودة", stop: "محطة", start_pt: "البداية", end_pt: "النهاية", transport: "نقل", guide: "مرشد" },
+            fr: { home: "Accueil", trips: "Voyages", about: "À propos", contact: "Contact", policy: "Confidentialité", location: "Adresse", report: "Signaler", latest_offers: "Dernières Offres", book_now: "Réserver", confirm: "Confirmer", send: "Envoyer", price_unit: "DA", start: "Départ", end: "Retour", stop: "Arrêt", start_pt: "Début", end_pt: "Fin", transport: "Transport", guide: "Guide" },
+            en: { home: "Home", trips: "Trips", about: "About Us", contact: "Contact", policy: "Privacy Policy", location: "Location", report: "Report Issue", latest_offers: "Latest Offers", book_now: "Book Now", confirm: "Confirm", send: "Send", price_unit: "DA", start: "Departure", end: "Return", stop: "Stop", start_pt: "Start", end_pt: "End", transport: "Transport", guide: "Guide" }
         };
 
-        const toBase64 = file => new Promise((res, rej) => {
-            const r = new FileReader(); r.readAsDataURL(file);
-            r.onload = () => res(r.result); r.onerror = rej;
-        });
+        // --- DATABASE ---
+        const DB = {
+            get: (k) => JSON.parse(localStorage.getItem('tw_' + k) || (k === 'visits' ? '[]' : (k === 'content' ? '{}' : '[]'))),
+            set: (k, v) => localStorage.setItem('tw_' + k, JSON.stringify(v)),
+            add: (k, i) => { let d = DB.get(k); if(!Array.isArray(d)) d=[]; i.id=Date.now().toString(); d.push(i); DB.set(k, d); },
+            del: (k, id) => { let d = DB.get(k); DB.set(k, d.filter(x => x.id !== id)); }
+        };
 
-        // --- VISIT TRACKER ---
-        function trackVisits() {
-            if(!sessionStorage.getItem('session_active')) {
-                DB.add('visits', { ts: Date.now() });
-                sessionStorage.setItem('session_active', 'true');
-            }
+        let curLang = localStorage.getItem('lang') || 'ar';
+        const toBase64 = file => new Promise((res) => { const r = new FileReader(); r.readAsDataURL(file); r.onload = () => res(r.result); });
+
+        // --- INIT ---
+        function init() {
+            changeLang(curLang);
+            loadLogo();
+            loadPublicContent();
+            loadTrips();
+            trackVisit();
+            checkAdminHash();
         }
 
-        // --- PUBLIC UI ---
-        function loadPublic() {
-            trackVisits();
-            // Banners
-            const banners = DB.get('banners');
-            const slider = document.getElementById('hero-slider');
-            if(banners.length > 0) {
-                slider.innerHTML = banners.map((b, i) => 
-                    `<div class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image: url('${b.img}')">
-                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
-                             <h2 class="text-5xl font-black text-white drop-shadow-lg animate__animated animate__fadeInDown">اكتشف الجزائر</h2>
-                        </div>
-                    </div>`
-                ).join('');
-                let idx = 0;
-                const items = document.querySelectorAll('.slide-item');
-                if(items.length > 1) setInterval(() => {
-                    items[idx].classList.remove('opacity-100'); items[idx].classList.add('opacity-0');
-                    idx = (idx + 1) % items.length;
-                    items[idx].classList.remove('opacity-0'); items[idx].classList.add('opacity-100');
-                }, 4000);
-            } else { slider.innerHTML = '<div class="h-full flex items-center justify-center text-gray-400">لا توجد إعلانات</div>'; }
+        // --- MULTI-LANGUAGE LOGIC ---
+        function changeLang(l) {
+            curLang = l;
+            localStorage.setItem('lang', l);
+            document.documentElement.dir = (l === 'ar') ? 'rtl' : 'ltr';
+            document.documentElement.lang = l;
+            document.body.className = `bg-gray-50 text-gray-800 font-${l === 'ar' ? 'ar' : 'en'}`;
+            document.getElementById('lang-switch').value = l;
 
-            // Trips
+            // Update UI Static Text
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const k = el.getAttribute('data-key');
+                if (LANG[l][k]) el.innerText = LANG[l][k];
+            });
+
+            // Update Dynamic Content text (About, Policy...)
+            loadPublicContent(); 
+            loadTrips(); // Reload trips to change title language
+        }
+
+        function loadPublicContent() {
+            const c = DB.get('content');
+            document.getElementById('about-text').innerText = c[`about_${curLang}`] || '...';
+            document.getElementById('policy-text').innerText = c[`policy_${curLang}`] || '...';
+            document.getElementById('location-text').innerText = c[`loc_${curLang}`] || '...';
+            document.getElementById('contact-text').innerText = c[`con_${curLang}`] || '...';
+        }
+
+        function loadLogo() {
+            const l = localStorage.getItem('tw_logo');
+            const img = document.getElementById('site-logo');
+            const txt = document.getElementById('site-title-text');
+            if (l) { img.src = l; img.classList.remove('hidden'); txt.classList.add('hidden'); }
+        }
+
+        // --- TRIPS & MAP ---
+        function loadTrips() {
             const trips = DB.get('trips');
             const grid = document.getElementById('trips-grid');
-            if(trips.length === 0) grid.innerHTML = '<p class="text-center w-full col-span-3">لا توجد رحلات متاحة.</p>';
-            else grid.innerHTML = trips.map(t => `
-                <div class="bg-white rounded-2xl shadow hover:shadow-xl transition cursor-pointer overflow-hidden group" onclick="openTrip('${t.id}')">
-                    <div class="h-60 overflow-hidden relative">
+            grid.innerHTML = trips.map(t => {
+                // Get content based on current lang
+                const title = t[`title_${curLang}`] || t.title_ar;
+                return `
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer group hover:shadow-2xl transition" onclick="openTrip('${t.id}')">
+                    <div class="h-64 overflow-hidden relative">
                         <img src="${t.mainImg}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                        <span class="absolute top-3 right-3 bg-white/90 px-3 py-1 rounded-full text-sm font-bold text-blue-800">${t.price} دج</span>
+                        <span class="absolute top-2 right-2 bg-white/90 px-3 py-1 rounded-full font-bold text-blue-800 shadow">${t.price} ${LANG[curLang].price_unit}</span>
                     </div>
-                    <div class="p-5">
-                        <h3 class="font-black text-xl mb-2 text-gray-800">${t.title}</h3>
-                        <div class="flex justify-between text-xs font-bold text-gray-500 mt-4">
-                            <span><i class="fas fa-calendar"></i> ${t.start}</span>
-                            <span>${t.transport}</span>
+                    <div class="p-5 text-center">
+                        <h3 class="text-xl font-bold mb-2">${title}</h3>
+                        <div class="flex justify-between text-xs text-gray-500 font-bold mt-4 border-t pt-3">
+                            <span><i class="fas fa-calendar-alt"></i> ${t.dateStart}</span>
+                            <span><i class="fas ${t.transport==='plane'?'fa-plane':'fa-bus'}"></i></span>
                         </div>
                     </div>
-                </div>
-            `).join('');
-        }
-
-        // --- TRIP MODAL LOGIC (The Scroll Fix) ---
-        window.openTrip = (id) => {
-            const t = DB.get('trips').find(x => x.id === id);
-            if(!t) return;
-            const modal = document.getElementById('trip-modal');
-            const content = document.getElementById('trip-modal-content');
-            modal.classList.remove('hidden');
-
-            let themeClass = 'theme-mountain';
-            let decos = [];
-            if(t.theme === 'sahara') { themeClass = 'theme-sahara'; decos = ['🌴','🐪','☀️','🦂']; }
-            else if(t.theme === 'coastal') { themeClass = 'theme-coastal'; decos = ['🏖️','⛵','🐬','🐚']; }
-            else if(t.theme === 'historical') { themeClass = 'theme-historical'; decos = ['🏛️','🏺','📜']; }
-            else { themeClass = 'theme-mountain'; decos = ['🌲','🦌','🏔️','❄️']; }
-
-            const points = t.program ? t.program.split(',') : [];
-            const mapHTML = points.map((p, i) => {
-                const deco = decos[i % decos.length];
-                return `
-                <div class="map-item">
-                    <div class="map-point-dot"></div>
-                    <div class="map-content">
-                        <h4 class="font-bold text-lg">${p}</h4>
-                        <span class="text-xs text-gray-500">${i===0?'البداية':(i===points.length-1?'النهاية':'محطة')}</span>
-                    </div>
-                    <div class="deco-float" style="${i%2===0 ? 'left:-60px' : 'right:-60px'}; top: -20px;">${deco}</div>
                 </div>`;
             }).join('');
 
-            let sliderHTML = `<img src="${t.mainImg}" class="modal-slide">`;
-            if(t.gallery && t.gallery.length > 0) {
-                sliderHTML = t.gallery.map(img => `<img src="${img}" class="modal-slide">`).join('');
+            // Load Banners
+            const banners = DB.get('banners');
+            const slider = document.getElementById('hero-slider');
+            if(banners.length > 0) {
+                slider.innerHTML = banners.map((b,i) => 
+                    `<div class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image: url('${b.img}')"></div>`
+                ).join('');
+                let idx = 0;
+                const items = document.querySelectorAll('.slide-item');
+                if(items.length>1) setInterval(() => {
+                    items[idx].classList.remove('opacity-100'); items[idx].classList.add('opacity-0');
+                    idx=(idx+1)%items.length;
+                    items[idx].classList.remove('opacity-0'); items[idx].classList.add('opacity-100');
+                }, 4000);
+            }
+        }
+
+        window.openTrip = (id) => {
+            const t = DB.get('trips').find(x => x.id === id);
+            if(!t) return;
+            document.getElementById('trip-modal').classList.remove('hidden');
+            const cont = document.getElementById('trip-content');
+            
+            const title = t[`title_${curLang}`] || t.title_ar;
+            const progTxt = t[`prog_${curLang}`] || t.prog_ar || "";
+            const points = progTxt.split(/,|،/).map(s => s.trim()).filter(s => s);
+            
+            // Build Snake Map
+            let mapHTML = `<div class="snake-map-container ${'theme-'+t.theme}"><div class="snake-line"></div>`;
+            const emojis = { mountain:['🌲','🏔️','🦅'], sahara:['🐪','☀️','🌴'], coastal:['🌊','⛵','🐚'], historical:['🏛️','🏺','📜'] };
+            const curEmojis = emojis[t.theme] || ['📍'];
+
+            mapHTML += points.map((p, i) => {
+                const side = (i % 2 === 0) ? 'left' : 'right'; // Alternate sides
+                const emoji = curEmojis[i % curEmojis.length];
+                return `
+                <div class="snake-item ${side}">
+                    <div class="snake-dot"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="snake-card">
+                        <div class="absolute -top-3 ${side==='left'?'right-0':'left-0'} text-2xl">${emoji}</div>
+                        <h4 class="font-bold text-lg mt-2">${p}</h4>
+                        <span class="text-xs text-gray-400 block mt-1">${i===0 ? LANG[curLang].start_pt : (i===points.length-1 ? LANG[curLang].end_pt : LANG[curLang].stop + ' ' + (i+1))}</span>
+                    </div>
+                </div>`;
+            }).join('');
+            mapHTML += `<div style="clear:both"></div></div>`;
+
+            // Images (Main + 5 Subs)
+            let imgsHTML = `<img src="${t.mainImg}" class="snap-center min-w-full h-full object-cover">`;
+            if(t.subs && t.subs.length) {
+                imgsHTML += t.subs.map(s => `<img src="${s}" class="snap-center min-w-full h-full object-cover">`).join('');
             }
 
-            content.innerHTML = `
-                <div class="flex flex-col md:flex-row h-full md:h-[80vh]">
-                    <!-- Image Slider -->
+            cont.innerHTML = `
+                <div class="flex flex-col md:flex-row h-[90vh]">
+                    <!-- Slider Left -->
                     <div class="w-full md:w-1/3 bg-black relative h-64 md:h-full">
-                        <div class="modal-slider h-full">${sliderHTML}</div>
-                        <div class="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black to-transparent text-white">
-                            <h2 class="text-3xl font-black">${t.title}</h2>
-                            <p class="text-xl text-yellow-400 font-bold">${t.price} دج</p>
+                        <div class="flex overflow-x-auto snap-x h-full w-full">${imgsHTML}</div>
+                        <div class="absolute bottom-0 w-full p-6 bg-gradient-to-t from-black to-transparent text-white">
+                            <h2 class="text-3xl font-bold">${title}</h2>
+                            <p class="text-xl text-yellow-400 font-bold">${t.price} ${LANG[curLang].price_unit}</p>
                         </div>
                     </div>
-                    
-                    <!-- Scrollable Content -->
-                    <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto relative h-full">
-                        <div class="p-6">
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6 text-sm">
-                                <div class="bg-blue-100 p-2 rounded text-blue-800 font-bold text-center"><i class="fas fa-calendar-alt block"></i> ${t.start}</div>
-                                <div class="bg-blue-100 p-2 rounded text-blue-800 font-bold text-center"><i class="fas fa-calendar-check block"></i> ${t.end}</div>
-                                <div class="bg-orange-100 p-2 rounded text-orange-800 font-bold text-center"><i class="fas fa-bus block"></i> ${t.transport}</div>
-                                <div class="bg-green-100 p-2 rounded text-green-800 font-bold text-center"><i class="fas fa-shield-alt block"></i> تأمين</div>
+                    <!-- Details Right -->
+                    <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto p-6 relative">
+                        <div class="grid grid-cols-2 gap-4 mb-8 text-center text-sm">
+                            <div class="bg-white p-2 rounded shadow">
+                                <span class="block text-gray-500 text-xs">${LANG[curLang].start}</span>
+                                <strong class="text-blue-600">${t.dateStart}</strong>
                             </div>
+                            <div class="bg-white p-2 rounded shadow">
+                                <span class="block text-gray-500 text-xs">${LANG[curLang].end}</span>
+                                <strong class="text-blue-600">${t.dateEnd}</strong>
+                            </div>
+                        </div>
 
-                            <div class="map-container ${themeClass}">
-                                <h3 class="text-center font-bold text-black/50 mb-8"><i class="fas fa-map-marked-alt"></i> مرر للأسفل لرؤية البرنامج</h3>
-                                <div class="map-timeline">
-                                    <div class="map-path-line"></div>
-                                    ${mapHTML}
-                                </div>
-                            </div>
+                        ${mapHTML}
 
-                            <!-- Register Button at BOTTOM -->
-                            <div class="mt-8 mb-4 text-center">
-                                 <p class="text-sm text-gray-500 mb-2">هل أعجبك البرنامج؟</p>
-                                 <button onclick="openBooking('${t.id}', '${t.title}')" class="btn-register-pulse w-full md:w-auto px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg text-xl">
-                                    سجل في هذه الرحلة الآن
-                                 </button>
-                            </div>
+                        <div class="h-24"></div> <!-- Spacer -->
+                        
+                        <!-- Floating Register Button (Only visible after scrolling down logically, but kept separate div) -->
+                        <div class="mt-8 mb-4 text-center pb-8">
+                            <button onclick="openBook('${t.id}', '${title}')" class="btn-glow w-full md:w-auto px-12 py-4 bg-blue-600 text-white font-bold rounded-full text-xl shadow-xl">
+                                ${LANG[curLang].book_now}
+                            </button>
                         </div>
                     </div>
                 </div>
             `;
-        };
-        window.closeTripModal = () => document.getElementById('trip-modal').classList.add('hidden');
+        }
 
-        // Booking
-        window.openBooking = (id, title) => {
-            document.getElementById('booking-trip-id').value = id;
-            document.getElementById('booking-trip-name').value = title;
+        window.openBook = (id, title) => {
+            document.getElementById('b-trip-id').value = id;
+            document.getElementById('b-trip-name').value = title;
             document.getElementById('booking-modal').classList.remove('hidden');
         };
-        document.getElementById('booking-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            DB.add('requests', {
-                name: document.getElementById('b-name').value,
-                phone: document.getElementById('b-phone').value,
-                age: document.getElementById('b-age').value,
-                state: document.getElementById('b-state').value,
-                trip: document.getElementById('booking-trip-name').value,
-                status: 'جديد'
-            });
-            document.getElementById('booking-modal').classList.add('hidden');
-            Swal.fire('تم!', 'سنتصل بك قريباً', 'success');
-        });
 
-        // --- ADMIN LOGIC (FIXED) ---
-        function checkAdminUrl() {
-            if(window.location.hash === '#admin' || window.location.hash === '#admin1') {
+        // --- ADMIN ---
+        function checkAdminHash() {
+            if(location.hash === '#admin') {
                 document.getElementById('user-app').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
             }
         }
-        window.addEventListener('load', checkAdminUrl);
-        window.addEventListener('hashchange', checkAdminUrl);
-        
-        // Force button
-        window.forceAdminCheck = () => { window.location.hash = '#admin'; location.reload(); };
-
-        window.loginAdmin = () => {
-            const u = document.getElementById('adm-user').value;
-            const p = document.getElementById('adm-pass').value;
-            if(u === 'admin' && p === 'abobob123') {
+        window.adminLogin = () => {
+            if(document.getElementById('adm-user').value==='admin' && document.getElementById('adm-pass').value==='abobob123') {
                 document.getElementById('admin-login').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                document.getElementById('admin-dashboard').classList.add('flex');
+                document.getElementById('admin-dash').classList.remove('hidden');
+                document.getElementById('admin-dash').classList.add('flex');
                 updateStats();
-            } else { Swal.fire('خطأ', 'بيانات خاطئة', 'error'); }
-        }
-        window.logout = () => { window.location.hash = ''; window.location.reload(); };
-
-        window.showSection = (id) => {
-            document.querySelectorAll('.admin-sec').forEach(d => d.classList.add('hidden'));
+            } else Swal.fire('Error','Login Failed','error');
+        };
+        window.showAdm = (id) => {
+            document.querySelectorAll('.adm-sec').forEach(d => d.classList.add('hidden'));
             document.getElementById('sec-'+id).classList.remove('hidden');
-            if(id === 'manage') renderManageTrips();
-            if(id === 'banners') renderManageBanners();
-            if(id === 'requests') renderRequests();
-            if(id === 'stats') updateStats();
-        }
+            if(id==='manage') loadManageTrips();
+            if(id==='banners') loadManageBanners();
+            if(id==='content') loadContentForm();
+        };
 
         // Add Trip
-        document.getElementById('add-trip-form').addEventListener('submit', async (e) => {
+        document.getElementById('form-add-trip').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.innerText = 'جاري الرفع...'; btn.disabled = true;
+            const mainF = document.getElementById('t-img-main').files[0];
+            const subFs = document.querySelectorAll('.sub-img');
+            
+            let mainImg = mainF ? await toBase64(mainF) : '';
+            let subs = [];
+            for(let f of subFs) { if(f.files[0]) subs.push(await toBase64(f.files[0])); }
 
-            try {
-                const mainFile = document.getElementById('nt-main-img').files[0];
-                const mainImg = mainFile ? await toBase64(mainFile) : '';
-                
-                const galleryFiles = document.getElementById('nt-gallery').files;
-                let galleryImgs = [];
-                if(galleryFiles.length > 0) {
-                    for(let i=0; i<galleryFiles.length; i++) galleryImgs.push(await toBase64(galleryFiles[i]));
-                }
-                if(mainImg) galleryImgs.unshift(mainImg);
-
-                const guideFile = document.getElementById('nt-guide-img').files[0];
-                const guideImg = guideFile ? await toBase64(guideFile) : '';
-
-                DB.add('trips', {
-                    title: document.getElementById('nt-title').value,
-                    price: document.getElementById('nt-price').value,
-                    start: document.getElementById('nt-start').value,
-                    end: document.getElementById('nt-end').value,
-                    transport: document.getElementById('nt-transport').value,
-                    theme: document.getElementById('nt-theme').value,
-                    hotel: document.getElementById('nt-hotel').value,
-                    program: document.getElementById('nt-program').value,
-                    mainImg: mainImg,
-                    gallery: galleryImgs,
-                    guideName: document.getElementById('nt-guide-name').value,
-                    guideImg: guideImg
-                });
-
-                Swal.fire('نجاح', 'تمت إضافة الرحلة', 'success');
-                e.target.reset();
-            } catch(err) { alert('خطأ: حجم الصور كبير'); }
-            btn.innerText = 'نشر الرحلة'; btn.disabled = false;
+            const trip = {
+                title_ar: document.getElementById('t-title-ar').value,
+                title_fr: document.getElementById('t-title-fr').value,
+                title_en: document.getElementById('t-title-en').value,
+                prog_ar: document.getElementById('t-prog-ar').value,
+                prog_fr: document.getElementById('t-prog-fr').value,
+                prog_en: document.getElementById('t-prog-en').value,
+                dateStart: document.getElementById('t-date-start').value,
+                dateEnd: document.getElementById('t-date-end').value,
+                price: document.getElementById('t-price').value,
+                transport: document.getElementById('t-transport').value,
+                theme: document.getElementById('t-theme').value,
+                mainImg, subs
+            };
+            DB.add('trips', trip);
+            Swal.fire('Success', 'Trip Added', 'success');
+            e.target.reset();
         });
 
-        // Manage Logic
-        function renderManageTrips() {
-            const list = document.getElementById('manage-list');
-            list.innerHTML = DB.get('trips').map(t => `
-                <div class="bg-white p-4 rounded shadow flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <img src="${t.mainImg}" class="w-16 h-16 object-cover rounded">
-                        <div><h4 class="font-bold">${t.title}</h4></div>
-                    </div>
-                    <button onclick="if(confirm('حذف؟')) { DB.del('trips', '${t.id}'); renderManageTrips(); }" class="bg-red-100 text-red-600 px-3 py-1 rounded">حذف</button>
+        // Manage Trips
+        function loadManageTrips() {
+            document.getElementById('manage-list').innerHTML = DB.get('trips').map(t => `
+                <div class="bg-white p-3 rounded shadow flex justify-between items-center">
+                    <span>${t.title_ar}</span>
+                    <button onclick="delTrip('${t.id}')" class="text-red-600 bg-red-100 px-3 py-1 rounded">Delete</button>
                 </div>
             `).join('');
         }
-        function renderManageBanners() {
-            const list = document.getElementById('banners-list');
-            list.innerHTML = DB.get('banners').map(b => `
-                <div class="relative group"><img src="${b.img}" class="w-full h-24 object-cover rounded"><button onclick="DB.del('banners', '${b.id}'); renderManageBanners();" class="absolute top-1 right-1 bg-red-600 text-white px-2 rounded">X</button></div>
-            `).join('');
-        }
-        async function addBanner() {
+        window.delTrip = (id) => { if(confirm('Confirm?')) { DB.del('trips', id); loadManageTrips(); } };
+
+        // Manage Banners
+        async function uploadBanner() {
             const f = document.getElementById('new-banner').files[0];
-            if(f) { const img = await toBase64(f); DB.add('banners', { img }); renderManageBanners(); }
+            if(f) { DB.add('banners', { img: await toBase64(f) }); loadManageBanners(); }
         }
-        function renderRequests() {
-            const list = document.getElementById('req-list');
-            list.innerHTML = DB.get('requests').map(r => `
-                <div class="p-4 border-b flex justify-between items-center hover:bg-gray-50">
-                    <div><h4 class="font-bold">${r.name}</h4><p class="text-sm text-blue-600">${r.phone}</p><p class="text-xs text-gray-500">${r.trip}</p></div>
-                    <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">${r.status}</span>
-                </div>
+        function loadManageBanners() {
+            document.getElementById('banner-list').innerHTML = DB.get('banners').map(b => `
+                <div class="relative"><img src="${b.img}" class="h-20 w-full object-cover"><button onclick="DB.del('banners','${b.id}');loadManageBanners()" class="absolute top-0 right-0 bg-red-600 text-white px-2">X</button></div>
             `).join('');
-        }
-        function updateStats() {
-            const visits = DB.get('visits');
-            const now = new Date();
-            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-            document.getElementById('stat-day').innerText = visits.filter(v => v.ts >= startOfDay).length;
-            document.getElementById('stat-month').innerText = visits.filter(v => v.ts >= startOfMonth).length;
-            document.getElementById('stat-req').innerText = DB.get('requests').length;
-            document.getElementById('stat-trips').innerText = DB.get('trips').length;
         }
 
-        loadPublic();
+        // Content
+        function loadContentForm() {
+            const c = DB.get('content');
+            ['about','policy','loc','con'].forEach(k => {
+                ['ar','fr','en'].forEach(l => {
+                    const el = document.getElementById(`txt-${k}-${l}`);
+                    if(el) el.value = c[`${k}_${l}`] || '';
+                });
+            });
+        }
+        window.saveContent = () => {
+            const c = {};
+            ['about','policy','loc','con'].forEach(k => {
+                ['ar','fr','en'].forEach(l => {
+                    const el = document.getElementById(`txt-${k}-${l}`);
+                    if(el) c[`${k}_${l}`] = el.value;
+                });
+            });
+            DB.set('content', c);
+            Swal.fire('Saved','Content updated','success');
+        };
+
+        // Settings (Logo)
+        window.saveLogo = async () => {
+            const f = document.getElementById('site-logo-input').files[0];
+            if(f) { localStorage.setItem('tw_logo', await toBase64(f)); Swal.fire('Saved','Logo updated','success'); loadLogo(); }
+        }
+
+        // Stats
+        function updateStats() {
+            const v = DB.get('visits');
+            const now = new Date();
+            const dStr = now.toDateString();
+            const mStr = now.getMonth() + '-' + now.getFullYear();
+            
+            // Simulating parsing timestamp for day/month (simplified)
+            // Real logic needs timestamps stored. Assuming DB.add('visits', {ts: Date.now()})
+            const dayCount = v.filter(x => new Date(x.id ? parseInt(x.id) : 0).toDateString() === dStr).length;
+            const monthCount = v.filter(x => {
+                const d = new Date(x.id ? parseInt(x.id) : 0);
+                return (d.getMonth() + '-' + d.getFullYear()) === mStr;
+            }).length;
+
+            document.getElementById('stat-day').innerText = dayCount;
+            document.getElementById('stat-month').innerText = monthCount;
+        }
+        function trackVisit() {
+            if(!sessionStorage.getItem('v')) { DB.add('visits', {}); sessionStorage.setItem('v','1'); }
+        }
+
+        // Utils
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
+        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
+        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+        window.forceAdmin = () => { location.hash='#admin'; location.reload(); };
+        window.adminLogout = () => { location.hash=''; location.reload(); };
+
+        init();
     </script>
 </body>
 </html>
