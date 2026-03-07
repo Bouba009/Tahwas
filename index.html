@@ -33,7 +33,19 @@
             100% { box-shadow: 0 0 5px #3b82f6; }
         }
 
-        /* ==================== MAP GAME STYLE STYLES ==================== */
+        /* Insurance Badge Glow */
+        .insurance-glow {
+            animation: pulse-green 2s infinite;
+            box-shadow: 0 0 15px #22c55e;
+            border: 2px solid #22c55e;
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        /* ==================== VIBRANT MAP STYLES ==================== */
         .map-container {
             position: relative;
             padding: 40px 20px;
@@ -41,28 +53,17 @@
             overflow: hidden;
             min-height: 600px;
             margin-top: 20px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.1);
+            perspective: 1000px;
         }
 
-        /* --- Themes Backgrounds --- */
-        .theme-sahara {
-            background: linear-gradient(180deg, #fce38a 0%, #f38181 100%);
-            border: 8px solid #eebb4d;
-        }
-        .theme-mountain {
-            background: linear-gradient(180deg, #d4fc79 0%, #96e6a1 50%, #e0f2fe 100%);
-            border: 8px solid #76c893;
-        }
-        .theme-coastal {
-            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 50%, #fadd96 100%);
-            border: 8px solid #4facfe;
-        }
-        .theme-historical {
-            background: linear-gradient(180deg, #e6dedd 0%, #d7d2cc 100%);
-            border: 8px solid #a39e93;
-        }
+        /* Theme Backgrounds */
+        .theme-sahara { background: linear-gradient(180deg, #fce38a 0%, #f38181 100%); border: 6px solid #eebb4d; }
+        .theme-mountain { background: linear-gradient(180deg, #d4fc79 0%, #96e6a1 50%, #e0f2fe 100%); border: 6px solid #76c893; }
+        .theme-coastal { background: linear-gradient(180deg, #4facfe 0%, #00f2fe 50%, #fadd96 100%); border: 6px solid #4facfe; }
+        .theme-historical { background: linear-gradient(180deg, #e6dedd 0%, #d7d2cc 100%); border: 6px solid #a39e93; }
 
-        /* --- The Path (Snake Effect) --- */
+        /* The Animated Path */
         .map-timeline {
             position: relative;
             max-width: 600px;
@@ -70,74 +71,54 @@
             padding-bottom: 50px;
         }
 
-        /* The vertical dashed line */
+        /* Moving Dashed Line */
         .map-timeline::before {
             content: '';
             position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            width: 6px;
-            margin-left: -3px;
-            background-image: linear-gradient(to bottom, rgba(255,255,255,0.7) 60%, transparent 40%);
-            background-size: 4px 30px; /* Dashed effect */
+            top: 0; bottom: 0; left: 50%; width: 8px; margin-left: -4px;
+            background-image: linear-gradient(to bottom, rgba(255,255,255,0.8) 50%, transparent 50%);
+            background-size: 8px 40px; 
             z-index: 1;
             border-radius: 5px;
+            animation: movePath 1s linear infinite; /* Movement Animation */
         }
+        @keyframes movePath { from { background-position: 0 0; } to { background-position: 0 40px; } }
 
         .map-item {
-            position: relative;
-            margin-bottom: 80px;
-            width: 50%;
-            clear: both;
-            z-index: 2;
+            position: relative; margin-bottom: 90px; width: 50%; clear: both; z-index: 2;
         }
         
-        /* ZigZag Logic */
-        .map-item:nth-child(odd) { float: left; text-align: left; padding-right: 50px; }
-        .map-item:nth-child(even) { float: right; text-align: right; padding-left: 50px; }
+        .map-item:nth-child(odd) { float: left; text-align: left; padding-right: 60px; }
+        .map-item:nth-child(even) { float: right; text-align: right; padding-left: 60px; }
 
-        /* The Dot on the path */
+        /* The Pulsing Dot */
         .map-item::after {
-            content: '';
-            position: absolute;
-            top: 20px;
-            width: 24px;
-            height: 24px;
-            background: #fff;
-            border: 5px solid #ff5722;
-            border-radius: 50%;
-            z-index: 10;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            content: ''; position: absolute; top: 25px; width: 25px; height: 25px;
+            background: #fff; border: 5px solid #ff5722; border-radius: 50%; z-index: 10;
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.6);
+            animation: pulseDot 1.5s infinite;
         }
-        .map-item:nth-child(odd)::after { right: -12px; }
-        .map-item:nth-child(even)::after { left: -12px; }
+        .map-item:nth-child(odd)::after { right: -12.5px; }
+        .map-item:nth-child(even)::after { left: -12.5px; }
 
-        /* The Content Box */
+        @keyframes pulseDot { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+        /* Content Card */
         .map-content {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            position: relative;
-            display: inline-block;
-            max-width: 100%;
-            min-width: 200px;
-            border-bottom: 4px solid rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-bottom: 5px solid rgba(0,0,0,0.1);
         }
-        .map-content h4 { margin: 0; font-weight: 900; color: #1e293b; font-size: 1.1rem; }
-        .map-content span { font-size: 0.9rem; color: #64748b; display: block; margin-top: 5px; }
+        .map-item:hover .map-content { transform: scale(1.1) rotate(2deg); z-index: 20; }
 
-        /* --- Floating Decorations (Trees, Camels, etc) --- */
+        /* Floating Decorations */
         .deco-icon {
-            position: absolute;
-            font-size: 3.5rem;
-            opacity: 0.9;
-            z-index: 5;
-            animation: float 4s ease-in-out infinite;
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+            position: absolute; font-size: 4rem; opacity: 1; z-index: 5;
+            filter: drop-shadow(0 8px 8px rgba(0,0,0,0.25));
+            animation: float 5s ease-in-out infinite;
         }
-        @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+        @keyframes float { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(8deg); } 100% { transform: translateY(0px) rotate(0deg); } }
 
         .sidebar { transition: transform 0.3s ease-in-out; }
     </style>
@@ -197,16 +178,12 @@
             <div class="container mx-auto px-4 text-center">
                 <h3 class="text-2xl font-bold mb-4">تحواس</h3>
                 <p class="text-gray-400">نصنع لك ذكريات لا تنسى في أجمل بقاع الجزائر.</p>
-                <div class="mt-4 flex justify-center gap-4">
-                    <i class="fab fa-facebook text-2xl hover:text-blue-500 cursor-pointer"></i>
-                    <i class="fab fa-instagram text-2xl hover:text-pink-500 cursor-pointer"></i>
-                </div>
             </div>
         </footer>
 
     </div> 
 
-    <!-- ================= TRIP DETAILS MODAL (THE GAME MAP) ================= -->
+    <!-- ================= TRIP DETAILS MODAL (GAME MAP) ================= -->
     <div id="trip-modal" class="fixed inset-0 bg-black bg-opacity-95 z-[60] hidden overflow-y-auto backdrop-blur-md">
         <button onclick="closeTripModal()" class="fixed top-6 left-6 z-[70] bg-white rounded-full p-3 text-red-600 hover:bg-red-50 shadow-2xl transition transform hover:scale-110"><i class="fas fa-times text-2xl"></i></button>
         
@@ -224,38 +201,22 @@
             <form id="booking-form" class="space-y-4">
                 <input type="hidden" id="booking-trip-id">
                 <input type="hidden" id="booking-trip-name">
-                <div>
-                    <label class="font-bold text-sm text-gray-600">الاسم الكامل</label>
-                    <input type="text" id="b-name" required class="w-full bg-gray-50 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="font-bold text-sm text-gray-600">رقم الهاتف</label>
-                    <input type="tel" id="b-phone" required class="w-full bg-gray-50 border-2 border-gray-200 rounded-lg p-3 focus:border-blue-500 outline-none">
-                </div>
+                <div><label class="font-bold text-sm text-gray-600">الاسم واللقب</label><input type="text" id="b-name" required class="w-full bg-gray-50 border p-3 rounded-lg outline-none"></div>
+                <div><label class="font-bold text-sm text-gray-600">رقم الهاتف</label><input type="tel" id="b-phone" required class="w-full bg-gray-50 border p-3 rounded-lg outline-none"></div>
                 <div class="flex gap-4">
-                    <div class="w-1/2">
-                        <label class="font-bold text-sm text-gray-600">السن</label>
-                        <input type="number" id="b-age" required class="w-full bg-gray-50 border-2 border-gray-200 rounded-lg p-3 outline-none">
-                    </div>
-                    <div class="w-1/2">
-                        <label class="font-bold text-sm text-gray-600">الولاية</label>
-                        <input type="text" id="b-state" required class="w-full bg-gray-50 border-2 border-gray-200 rounded-lg p-3 outline-none">
-                    </div>
+                    <div class="w-1/2"><label class="font-bold text-sm text-gray-600">السن</label><input type="number" id="b-age" required class="w-full bg-gray-50 border p-3 rounded-lg"></div>
+                    <div class="w-1/2"><label class="font-bold text-sm text-gray-600">الجنس</label><select id="b-gender" class="w-full bg-gray-50 border p-3 rounded-lg"><option>ذكر</option><option>أنثى</option></select></div>
                 </div>
-                
+                <div><label class="font-bold text-sm text-gray-600">الولاية</label><input type="text" id="b-state" required class="w-full bg-gray-50 border p-3 rounded-lg"></div>
                 <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl hover:bg-blue-700 transition shadow-lg text-lg mt-4">تأكيد التسجيل 🚀</button>
             </form>
-            <button onclick="document.getElementById('booking-modal').classList.add('hidden')" class="w-full text-center text-gray-400 mt-4 text-sm hover:text-gray-600">إلغاء</button>
         </div>
     </div>
 
     <!-- ================= REPORT MODAL ================= -->
     <div id="report-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[80] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl w-full max-w-md p-6 shadow-2xl">
-            <div class="flex justify-between mb-4">
-                <h3 class="text-xl font-bold text-red-600">الإبلاغ عن مشكلة</h3>
-                <button onclick="document.getElementById('report-modal').style.display='none'"><i class="fas fa-times"></i></button>
-            </div>
+            <div class="flex justify-between mb-4"><h3 class="text-xl font-bold text-red-600">الإبلاغ عن مشكلة</h3><button onclick="document.getElementById('report-modal').style.display='none'"><i class="fas fa-times"></i></button></div>
             <form id="report-form" class="space-y-3">
                 <input type="text" id="r-name" placeholder="الاسم" class="w-full border p-2 rounded" required>
                 <input type="email" id="r-email" placeholder="البريد الإلكتروني" class="w-full border p-2 rounded" required>
@@ -267,15 +228,13 @@
 
     <!-- ================= ADMIN PANEL ================= -->
     <div id="admin-panel" class="hidden min-h-screen bg-gray-100">
-        
         <!-- Admin Login -->
         <div id="admin-login" class="flex items-center justify-center min-h-screen bg-gray-900">
             <div class="bg-white p-8 rounded-xl shadow-2xl w-96 animate__animated animate__fadeInDown">
-                <h2 class="text-3xl font-black text-center mb-2 text-gray-800">لوحة التحكم</h2>
-                <p class="text-center text-gray-500 mb-6 text-sm">مرحباً بك مجدداً أيها المشرف</p>
-                <input type="text" id="admin-user" placeholder="اسم المستخدم" class="w-full border-2 bg-gray-50 p-3 rounded-lg mb-4 outline-none focus:border-blue-500">
-                <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full border-2 bg-gray-50 p-3 rounded-lg mb-6 outline-none focus:border-blue-500">
-                <button onclick="checkAdmin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 shadow-lg transition">تسجيل الدخول</button>
+                <h2 class="text-3xl font-black text-center mb-6 text-gray-800">تحواس ADMIN</h2>
+                <input type="text" id="admin-user" placeholder="اسم المستخدم" class="w-full border-2 bg-gray-50 p-3 rounded-lg mb-4 outline-none">
+                <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full border-2 bg-gray-50 p-3 rounded-lg mb-6 outline-none">
+                <button onclick="checkAdmin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 shadow-lg transition">دخول</button>
             </div>
         </div>
 
@@ -283,14 +242,15 @@
         <div id="admin-dashboard" class="hidden flex">
             <!-- Sidebar -->
             <div class="w-64 bg-slate-900 text-white min-h-screen p-6 fixed right-0 h-full overflow-y-auto z-20 shadow-xl">
-                <h2 class="text-2xl font-black mb-10 text-center border-b border-slate-700 pb-4 tracking-wider">TAHWAS <span class="text-blue-500">ADMIN</span></h2>
+                <h2 class="text-2xl font-black mb-10 text-center border-b border-slate-700 pb-4">لوحة التحكم</h2>
                 <ul class="space-y-2">
-                    <li onclick="showAdminSection('stats')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition flex items-center gap-3"><i class="fas fa-chart-pie"></i> الإحصائيات</li>
-                    <li onclick="showAdminSection('add-trip')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition flex items-center gap-3"><i class="fas fa-plus-circle"></i> إضافة رحلة</li>
-                    <li onclick="showAdminSection('requests')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition flex items-center gap-3"><i class="fas fa-users"></i> الحجوزات</li>
-                    <li onclick="showAdminSection('banners')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition flex items-center gap-3"><i class="fas fa-images"></i> البانرات</li>
-                    <li onclick="showAdminSection('complaints')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition flex items-center gap-3"><i class="fas fa-envelope-open-text"></i> الشكاوى</li>
-                    <li onclick="logoutAdmin()" class="cursor-pointer text-red-400 hover:bg-red-900/30 p-3 rounded-lg mt-10 transition flex items-center gap-3"><i class="fas fa-sign-out-alt"></i> خروج</li>
+                    <li onclick="showAdminSection('stats')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg flex items-center gap-3"><i class="fas fa-chart-pie"></i> الإحصائيات</li>
+                    <li onclick="showAdminSection('add-trip')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg flex items-center gap-3"><i class="fas fa-plus-circle"></i> إضافة رحلة</li>
+                    <li onclick="showAdminSection('manage-trips')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg flex items-center gap-3"><i class="fas fa-edit"></i> إدارة الرحلات (حذف)</li>
+                    <li onclick="showAdminSection('requests')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg flex items-center gap-3"><i class="fas fa-users"></i> الحجوزات</li>
+                    <li onclick="showAdminSection('banners')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg flex items-center gap-3"><i class="fas fa-images"></i> البانرات</li>
+                    <li onclick="showAdminSection('complaints')" class="cursor-pointer hover:bg-slate-700 p-3 rounded-lg flex items-center gap-3"><i class="fas fa-envelope-open-text"></i> الشكاوى</li>
+                    <li onclick="logoutAdmin()" class="cursor-pointer text-red-400 hover:bg-red-900/30 p-3 rounded-lg mt-10 flex items-center gap-3"><i class="fas fa-sign-out-alt"></i> خروج</li>
                 </ul>
             </div>
 
@@ -299,21 +259,21 @@
                 
                 <!-- Stats Section -->
                 <div id="adm-stats" class="admin-section animate__animated animate__fadeIn">
-                    <h2 class="text-3xl font-black mb-8 text-slate-800">نظرة عامة على النظام</h2>
+                    <h2 class="text-3xl font-black mb-8 text-slate-800">إحصائيات الزيارات</h2>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border-b-4 border-blue-500">
-                            <h3 class="text-gray-500 font-bold text-sm">الرحلات النشطة</h3>
-                            <p class="text-4xl font-black mt-2 text-blue-600" id="stat-trips">0</p>
+                        <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-blue-500">
+                            <h3 class="text-gray-500 font-bold text-sm">زيارات اليوم</h3>
+                            <p class="text-4xl font-black mt-2 text-blue-600" id="stat-visits-today">0</p>
                         </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border-b-4 border-green-500">
+                        <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-indigo-500">
+                            <h3 class="text-gray-500 font-bold text-sm">زيارات الشهر</h3>
+                            <p class="text-4xl font-black mt-2 text-indigo-600" id="stat-visits-month">0</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-green-500">
                             <h3 class="text-gray-500 font-bold text-sm">طلبات جديدة</h3>
                             <p class="text-4xl font-black mt-2 text-green-600" id="stat-new">0</p>
                         </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border-b-4 border-purple-500">
-                            <h3 class="text-gray-500 font-bold text-sm">إجمالي الحجوزات</h3>
-                            <p class="text-4xl font-black mt-2 text-purple-600" id="stat-all">0</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border-b-4 border-red-500">
+                        <div class="bg-white p-6 rounded-2xl shadow border-b-4 border-red-500">
                             <h3 class="text-gray-500 font-bold text-sm">الشكاوى</h3>
                             <p class="text-4xl font-black mt-2 text-red-600" id="stat-comp">0</p>
                         </div>
@@ -322,26 +282,33 @@
 
                 <!-- Add Trip Section -->
                 <div id="adm-add-trip" class="admin-section hidden animate__animated animate__fadeIn">
-                    <h2 class="text-3xl font-black mb-6">نشر رحلة جديدة</h2>
+                    <h2 class="text-3xl font-black mb-6">إضافة رحلة جديدة</h2>
                     <form id="new-trip-form" class="bg-white p-8 rounded-2xl shadow-lg space-y-6">
                         <div class="grid grid-cols-2 gap-6">
+                            <div><label class="block text-sm font-bold mb-2">عنوان الرحلة</label><input type="text" id="nt-title" class="w-full border-2 bg-gray-50 p-3 rounded-lg outline-none" required></div>
+                            <div><label class="block text-sm font-bold mb-2">السعر (دج)</label><input type="number" id="nt-price" class="w-full border-2 bg-gray-50 p-3 rounded-lg outline-none" required></div>
+                        </div>
+                        
+                        <!-- New Fields: Dates & Transport -->
+                        <div class="grid grid-cols-3 gap-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                            <div><label class="block text-sm font-bold mb-2">تاريخ الانطلاق</label><input type="date" id="nt-start" class="w-full border p-2 rounded" required></div>
+                            <div><label class="block text-sm font-bold mb-2">تاريخ العودة</label><input type="date" id="nt-end" class="w-full border p-2 rounded" required></div>
                             <div>
-                                <label class="block text-sm font-bold mb-2">عنوان الرحلة</label>
-                                <input type="text" id="nt-title" class="w-full border-2 bg-gray-50 p-3 rounded-lg outline-none focus:border-blue-500" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold mb-2">السعر (دج)</label>
-                                <input type="number" id="nt-price" class="w-full border-2 bg-gray-50 p-3 rounded-lg outline-none focus:border-blue-500" required>
+                                <label class="block text-sm font-bold mb-2">وسيلة النقل</label>
+                                <select id="nt-transport" class="w-full border p-2 rounded">
+                                    <option value="حافلة سياحية">🚌 حافلة سياحية</option>
+                                    <option value="طائرة">✈️ طائرة</option>
+                                    <option value="قطار">🚆 قطار</option>
+                                    <option value="سيارات رباعية">🚙 سيارات 4x4</option>
+                                </select>
                             </div>
                         </div>
+
                         <div class="grid grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-bold mb-2">اسم الفندق</label>
-                                <input type="text" id="nt-hotel" class="w-full border-2 bg-gray-50 p-3 rounded-lg outline-none focus:border-blue-500">
-                            </div>
+                            <div><label class="block text-sm font-bold mb-2">اسم الفندق</label><input type="text" id="nt-hotel" class="w-full border-2 bg-gray-50 p-3 rounded-lg outline-none"></div>
                             <div>
                                 <label class="block text-sm font-bold mb-2">نوع الخريطة (الثيم)</label>
-                                <select id="nt-maptype" class="w-full border-2 bg-gray-50 p-3 rounded-lg outline-none focus:border-blue-500">
+                                <select id="nt-maptype" class="w-full border-2 bg-gray-50 p-3 rounded-lg outline-none">
                                     <option value="mountain">🏔️ جبلية (ثلوج وطبيعة)</option>
                                     <option value="sahara">🐪 صحراوية (رمال وجمال)</option>
                                     <option value="coastal">🌊 ساحلية (بحر وشاطئ)</option>
@@ -349,49 +316,36 @@
                                 </select>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold mb-2">وصف قصير</label>
-                            <textarea id="nt-desc" class="w-full border-2 bg-gray-50 p-3 rounded-lg outline-none focus:border-blue-500 h-20"></textarea>
-                        </div>
+                        <div><label class="block text-sm font-bold mb-2">وصف قصير</label><textarea id="nt-desc" class="w-full border-2 bg-gray-50 p-3 rounded-lg h-20"></textarea></div>
                         
-                        <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
-                            <h4 class="font-bold text-blue-800 mb-2"><i class="fas fa-map-marked-alt"></i> برنامج الرحلة (الخريطة)</h4>
-                            <textarea id="nt-program" placeholder="اكتب المحطات مفصولة بفاصلة. مثال: الانطلاق من العاصمة, استراحة غداء, الوصول للفندق, جولة ليلية" class="w-full border-2 p-3 rounded-lg h-32 outline-none focus:border-blue-500"></textarea>
-                            <p class="text-xs text-gray-500 mt-2">* سيتم تحويل هذا النص تلقائياً إلى خريطة تفاعلية جميلة.</p>
+                        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                            <h4 class="font-bold text-gray-800 mb-2"><i class="fas fa-map-marked-alt"></i> برنامج الرحلة (الخريطة التفاعلية)</h4>
+                            <textarea id="nt-program" placeholder="اكتب المحطات مفصولة بفاصلة..." class="w-full border-2 p-3 rounded-lg h-32 outline-none"></textarea>
                         </div>
 
                         <div class="grid grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-bold mb-2">صورة الغلاف (كبيرة)</label>
-                                <input type="file" id="nt-img" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold mb-2">صورة المرشد</label>
-                                <input type="file" id="nt-guide-img" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                            </div>
+                            <div><label class="block text-sm font-bold mb-2">صورة الرحلة</label><input type="file" id="nt-img" accept="image/*" class="w-full text-sm"></div>
+                            <div><label class="block text-sm font-bold mb-2">صورة المرشد</label><input type="file" id="nt-guide-img" accept="image/*" class="w-full text-sm"></div>
                         </div>
-                        
-                        <div>
-                             <label class="block text-sm font-bold mb-2">اسم المرشد</label>
-                             <input type="text" id="nt-guide-name" class="w-full border-2 bg-gray-50 p-3 rounded-lg outline-none focus:border-blue-500">
-                        </div>
-
-                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 shadow-lg text-lg">حفظ ونشر الرحلة ✅</button>
+                        <div><label class="block text-sm font-bold mb-2">اسم المرشد</label><input type="text" id="nt-guide-name" class="w-full border-2 bg-gray-50 p-3 rounded-lg"></div>
+                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl hover:bg-green-700 shadow-lg text-lg">نشر الرحلة</button>
                     </form>
+                </div>
+
+                <!-- Manage Trips (Delete) -->
+                <div id="adm-manage-trips" class="admin-section hidden animate__animated animate__fadeIn">
+                    <h2 class="text-3xl font-black mb-6">إدارة الرحلات (حذف)</h2>
+                    <div id="manage-trips-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                 </div>
 
                 <!-- Requests Section -->
                 <div id="adm-requests" class="admin-section hidden animate__animated animate__fadeIn">
-                    <h2 class="text-3xl font-black mb-6">جدول الحجوزات</h2>
+                    <h2 class="text-3xl font-black mb-6">الحجوزات</h2>
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-600">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b">
                                 <tr>
-                                    <th class="px-6 py-4">العميل</th>
-                                    <th class="px-6 py-4">معلومات الاتصال</th>
-                                    <th class="px-6 py-4">الرحلة</th>
-                                    <th class="px-6 py-4">الحالة</th>
-                                    <th class="px-6 py-4">تاريخ الطلب</th>
+                                    <th class="px-6 py-4">الاسم</th><th class="px-6 py-4">الهاتف</th><th class="px-6 py-4">الرحلة</th><th class="px-6 py-4">الحالة</th>
                                 </tr>
                             </thead>
                             <tbody id="requests-table-body"></tbody>
@@ -401,18 +355,16 @@
 
                 <!-- Complaints Section -->
                 <div id="adm-complaints" class="admin-section hidden animate__animated animate__fadeIn">
-                    <h2 class="text-3xl font-black mb-6">صندوق الشكاوى</h2>
+                    <h2 class="text-3xl font-black mb-6">الشكاوى</h2>
                     <div id="complaints-list" class="space-y-4"></div>
                 </div>
 
                 <!-- Banners Section -->
                 <div id="adm-banners" class="admin-section hidden animate__animated animate__fadeIn">
-                    <h2 class="text-3xl font-black mb-6">صور السلايدر (Banners)</h2>
-                    <div class="bg-white p-6 rounded-xl shadow mb-6">
-                        <div class="flex gap-4">
-                             <input type="file" id="new-banner-file" accept="image/*" class="border p-2 rounded w-full">
-                             <button onclick="uploadBanner()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">رفع</button>
-                        </div>
+                    <h2 class="text-3xl font-black mb-6">البانرات</h2>
+                    <div class="bg-white p-6 rounded-xl shadow mb-6 flex gap-4">
+                         <input type="file" id="new-banner-file" accept="image/*" class="border p-2 rounded w-full">
+                         <button onclick="uploadBanner()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">رفع</button>
                     </div>
                     <div id="banners-list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                 </div>
@@ -424,7 +376,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // --- DATABASE MANAGER (LOCAL STORAGE) ---
+        // --- DATABASE MANAGER ---
         const DB = {
             get: (key) => JSON.parse(localStorage.getItem('tahwas_' + key) || '[]'),
             set: (key, data) => localStorage.setItem('tahwas_' + key, JSON.stringify(data)),
@@ -438,10 +390,7 @@
             update: (key, id, newData) => {
                 const data = DB.get(key);
                 const index = data.findIndex(x => x.id === id);
-                if (index !== -1) {
-                    data[index] = { ...data[index], ...newData };
-                    DB.set(key, data);
-                }
+                if (index !== -1) { data[index] = { ...data[index], ...newData }; DB.set(key, data); }
             },
             delete: (key, id) => {
                 const data = DB.get(key);
@@ -450,7 +399,6 @@
             }
         };
 
-        // --- HELPER: Image to Base64 ---
         const toBase64 = file => new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -458,50 +406,50 @@
             reader.onerror = error => reject(error);
         });
 
-        // --- SEED DEMO DATA ---
+        // --- VISIT COUNTER LOGIC ---
+        function trackVisit() {
+            if(!sessionStorage.getItem('visited')) {
+                DB.add('visits', { timestamp: new Date().toISOString() });
+                sessionStorage.setItem('visited', 'true');
+            }
+        }
+
+        // --- SEED DATA ---
         function seedData() {
             if (DB.get('trips').length === 0) {
                 const demoTrips = [
                     {
                         id: '1', title: 'سحر صحراء تمنراست', price: '45000', hotel: 'فندق الطاهات', mapType: 'sahara',
-                        desc: 'رحلة لا تنسى إلى قلب الصحراء الجزائرية، اكتشف الأسكرام والتقاليد التارقية العريقة.', 
-                        program: 'الانطلاق من المطار, الوصول للفندق والاستراحة, زيارة جبل الأسكرام لمشاهدة الغروب, سهرة فلكلورية مع الشاي الصحراوي, جولة في السوق التقليدي, العودة للديار',
-                        imageUrl: 'https://images.unsplash.com/photo-1549643276-fbc2bd874326?w=800', guideName: 'الحاج محمد', createdAt: new Date().toISOString()
-                    },
-                    {
-                        id: '2', title: 'مغامرات تيكجدة الثلجية', price: '12000', hotel: 'منتجع تيكجدة', mapType: 'mountain',
-                        desc: 'استمتع بالتزلج والمناظر الطبيعية الخلابة في جبال جرجرة الشامخة.', 
-                        program: 'التجمع والانطلاق بالحافلة, الوصول للقمة وتوزيع العتاد, وقت حر للتزلج واللعب بالثلج, وجبة غداء مشاوي في الهواء الطلق, زيارة البحيرة السوداء, العودة مساءً',
-                        imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800', guideName: 'أمين المتسلق', createdAt: new Date().toISOString()
+                        desc: 'اكتشف الأسكرام والتقاليد التارقية العريقة.', 
+                        program: 'الانطلاق, الوصول للفندق, جبل الأسكرام, سهرة فلكلورية, العودة',
+                        imageUrl: 'https://images.unsplash.com/photo-1549643276-fbc2bd874326?w=800', 
+                        guideName: 'الحاج محمد', startDate: '2024-12-01', endDate: '2024-12-05', transport: '✈️ طائرة'
                     }
                 ];
                 DB.set('trips', demoTrips);
             }
             if (DB.get('banners').length === 0) {
-                DB.set('banners', [
-                    { id: 'b1', imageUrl: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=1200' },
-                    { id: 'b2', imageUrl: 'https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=1200' }
-                ]);
+                DB.set('banners', [{ id: 'b1', imageUrl: 'https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=1200' }]);
             }
         }
 
-        // --- PUBLIC FUNCTIONS ---
+        // --- UI FUNCTIONS ---
         window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
         window.openReportModal = () => document.getElementById('report-modal').style.display = 'flex';
         window.closeTripModal = () => document.getElementById('trip-modal').classList.add('hidden');
 
         async function loadPublicData() {
             seedData();
-            // Load Banners
+            trackVisit(); // Count visit
+
             const banners = DB.get('banners');
             const slider = document.getElementById('hero-slider');
             if(banners.length > 0) {
                 let html = '';
                 banners.forEach(b => {
-                    html += `<div class="absolute inset-0 bg-cover bg-center slide-item transition-opacity duration-1000" style="background-image: url('${b.imageUrl}'); display:none;">
+                    html += `<div class="absolute inset-0 bg-cover bg-center slide-item" style="background-image: url('${b.imageUrl}'); display:none;">
                          <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center flex-col text-white text-center p-4">
-                            <h2 class="text-5xl font-black mb-4 animate__animated animate__fadeInDown drop-shadow-lg">اكتشف الجزائر</h2>
-                            <p class="text-xl animate__animated animate__fadeInUp drop-shadow-md">رحلات منظمة بأسعار تنافسية</p>
+                            <h2 class="text-5xl font-black mb-4 drop-shadow-lg">اكتشف الجزائر</h2>
                          </div>
                     </div>`;
                 });
@@ -509,16 +457,9 @@
                 const items = document.querySelectorAll('.slide-item');
                 let current = 0;
                 if(items.length > 0) items[0].style.display = 'block';
-                if(items.length > 1) {
-                    setInterval(() => {
-                        items[current].style.display = 'none';
-                        current = (current + 1) % items.length;
-                        items[current].style.display = 'block';
-                    }, 5000);
-                }
+                if(items.length > 1) setInterval(() => { items[current].style.display = 'none'; current = (current + 1) % items.length; items[current].style.display = 'block'; }, 5000);
             }
 
-            // Load Trips
             const trips = DB.get('trips');
             const grid = document.getElementById('trips-grid');
             grid.innerHTML = '';
@@ -527,23 +468,21 @@
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2 group cursor-pointer border border-gray-100" onclick="openTripDetails('${trip.id}')">
                     <div class="h-64 overflow-hidden relative">
                         <img src="${trip.imageUrl}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
-                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-1 rounded-full text-sm font-bold text-blue-800 shadow">
-                            ${trip.price} دج
-                        </div>
+                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-1 rounded-full text-sm font-bold text-blue-800 shadow">${trip.price} دج</div>
                     </div>
                     <div class="p-6">
-                        <h3 class="text-2xl font-black mb-2 text-gray-800 group-hover:text-blue-600 transition">${trip.title}</h3>
+                        <h3 class="text-2xl font-black mb-2 text-gray-800">${trip.title}</h3>
                         <p class="text-gray-500 text-sm mb-4 line-clamp-2">${trip.desc}</p>
-                        <div class="flex justify-between items-center border-t pt-4">
-                            <span class="text-blue-600 font-bold text-sm"><i class="fas fa-map-marked-alt"></i> ${trip.program ? trip.program.split(',').length + ' محطات' : 'برنامج مميز'}</span>
-                            <span class="text-gray-400 text-sm group-hover:translate-x-[-5px] transition">عرض التفاصيل <i class="fas fa-arrow-left"></i></span>
+                        <div class="flex justify-between items-center text-sm text-gray-500 font-bold">
+                            <span><i class="fas fa-bus"></i> ${trip.transport || 'حافلة'}</span>
+                            <span>${trip.startDate || 'قريباً'}</span>
                         </div>
                     </div>
                 </div>`;
             });
         }
 
-        // --- MAP GENERATION LOGIC ---
+        // --- VIBRANT MAP LOGIC ---
         window.openTripDetails = (id) => {
             const trips = DB.get('trips');
             const trip = trips.find(t => t.id === id);
@@ -553,53 +492,36 @@
             const content = document.getElementById('trip-modal-content');
             modal.classList.remove('hidden');
 
-            // 1. Theme Configuration
             let themeClass = 'theme-mountain';
             let decos = [];
             
             switch(trip.mapType) {
-                case 'sahara':
-                    themeClass = 'theme-sahara';
-                    decos = ['🌴', '🐪', '☀️', '🦂', '🏜️', '⛺'];
-                    break;
-                case 'coastal':
-                    themeClass = 'theme-coastal';
-                    decos = ['🏖️', '🌊', '🦀', '⛵', '🐚', '🐬'];
-                    break;
-                case 'historical':
-                    themeClass = 'theme-historical';
-                    decos = ['🏛️', '🏺', '🗿', '📜', '🗺️', '🏰'];
-                    break;
-                default: // mountain
-                    themeClass = 'theme-mountain';
-                    decos = ['🌲', '🏔️', '🦌', '🍄', '🦅', '❄️'];
+                case 'sahara': themeClass = 'theme-sahara'; decos = ['🌴', '🐪', '☀️', '🦂', '🏜️', '⛺']; break;
+                case 'coastal': themeClass = 'theme-coastal'; decos = ['🏖️', '🌊', '🦀', '⛵', '🐚', '🐬']; break;
+                case 'historical': themeClass = 'theme-historical'; decos = ['🏛️', '🏺', '🗿', '📜', '🗺️', '🏰']; break;
+                default: themeClass = 'theme-mountain'; decos = ['🌲', '🏔️', '🦌', '🍄', '🦅', '❄️'];
             }
 
-            // 2. Build Map Points (Zigzag)
             const mapPoints = trip.program ? trip.program.split(',') : [];
             let timelineHtml = `<div class="map-timeline">`;
             
             mapPoints.forEach((point, index) => {
                 const randomDeco = decos[Math.floor(Math.random() * decos.length)];
-                
                 timelineHtml += `
-                <div class="map-item animate__animated animate__fadeInUp" style="animation-delay: ${index * 0.2}s">
+                <div class="map-item animate__animated animate__fadeInUp" style="animation-delay: ${index * 0.3}s">
                     <div class="map-content transform transition hover:scale-105">
                         <h4>${point.trim()}</h4>
-                        <span class="font-bold">
+                        <span class="font-bold text-gray-500 text-xs mt-1 block">
                             ${index === 0 ? '🏁 الانطلاق' : (index === mapPoints.length - 1 ? '🏠 العودة' : '📍 محطة ' + (index+1))}
                         </span>
                     </div>
-                    <!-- Decorative Icon -->
-                    <div class="deco-icon" style="${index % 2 === 0 ? 'left: -60px' : 'right: -60px'}; top: 0;">${randomDeco}</div>
+                    <div class="deco-icon" style="${index % 2 === 0 ? 'left: -70px' : 'right: -70px'}; top: -10px;">${randomDeco}</div>
                 </div>`;
             });
             timelineHtml += `<div style="clear:both"></div></div>`;
 
-            // 3. Render Modal
             content.innerHTML = `
                 <div class="flex flex-col md:flex-row h-full">
-                    <!-- Image Side -->
                     <div class="w-full md:w-1/3 h-64 md:h-auto relative">
                         <img src="${trip.imageUrl}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-6 text-white">
@@ -607,40 +529,33 @@
                             <p class="text-2xl font-bold text-yellow-400">${trip.price} دج</p>
                         </div>
                     </div>
-
-                    <!-- Details Side -->
                     <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto max-h-[90vh] relative">
-                        <!-- Top Info -->
-                        <div class="bg-white p-6 shadow-sm sticky top-0 z-30 flex flex-wrap gap-4 items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 bg-gray-200 rounded-full overflow-hidden border-2 border-blue-500">
-                                    ${trip.guideImg ? `<img src="${trip.guideImg}" class="w-full h-full object-cover">` : '<i class="fas fa-user text-2xl text-gray-400 m-2"></i>'}
-                                </div>
-                                <div>
-                                    <p class="text-xs text-gray-500 font-bold uppercase">قائد الرحلة</p>
-                                    <h4 class="font-bold text-sm">${trip.guideName || 'مرشد محترف'}</h4>
-                                </div>
+                        <!-- Extra Details -->
+                        <div class="bg-white p-6 shadow-sm sticky top-0 z-30">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center text-sm mb-4">
+                                <div class="bg-blue-50 p-2 rounded border border-blue-200"><i class="fas fa-calendar-alt text-blue-600 block text-lg mb-1"></i> ${trip.startDate || 'غير محدد'}</div>
+                                <div class="bg-blue-50 p-2 rounded border border-blue-200"><i class="fas fa-calendar-check text-blue-600 block text-lg mb-1"></i> ${trip.endDate || 'غير محدد'}</div>
+                                <div class="bg-purple-50 p-2 rounded border border-purple-200"><i class="fas fa-bus text-purple-600 block text-lg mb-1"></i> ${trip.transport || 'حافلة'}</div>
+                                <div class="bg-green-100 p-2 rounded border border-green-300 insurance-glow text-green-800 font-bold"><i class="fas fa-heartbeat block text-lg mb-1"></i> تأمين صحي شامل</div>
                             </div>
-                            <div class="flex gap-4 text-sm font-bold text-gray-600">
-                                <span class="bg-blue-50 px-3 py-1 rounded text-blue-600"><i class="fas fa-hotel"></i> ${trip.hotel || 'فندق سياحي'}</span>
-                                <span class="bg-green-50 px-3 py-1 rounded text-green-600"><i class="fas fa-utensils"></i> شامل الأكل</span>
+                            <div class="flex items-center gap-3 border-t pt-4">
+                                <div class="w-10 h-10 bg-gray-200 rounded-full overflow-hidden border">
+                                    ${trip.guideImg ? `<img src="${trip.guideImg}" class="w-full h-full object-cover">` : '<i class="fas fa-user m-2"></i>'}
+                                </div>
+                                <div><p class="text-xs text-gray-500 font-bold uppercase">قائد الرحلة</p><h4 class="font-bold text-sm">${trip.guideName || 'مرشد محترف'}</h4></div>
                             </div>
                         </div>
 
-                        <!-- THE MAP -->
                         <div class="map-container ${themeClass} mx-4 md:mx-8 mb-24 mt-6">
-                            <div class="text-center mb-10 text-white/80 drop-shadow-md">
-                                <p class="font-bold text-lg"><i class="fas fa-route"></i> برنامج الرحلة التفصيلي</p>
+                            <div class="text-center mb-10 text-white/90 drop-shadow-md">
+                                <p class="font-bold text-lg"><i class="fas fa-route"></i> مسار الرحلة التفاعلي</p>
                                 <i class="fas fa-chevron-down animate-bounce mt-2"></i>
                             </div>
                             ${timelineHtml}
                         </div>
                         
-                        <!-- Fixed Booking Button -->
                         <div class="absolute bottom-6 left-0 right-0 px-8 flex justify-center z-40">
-                             <button onclick="openBooking('${trip.id}', '${trip.title}')" class="w-full max-w-sm bg-gradient-to-r from-blue-600 to-blue-500 text-white font-black py-4 rounded-full shadow-2xl glow-btn text-xl transition transform hover:scale-105 border-4 border-white">
-                                سجل الآن في هذه الرحلة
-                            </button>
+                             <button onclick="openBooking('${trip.id}', '${trip.title}')" class="w-full max-w-sm bg-gradient-to-r from-blue-600 to-blue-500 text-white font-black py-4 rounded-full shadow-2xl glow-btn text-xl transition transform hover:scale-105 border-4 border-white">سجل الآن</button>
                         </div>
                         <div class="h-10"></div>
                     </div>
@@ -648,7 +563,6 @@
             `;
         };
 
-        // Booking Form
         window.openBooking = (id, title) => {
             document.getElementById('trip-modal').classList.add('hidden');
             document.getElementById('booking-trip-id').value = id;
@@ -664,32 +578,23 @@
                 name: document.getElementById('b-name').value,
                 phone: document.getElementById('b-phone').value,
                 age: document.getElementById('b-age').value,
+                gender: document.getElementById('b-gender').value,
                 state: document.getElementById('b-state').value,
                 status: 'pending'
             });
             document.getElementById('booking-modal').classList.add('hidden');
-            Swal.fire({
-                icon: 'success', title: 'تم تسجيلك بنجاح!', text: 'سنتصل بك قريباً لتأكيد الحجز.', showConfirmButton: false, timer: 2500
-            });
+            Swal.fire({ icon: 'success', title: 'تم تسجيلك بنجاح!', text: 'سنتصل بك قريباً.', showConfirmButton: false, timer: 2000 });
         });
 
-        // Report Form
         document.getElementById('report-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            DB.add('complaints', {
-                name: document.getElementById('r-name').value,
-                email: document.getElementById('r-email').value,
-                desc: document.getElementById('r-desc').value
-            });
+            DB.add('complaints', { name: document.getElementById('r-name').value, email: document.getElementById('r-email').value, desc: document.getElementById('r-desc').value });
             document.getElementById('report-modal').style.display = 'none';
             Swal.fire('تم', 'شكراً لإبلاغنا', 'success');
         });
 
-        // --- ADMIN LOGIC ---
-        if (window.location.hash === '#admin1') {
-            document.getElementById('user-app').classList.add('hidden');
-            document.getElementById('admin-panel').classList.remove('hidden');
-        }
+        // --- ADMIN ---
+        if (window.location.hash === '#admin1') { document.getElementById('user-app').classList.add('hidden'); document.getElementById('admin-panel').classList.remove('hidden'); }
 
         window.checkAdmin = () => {
             if(document.getElementById('admin-user').value === 'admin' && document.getElementById('admin-pass').value === 'abobob123') {
@@ -698,7 +603,7 @@
                 document.getElementById('admin-dashboard').classList.add('flex');
                 loadAdminStats();
                 loadAdminRequests();
-                loadAdminComplaints();
+                loadAdminManageTrips();
                 loadAdminBanners();
             } else { Swal.fire('خطأ', 'بيانات الدخول غير صحيحة', 'error'); }
         };
@@ -711,19 +616,25 @@
         window.logoutAdmin = () => { window.location.hash = ''; window.location.reload(); };
 
         function loadAdminStats() {
-            document.getElementById('stat-trips').innerText = DB.get('trips').length;
+            // Calculate Visits
+            const visits = DB.get('visits');
+            const today = new Date().toISOString().split('T')[0];
+            const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+            
+            const visitsToday = visits.filter(v => v.timestamp.startsWith(today)).length;
+            const visitsMonth = visits.filter(v => v.timestamp.startsWith(currentMonth)).length;
+
+            document.getElementById('stat-visits-today').innerText = visitsToday;
+            document.getElementById('stat-visits-month').innerText = visitsMonth;
+            
             const reqs = DB.get('requests');
-            document.getElementById('stat-all').innerText = reqs.length;
             document.getElementById('stat-new').innerText = reqs.filter(r => r.status === 'pending').length;
             document.getElementById('stat-comp').innerText = DB.get('complaints').length;
         }
 
         document.getElementById('new-trip-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button');
-            const originalText = btn.innerText;
-            btn.innerText = "جاري المعالجة..."; btn.disabled = true;
-
+            const btn = e.target.querySelector('button'); btn.innerText = "جاري..."; btn.disabled = true;
             try {
                 const imgFile = document.getElementById('nt-img').files[0];
                 const guideFile = document.getElementById('nt-guide-img').files[0];
@@ -737,77 +648,57 @@
                     mapType: document.getElementById('nt-maptype').value,
                     desc: document.getElementById('nt-desc').value,
                     program: document.getElementById('nt-program').value,
+                    startDate: document.getElementById('nt-start').value,
+                    endDate: document.getElementById('nt-end').value,
+                    transport: document.getElementById('nt-transport').value,
                     guideName: document.getElementById('nt-guide-name').value,
                     imageUrl: imgUrl,
                     guideImg: guideUrl
                 });
-
-                Swal.fire('ممتاز', 'تم نشر الرحلة بنجاح', 'success');
-                e.target.reset();
-                loadAdminStats();
-            } catch(err) { alert("خطأ: حجم الصورة كبير جداً"); }
-            btn.innerText = originalText; btn.disabled = false;
+                Swal.fire('تم', 'تم نشر الرحلة', 'success'); e.target.reset(); loadAdminManageTrips();
+            } catch(err) { alert("خطأ: حجم الصورة كبير"); }
+            btn.innerText = "نشر الرحلة"; btn.disabled = false;
         });
 
+        // Manage Trips (Delete)
+        function loadAdminManageTrips() {
+            const list = document.getElementById('manage-trips-list');
+            list.innerHTML = '';
+            const trips = DB.get('trips');
+            if(trips.length === 0) list.innerHTML = '<p>لا توجد رحلات</p>';
+            trips.forEach(t => {
+                list.innerHTML += `
+                <div class="bg-white p-4 rounded shadow flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <img src="${t.imageUrl}" class="w-16 h-16 rounded object-cover">
+                        <div><h4 class="font-bold">${t.title}</h4><p class="text-sm text-gray-500">${t.price} دج</p></div>
+                    </div>
+                    <button onclick="deleteTrip('${t.id}')" class="bg-red-100 text-red-600 px-4 py-2 rounded hover:bg-red-200"><i class="fas fa-trash"></i> حذف</button>
+                </div>`;
+            });
+        }
+        window.deleteTrip = (id) => { if(confirm('هل أنت متأكد من حذف هذه الرحلة؟')) { DB.delete('trips', id); loadAdminManageTrips(); } };
+
         function loadAdminRequests() {
-            const tbody = document.getElementById('requests-table-body');
-            tbody.innerHTML = '';
-            const reqs = DB.get('requests').reverse();
-            
-            reqs.forEach(r => {
-                const statusColors = {'pending':'bg-yellow-100 text-yellow-800','confirmed':'bg-green-100 text-green-800','cancelled':'bg-red-100 text-red-800'};
-                tbody.innerHTML += `
-                <tr class="bg-white border-b hover:bg-gray-50 transition">
-                    <td class="px-6 py-4 font-bold text-gray-800">${r.name}<br><span class="text-xs text-gray-400">${r.state} | ${r.age} سنة</span></td>
-                    <td class="px-6 py-4 text-blue-600 font-mono">${r.phone}</td>
-                    <td class="px-6 py-4 font-bold">${r.tripName}</td>
-                    <td class="px-6 py-4">
-                        <select onchange="DB.update('requests', '${r.id}', {status: this.value}); loadAdminStats();" class="text-xs p-1 rounded font-bold ${statusColors[r.status] || ''}">
-                            <option value="pending" ${r.status==='pending'?'selected':''}>قيد الانتظار</option>
-                            <option value="confirmed" ${r.status==='confirmed'?'selected':''}>تم التأكيد</option>
-                            <option value="cancelled" ${r.status==='cancelled'?'selected':''}>ملغى</option>
-                        </select>
-                    </td>
-                    <td class="px-6 py-4 text-gray-400 text-xs">${r.createdAt.split('T')[0]}</td>
-                </tr>`;
+            const tbody = document.getElementById('requests-table-body'); tbody.innerHTML = '';
+            DB.get('requests').reverse().forEach(r => {
+                tbody.innerHTML += `<tr class="bg-white border-b"><td class="px-6 py-4 font-bold">${r.name}</td><td class="px-6 py-4">${r.phone}</td><td class="px-6 py-4">${r.tripName}</td><td class="px-6 py-4"><span class="bg-yellow-100 text-yellow-800 px-2 rounded text-xs font-bold">${r.status}</span></td></tr>`;
             });
         }
 
-        function loadAdminComplaints() {
-             const list = document.getElementById('complaints-list');
-             list.innerHTML = '';
-             DB.get('complaints').forEach(c => {
-                 list.innerHTML += `<div class="bg-white p-4 rounded-xl shadow border-r-4 border-red-500"><h4 class="font-bold">${c.name} <span class="text-gray-400 text-sm">(${c.email})</span></h4><p class="mt-2 text-gray-600">${c.desc}</p></div>`;
-             });
-        }
-
         function loadAdminBanners() {
-            const list = document.getElementById('banners-list');
-            list.innerHTML = '';
+            const list = document.getElementById('banners-list'); list.innerHTML = '';
             DB.get('banners').forEach(b => {
-                list.innerHTML += `
-                <div class="relative group rounded-xl overflow-hidden shadow-lg">
-                    <img src="${b.imageUrl}" class="w-full h-40 object-cover">
-                    <button onclick="DB.delete('banners', '${b.id}'); loadAdminBanners();" class="absolute top-2 right-2 bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow hover:bg-red-700"><i class="fas fa-trash"></i></button>
-                </div>`;
+                list.innerHTML += `<div class="relative group"><img src="${b.imageUrl}" class="w-full h-32 object-cover rounded"><button onclick="DB.delete('banners', '${b.id}'); loadAdminBanners();" class="absolute top-1 right-1 bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center"><i class="fas fa-trash"></i></button></div>`;
             });
         }
 
         window.uploadBanner = async () => {
             const file = document.getElementById('new-banner-file').files[0];
-            if(file) {
-                try {
-                    const url = await toBase64(file);
-                    DB.add('banners', { imageUrl: url });
-                    loadAdminBanners();
-                    Swal.fire('تم', 'تم رفع البانر', 'success');
-                } catch(e) { alert("صورة كبيرة جداً"); }
-            }
+            if(file) { try { const url = await toBase64(file); DB.add('banners', { imageUrl: url }); loadAdminBanners(); Swal.fire('تم', 'تم رفع البانر', 'success'); } catch(e) { alert("صورة كبيرة"); } }
         };
 
-        // Init
         loadPublicData();
-
     </script>
 </body>
 </html>
