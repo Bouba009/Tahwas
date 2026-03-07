@@ -48,7 +48,7 @@
             padding-right: 30px;
         }
         .journey-point::before {
-            content: '\f3c5'; /* Map marker icon */
+            content: '\f3c5';
             font-family: 'Font Awesome 6 Free';
             font-weight: 900;
             position: absolute;
@@ -81,7 +81,6 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Sidebar Transition */
         .sidebar { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
@@ -97,13 +96,13 @@
                     <i class="fas fa-bars text-2xl cursor-pointer md:hidden" onclick="toggleSidebar()"></i>
                     <h1 class="text-3xl font-black text-blue-600 tracking-tighter">تحواس<span class="text-orange-500">.</span></h1>
                 </div>
-                <!-- Desktop Menu -->
                 <nav class="hidden md:flex gap-6 font-bold text-gray-600">
                     <a href="#" class="hover:text-blue-600 transition">الرئيسية</a>
                     <a href="#trips-section" class="hover:text-blue-600 transition">رحلات</a>
                     <a href="#about" class="hover:text-blue-600 transition">من نحن</a>
-                    <a href="#contact" class="hover:text-blue-600 transition">اتصل بنا</a>
                     <button onclick="openReportModal()" class="text-red-500 hover:text-red-700"><i class="fas fa-exclamation-triangle"></i> الإبلاغ عن مشكل</button>
+                    <!-- رابط سري للأدمن -->
+                    <a href="#admin1" onclick="window.location.reload()" class="text-xs text-gray-300 hover:text-gray-500">Admin</a>
                 </nav>
             </div>
         </header>
@@ -114,19 +113,15 @@
             <ul class="space-y-4 font-bold text-lg">
                 <li><a href="#" class="block hover:text-blue-600">الرئيسية</a></li>
                 <li><a href="#trips-section" class="block hover:text-blue-600">رحلات</a></li>
-                <li><a href="#about" class="block hover:text-blue-600">من نحن</a></li>
-                <li><a href="#contact" class="block hover:text-blue-600">اتصل بنا</a></li>
-                <li><a href="#" class="block hover:text-blue-600">سياسة الخصوصية</a></li>
-                <li><a href="#" class="block hover:text-blue-600">مقرنا</a></li>
                 <li><button onclick="openReportModal()" class="text-red-500">الإبلاغ عن مشكل</button></li>
+                <li><a href="#admin1" onclick="window.location.reload()" class="text-gray-400 text-sm">دخول المشرف</a></li>
             </ul>
         </div>
 
         <!-- Hero Section (Slider) -->
         <div class="pt-20 relative h-[400px] md:h-[500px] overflow-hidden bg-gray-200" id="hero-slider">
-            <!-- Banners will be injected here via JS -->
             <div class="absolute inset-0 flex items-center justify-center text-gray-400">
-                <i class="fas fa-spinner fa-spin text-3xl"></i> جاري تحميل العروض...
+                <i class="fas fa-spinner fa-spin text-3xl"></i>
             </div>
         </div>
 
@@ -135,6 +130,7 @@
             <div class="text-center mb-12">
                 <h2 class="text-4xl font-black text-gray-800 mb-2">أحدث الرحلات السياحية</h2>
                 <div class="h-1 w-20 bg-blue-600 mx-auto rounded"></div>
+                <button onclick="resetData()" class="mt-4 text-xs text-gray-400 underline">إعادة ضبط البيانات (تجريبي)</button>
             </div>
 
             <div id="trips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -142,41 +138,22 @@
             </div>
         </section>
 
-        <!-- About/Contact/Footer Section (Simplified) -->
+        <!-- Footer -->
         <footer class="bg-gray-800 text-white py-10 mt-10">
-            <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-right">
-                <div>
-                    <h3 class="text-2xl font-bold mb-4">تحواس</h3>
-                    <p class="text-gray-400">نحن بوابتك لاكتشاف جمال الجزائر والعالم. رحلات منظمة واحترافية.</p>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-4">روابط سريعة</h3>
-                    <ul class="text-gray-400 space-y-2">
-                        <li><a href="#">من نحن</a></li>
-                        <li><a href="#">سياسة الخصوصية</a></li>
-                        <li><a href="#">مقرنا</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-4">اتصل بنا</h3>
-                    <p class="text-gray-400">contact@tahwas.com</p>
-                    <p class="text-gray-400">+213 555 123 456</p>
-                </div>
+            <div class="container mx-auto px-4 text-center">
+                <h3 class="text-2xl font-bold mb-4">تحواس</h3>
+                <p class="text-gray-400">جميع الحقوق محفوظة &copy; 2024</p>
             </div>
         </footer>
 
     </div> 
-    <!-- End User App -->
 
-    <!-- ================= TRIP DETAILS MODAL (The Map) ================= -->
+    <!-- ================= TRIP DETAILS MODAL ================= -->
     <div id="trip-modal" class="fixed inset-0 bg-black bg-opacity-90 z-[60] hidden overflow-y-auto backdrop-blur-sm">
         <div class="min-h-screen flex items-center justify-center p-4">
             <div class="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden relative animate__animated animate__fadeInUp">
                 <button onclick="closeTripModal()" class="absolute top-4 left-4 z-20 bg-white rounded-full p-2 text-red-600 hover:bg-red-50 shadow-lg"><i class="fas fa-times text-2xl"></i></button>
-                
-                <div id="trip-modal-content">
-                    <!-- Dynamic Content -->
-                </div>
+                <div id="trip-modal-content"></div>
             </div>
         </div>
     </div>
@@ -188,38 +165,19 @@
             <form id="booking-form" class="space-y-4">
                 <input type="hidden" id="booking-trip-id">
                 <input type="hidden" id="booking-trip-name">
-                <div>
-                    <label class="block text-sm font-bold mb-1">الاسم واللقب</label>
-                    <input type="text" id="b-name" required class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">رقم الهاتف</label>
-                    <input type="tel" id="b-phone" required class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
+                <input type="text" id="b-name" placeholder="الاسم واللقب" required class="w-full border rounded p-2">
+                <input type="tel" id="b-phone" placeholder="رقم الهاتف" required class="w-full border rounded p-2">
                 <div class="flex gap-4">
-                    <div class="w-1/2">
-                        <label class="block text-sm font-bold mb-1">السن</label>
-                        <input type="number" id="b-age" required class="w-full border rounded p-2 outline-none">
-                    </div>
-                    <div class="w-1/2">
-                        <label class="block text-sm font-bold mb-1">الجنس</label>
-                        <select id="b-gender" class="w-full border rounded p-2 outline-none">
-                            <option>ذكر</option>
-                            <option>أنثى</option>
-                        </select>
-                    </div>
+                    <input type="number" id="b-age" placeholder="السن" required class="w-1/2 border rounded p-2">
+                    <select id="b-gender" class="w-1/2 border rounded p-2"><option>ذكر</option><option>أنثى</option></select>
                 </div>
-                <div>
-                    <label class="block text-sm font-bold mb-1">الولاية</label>
-                    <input type="text" id="b-state" required class="w-full border rounded p-2 outline-none">
-                </div>
-                
+                <input type="text" id="b-state" placeholder="الولاية" required class="w-full border rounded p-2">
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">تأكيد التسجيل</button>
             </form>
         </div>
     </div>
 
-    <!-- ================= REPORT ISSUE MODAL ================= -->
+    <!-- ================= REPORT MODAL ================= -->
     <div id="report-modal" class="fixed inset-0 bg-black bg-opacity-80 z-[70] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl w-full max-w-md p-6 shadow-2xl">
             <div class="flex justify-between mb-4">
@@ -242,6 +200,7 @@
         <div id="admin-login" class="flex items-center justify-center min-h-screen">
             <div class="bg-white p-8 rounded-xl shadow-lg w-96">
                 <h2 class="text-2xl font-bold text-center mb-6">دخول المسؤول</h2>
+                <div class="bg-yellow-100 p-2 text-xs mb-4 rounded text-yellow-800">وضع التخزين المحلي (Local Storage)</div>
                 <input type="text" id="admin-user" placeholder="اسم المستخدم" class="w-full border p-3 rounded mb-4">
                 <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full border p-3 rounded mb-4">
                 <button onclick="checkAdmin()" class="w-full bg-gray-800 text-white py-3 rounded hover:bg-black">دخول</button>
@@ -271,8 +230,8 @@
                     <h2 class="text-3xl font-bold mb-6">نظرة عامة</h2>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                         <div class="bg-blue-500 text-white p-6 rounded-lg shadow-lg">
-                            <h3 class="text-lg">زيارات اليوم</h3>
-                            <p class="text-4xl font-bold mt-2" id="stat-today">0</p>
+                            <h3 class="text-lg">الرحلات النشطة</h3>
+                            <p class="text-4xl font-bold mt-2" id="stat-trips">0</p>
                         </div>
                         <div class="bg-green-500 text-white p-6 rounded-lg shadow-lg">
                             <h3 class="text-lg">طلبات جديدة</h3>
@@ -311,13 +270,12 @@
                         <div class="border p-4 rounded bg-gray-50">
                             <h4 class="font-bold mb-2">تفاصيل البرنامج (الخريطة)</h4>
                             <textarea id="nt-program" placeholder="اكتب البرنامج مفصولاً بفاصلة. مثال: الانطلاق, الوصول للفندق, العشاء, زيارة المتحف" class="w-full border p-3 rounded h-24"></textarea>
-                            <p class="text-xs text-gray-500 mt-1">* سيتم تحويل هذا النص إلى خريطة تفاعلية تلقائياً</p>
                         </div>
 
                         <div class="border p-4 rounded bg-gray-50 flex items-center gap-4">
                             <div class="w-1/2">
-                                <label>صورة الرحلة (رئيسية)</label>
-                                <input type="file" id="nt-img" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                <label>صورة الرحلة</label>
+                                <input type="file" id="nt-img" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                             </div>
                         </div>
 
@@ -325,11 +283,11 @@
                             <h4 class="font-bold mb-2">معلومات المرشد</h4>
                             <div class="grid grid-cols-2 gap-4">
                                 <input type="text" id="nt-guide-name" placeholder="اسم المرشد" class="border p-3 rounded">
-                                <input type="file" id="nt-guide-img" class="block w-full text-sm">
+                                <input type="file" id="nt-guide-img" accept="image/*" class="block w-full text-sm">
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded hover:bg-green-700">نشر الرحلة</button>
+                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded hover:bg-green-700">حفظ الرحلة محلياً</button>
                     </form>
                 </div>
 
@@ -345,12 +303,10 @@
                                     <th class="px-6 py-3">الهاتف</th>
                                     <th class="px-6 py-3">الرحلة</th>
                                     <th class="px-6 py-3">الحالة</th>
-                                    <th class="px-6 py-3">تاريخ التسجيل</th>
+                                    <th class="px-6 py-3">تاريخ</th>
                                 </tr>
                             </thead>
-                            <tbody id="requests-table-body">
-                                <!-- Dynamic Rows -->
-                            </tbody>
+                            <tbody id="requests-table-body"></tbody>
                         </table>
                     </div>
                 </div>
@@ -365,8 +321,8 @@
                 <div id="adm-banners" class="admin-section hidden">
                     <h2 class="text-3xl font-bold mb-6">إدارة البانرات</h2>
                     <div class="mb-4">
-                         <input type="file" id="new-banner-file" class="border p-2 rounded">
-                         <button onclick="uploadBanner()" class="bg-blue-600 text-white px-4 py-2 rounded">رفع بانر</button>
+                         <input type="file" id="new-banner-file" accept="image/*" class="border p-2 rounded">
+                         <button onclick="uploadBanner()" class="bg-blue-600 text-white px-4 py-2 rounded">إضافة بانر</button>
                     </div>
                     <div id="banners-list" class="grid grid-cols-2 gap-4"></div>
                 </div>
@@ -375,206 +331,201 @@
         </div>
     </div>
 
-    <!-- Firebase & Logic Scripts -->
-    <script type="module">
-        // Import Firebase Functions
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, query, where, orderBy, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, listAll } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
-        
-        // SweetAlert2
-        import Swal from 'https://cdn.jsdelivr.net/npm/sweetalert2@11/src/sweetalert2.js'
-        window.Swal = Swal;
-
-        // Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAaXp-gUOQ_G2s-kM8JhaqW8TJcJ4Nqcuo",
-            authDomain: "comondi-fae4b.firebaseapp.com",
-            projectId: "comondi-fae4b",
-            storageBucket: "comondi-fae4b.firebasestorage.app",
-            messagingSenderId: "932777870241",
-            appId: "1:932777870241:web:78b0cf3a3cf14046be01e0",
-            measurementId: "G-M09RX0V18S"
-        };
-
-        // Initialize
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-
-        // --- GLOBAL VARIABLES & UTILS ---
-        window.toggleSidebar = () => {
-            const sb = document.getElementById('sidebar');
-            if (sb.classList.contains('translate-x-full')) {
-                sb.classList.remove('translate-x-full');
-            } else {
-                sb.classList.add('translate-x-full');
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // --- LOCAL STORAGE MANAGER ---
+        const DB = {
+            get: (key) => JSON.parse(localStorage.getItem('tahwas_' + key) || '[]'),
+            set: (key, data) => localStorage.setItem('tahwas_' + key, JSON.stringify(data)),
+            add: (key, item) => {
+                const data = DB.get(key);
+                item.id = Date.now().toString(); // Generate ID
+                item.createdAt = new Date().toISOString();
+                data.push(item);
+                DB.set(key, data);
+                return item;
+            },
+            update: (key, id, newData) => {
+                const data = DB.get(key);
+                const index = data.findIndex(x => x.id === id);
+                if (index !== -1) {
+                    data[index] = { ...data[index], ...newData };
+                    DB.set(key, data);
+                }
+            },
+            delete: (key, id) => {
+                const data = DB.get(key);
+                const newData = data.filter(x => x.id !== id);
+                DB.set(key, newData);
             }
         };
 
+        // --- IMAGE HANDLER (Base64) ---
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        // --- GLOBAL UI FUNCTIONS ---
+        window.toggleSidebar = () => {
+            document.getElementById('sidebar').classList.toggle('translate-x-full');
+        };
         window.openReportModal = () => document.getElementById('report-modal').style.display = 'flex';
+        window.closeTripModal = () => document.getElementById('trip-modal').classList.add('hidden');
 
-        // --- PUBLIC: FETCH DATA ---
+        // --- SEED DATA (If Empty) ---
+        function seedData() {
+            if (DB.get('trips').length === 0) {
+                const demoTrips = [
+                    {
+                        id: '1', title: 'رحلة إلى تمنراست', price: '45000', hotel: 'فندق الطاهات', mapType: 'sahara',
+                        desc: 'استمتع بجمال الصحراء والأسكرام', program: 'الانطلاق من العاصمة, الوصول للفندق, زيارة الأسكرام, سهرة فلكلورية, العودة',
+                        imageUrl: 'https://images.unsplash.com/photo-1549643276-fbc2bd874326?w=800', guideName: 'محمد صحراوي', createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: '2', title: 'مغامرة في تيكجدة', price: '12000', hotel: 'منتجع تيكجدة', mapType: 'mountain',
+                        desc: 'يوم كامل من التزلج والمناظر الطبيعية', program: 'الانطلاق صباحاً, الوصول للقمة, وقت حر للتزلج, الغداء المشوي, العودة مساءً',
+                        imageUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800', guideName: 'أمين جبالي', createdAt: new Date().toISOString()
+                    }
+                ];
+                DB.set('trips', demoTrips);
+            }
+            if (DB.get('banners').length === 0) {
+                DB.set('banners', [
+                    { id: 'b1', imageUrl: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=1200' },
+                    { id: 'b2', imageUrl: 'https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?w=1200' }
+                ]);
+            }
+        }
 
-        // 1. Fetch Banners
-        async function loadBanners() {
+        window.resetData = () => {
+            if(confirm("هل تريد مسح كل البيانات وإرجاع البيانات التجريبية؟")) {
+                localStorage.clear();
+                window.location.reload();
+            }
+        };
+
+        // --- LOAD DATA (PUBLIC) ---
+        function loadPublicData() {
+            seedData(); // Ensure mock data exists
+
+            // Load Banners
+            const banners = DB.get('banners');
             const slider = document.getElementById('hero-slider');
-            // For demo: if no storage access, show placeholder. 
-            // In real usage, fetch from specific collection or storage folder.
-            // Here we assume a collection 'banners' exists containing URLs.
-            try {
-                const q = query(collection(db, "banners"));
-                const querySnapshot = await getDocs(q);
-                let slidesHtml = '';
+            if(banners.length > 0) {
+                let html = '';
+                banners.forEach(b => {
+                    html += `<div class="absolute inset-0 bg-cover bg-center slide-item transition-opacity duration-1000" style="background-image: url('${b.imageUrl}'); display:none;">
+                         <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                            <h2 class="text-4xl text-white font-bold animate__animated animate__fadeInUp">اكتشف روعة الجزائر</h2>
+                         </div>
+                    </div>`;
+                });
+                slider.innerHTML = html;
                 
-                if (querySnapshot.empty) {
-                    // Fallback sliders
-                    slidesHtml = `
-                        <div class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000" style="background-image: url('https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?auto=format&fit=crop&w=1200&q=80');">
-                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center flex-col text-center p-4">
-                                <h2 class="text-4xl md:text-6xl text-white font-black mb-4 animate__animated animate__fadeInDown">اكتشف صحراء الجزائر</h2>
-                                <p class="text-xl text-white mb-6">رحلات لا تُنسى بأسعار تنافسية</p>
-                            </div>
-                        </div>`;
-                } else {
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        slidesHtml += `<div class="absolute inset-0 bg-cover bg-center slide-item" style="background-image: url('${data.imageUrl}'); display:none;"></div>`;
-                    });
-                }
-                slider.innerHTML = slidesHtml;
-                
-                // Simple JS Slider Logic
-                if(!querySnapshot.empty){
-                    const items = document.querySelectorAll('.slide-item');
-                    let current = 0;
-                    if(items.length > 0) items[0].style.display = 'block';
+                // Slider Logic
+                const items = document.querySelectorAll('.slide-item');
+                let current = 0;
+                if(items.length > 0) items[0].style.display = 'block';
+                if(items.length > 1) {
                     setInterval(() => {
                         items[current].style.display = 'none';
                         current = (current + 1) % items.length;
                         items[current].style.display = 'block';
-                    }, 5000);
+                    }, 4000);
                 }
-            } catch (e) { console.log("Banner error (likely CORS/Rules):", e); }
-        }
-
-        // 2. Fetch Trips
-        async function loadTrips() {
-            const grid = document.getElementById('trips-grid');
-            grid.innerHTML = '<div class="col-span-3 text-center"><span class="loader inline-block"></span></div>';
-
-            try {
-                const q = query(collection(db, "trips"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                
-                grid.innerHTML = '';
-                if(querySnapshot.empty) { grid.innerHTML = '<p class="text-center col-span-3">لا توجد رحلات حالياً</p>'; return; }
-
-                querySnapshot.forEach((docSnap) => {
-                    const trip = docSnap.data();
-                    const id = docSnap.id;
-                    
-                    const card = `
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2 group cursor-pointer" onclick="openTripDetails('${id}')">
-                        <div class="h-64 overflow-hidden relative">
-                            <img src="${trip.imageUrl || 'https://via.placeholder.com/400'}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" alt="${trip.title}">
-                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-blue-800 shadow">
-                                <i class="fas fa-tag"></i> ${trip.price} دج
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-2xl font-bold mb-2 text-gray-800">${trip.title}</h3>
-                            <p class="text-gray-500 text-sm mb-4 line-clamp-2">${trip.desc}</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-blue-600 font-bold"><i class="fas fa-map-marker-alt"></i> ${trip.program ? trip.program.split(',').length + ' محطات' : 'برنامج متنوع'}</span>
-                                <span class="text-gray-400 text-sm">عرض التفاصيل <i class="fas fa-arrow-left"></i></span>
-                            </div>
-                        </div>
-                    </div>`;
-                    grid.innerHTML += card;
-                });
-            } catch (e) {
-                console.error(e);
-                grid.innerHTML = '<p class="text-red-500 text-center col-span-3">حدث خطأ في تحميل الرحلات. تأكد من اتصال الإنترنت.</p>';
             }
+
+            // Load Trips
+            const trips = DB.get('trips');
+            const grid = document.getElementById('trips-grid');
+            grid.innerHTML = '';
+            
+            if(trips.length === 0) { grid.innerHTML = '<p class="text-center w-full">لا توجد رحلات حالياً</p>'; return; }
+
+            trips.forEach(trip => {
+                grid.innerHTML += `
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2 group cursor-pointer" onclick="openTripDetails('${trip.id}')">
+                    <div class="h-64 overflow-hidden relative">
+                        <img src="${trip.imageUrl || 'https://via.placeholder.com/400'}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-blue-800 shadow">
+                            <i class="fas fa-tag"></i> ${trip.price} دج
+                        </div>
+                        <!-- زر حذف للأدمن فقط إذا كان في لوحة التحكم (اختياري) -->
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-2 text-gray-800">${trip.title}</h3>
+                        <p class="text-gray-500 text-sm mb-4 line-clamp-2">${trip.desc}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-600 font-bold"><i class="fas fa-map-marker-alt"></i> برنامج الرحلة</span>
+                            <span class="text-gray-400 text-sm">التفاصيل <i class="fas fa-arrow-left"></i></span>
+                        </div>
+                    </div>
+                </div>`;
+            });
         }
 
-        // 3. Trip Details & Map Logic
-        window.openTripDetails = async (id) => {
+        // Trip Details
+        window.openTripDetails = (id) => {
+            const trips = DB.get('trips');
+            const trip = trips.find(t => t.id === id);
+            if(!trip) return;
+
             const modal = document.getElementById('trip-modal');
             const content = document.getElementById('trip-modal-content');
             modal.classList.remove('hidden');
-            content.innerHTML = '<div class="p-10 text-center"><span class="loader inline-block"></span></div>';
 
-            const docRef = doc(db, "trips", id);
-            const docSnap = await getDocs(query(collection(db, "trips"), where("__name__", "==", id))); 
-            // Firestore specific way to get by ID in V9 often uses getDoc but query works too for simplicity here
-            
-            // Better: use getDoc
-            // Since I imported many things, let's just loop locally if already loaded, 
-            // but for correctness let's fetch specific.
-            
-            // To save API calls, we could pass data object, but let's re-fetch for simplicity
-            let tripData = null;
-            docSnap.forEach(d => { if(d.id === id) tripData = d.data(); });
-
-            if (!tripData) { content.innerHTML = '<p>الرحلة غير موجودة</p>'; return; }
-
-            // Build The Map
-            const mapPoints = tripData.program.split(',').map(p => p.trim());
-            let mapHtml = `<div class="journey-map ${'map-' + (tripData.mapType || 'mountain')} relative">`;
-            
-            mapPoints.forEach((point, index) => {
+            const mapPoints = trip.program ? trip.program.split(',') : [];
+            let mapHtml = `<div class="journey-map ${'map-' + (trip.mapType || 'mountain')} relative">`;
+            mapPoints.forEach((p, i) => {
                 mapHtml += `
-                <div class="journey-point flex items-center animate__animated animate__fadeInRight" style="animation-delay: ${index * 0.2}s">
+                <div class="journey-point flex items-center animate__animated animate__fadeInRight" style="animation-delay: ${i * 0.2}s">
                     <div class="bg-white p-4 rounded-lg shadow-md w-full ml-10 border-r-4 border-blue-400">
-                        <h4 class="font-bold text-lg text-gray-800">${point}</h4>
-                        ${index === 0 ? '<span class="text-xs text-green-600 font-bold">نقطة الانطلاق</span>' : ''}
+                        <h4 class="font-bold text-lg text-gray-800">${p}</h4>
                     </div>
                 </div>`;
             });
             mapHtml += `</div>`;
 
-            // Build Modal HTML
             content.innerHTML = `
                 <div class="grid grid-cols-1 md:grid-cols-2">
                     <div class="h-64 md:h-auto">
-                        <img src="${tripData.imageUrl}" class="w-full h-full object-cover">
+                        <img src="${trip.imageUrl}" class="w-full h-full object-cover">
                     </div>
                     <div class="p-8 bg-gray-50 overflow-y-auto max-h-[80vh]">
-                        <h2 class="text-3xl font-black mb-2 text-blue-800">${tripData.title}</h2>
-                        <p class="text-2xl font-bold text-orange-500 mb-4">${tripData.price} دج <span class="text-sm text-gray-500 font-normal">/ شامل كل التكاليف</span></p>
+                        <h2 class="text-3xl font-black mb-2 text-blue-800">${trip.title}</h2>
+                        <p class="text-2xl font-bold text-orange-500 mb-4">${trip.price} دج</p>
                         
                         <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
-                            <div class="bg-white p-3 rounded shadow-sm"><i class="fas fa-hotel text-blue-500"></i> <b>الفندق:</b> ${tripData.hotel || 'غير محدد'}</div>
+                            <div class="bg-white p-3 rounded shadow-sm"><i class="fas fa-hotel text-blue-500"></i> <b>الفندق:</b> ${trip.hotel}</div>
                             <div class="bg-white p-3 rounded shadow-sm"><i class="fas fa-utensils text-green-500"></i> <b>الأكل:</b> فطور/عشاء</div>
                         </div>
 
-                        <!-- Guide Info -->
-                        <div class="flex items-center gap-4 mb-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
-                            <img src="${tripData.guideImg || 'https://via.placeholder.com/100'}" class="w-16 h-16 rounded-full border-2 border-white shadow-lg object-cover">
+                         <div class="flex items-center gap-4 mb-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+                                ${trip.guideImg ? `<img src="${trip.guideImg}" class="w-full h-full object-cover">` : '<i class="fas fa-user"></i>'}
+                            </div>
                             <div>
                                 <p class="text-xs text-gray-500 uppercase">قائد الرحلة</p>
-                                <h4 class="font-bold text-lg">${tripData.guideName || 'مرشد محترف'}</h4>
+                                <h4 class="font-bold text-lg">${trip.guideName || 'مرشد سياحي'}</h4>
                             </div>
                         </div>
 
-                        <h3 class="font-bold text-xl mb-4 border-b pb-2">برنامج الرحلة</h3>
+                        <h3 class="font-bold text-xl mb-4 border-b pb-2">البرنامج</h3>
                         ${mapHtml}
 
-                        <button onclick="openBooking('${id}', '${tripData.title}')" class="w-full mt-6 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold py-4 rounded-xl shadow-lg glow-btn text-xl transition transform hover:scale-105">
-                            سجل في هذه الرحلة الآن
+                        <button onclick="openBooking('${trip.id}', '${trip.title}')" class="w-full mt-6 bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold py-4 rounded-xl shadow-lg glow-btn text-xl transition transform hover:scale-105">
+                            سجل الآن
                         </button>
                     </div>
                 </div>
             `;
         };
 
-        window.closeTripModal = () => document.getElementById('trip-modal').classList.add('hidden');
-
-        // 4. Booking Logic
+        // Booking Logic
         window.openBooking = (id, title) => {
             document.getElementById('trip-modal').classList.add('hidden');
             document.getElementById('booking-trip-id').value = id;
@@ -582,71 +533,43 @@
             document.getElementById('booking-modal').classList.remove('hidden');
         };
 
-        document.getElementById('booking-form').addEventListener('submit', async (e) => {
+        document.getElementById('booking-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button');
-            const originalText = btn.innerText;
-            btn.innerText = 'جاري التسجيل...';
-            btn.disabled = true;
-
-            try {
-                await addDoc(collection(db, "requests"), {
-                    tripId: document.getElementById('booking-trip-id').value,
-                    tripName: document.getElementById('booking-trip-name').value,
-                    name: document.getElementById('b-name').value,
-                    phone: document.getElementById('b-phone').value,
-                    age: document.getElementById('b-age').value,
-                    gender: document.getElementById('b-gender').value,
-                    state: document.getElementById('b-state').value,
-                    status: 'pending', // pending, contacted, confirmed, cancelled
-                    createdAt: new Date()
-                });
-
-                // Update Stats (Simple counter increment simulation)
-                // In real app use Cloud Functions or distributed counters
-                
-                document.getElementById('booking-modal').classList.add('hidden');
-                Swal.fire({
-                    icon: 'success',
-                    title: 'تم التسجيل بنجاح!',
-                    text: 'سنتصل بك قريباً لتأكيد الحجز.',
-                    showConfirmButton: false,
-                    timer: 2000
-                }).then(() => {
-                    window.location.reload(); // Return to home
-                });
-
-            } catch (err) {
-                console.error(err);
-                btn.innerText = originalText;
-                btn.disabled = false;
-                Swal.fire('خطأ', 'حدث خطأ أثناء التسجيل، حاول مرة أخرى', 'error');
-            }
+            const booking = {
+                tripId: document.getElementById('booking-trip-id').value,
+                tripName: document.getElementById('booking-trip-name').value,
+                name: document.getElementById('b-name').value,
+                phone: document.getElementById('b-phone').value,
+                age: document.getElementById('b-age').value,
+                gender: document.getElementById('b-gender').value,
+                state: document.getElementById('b-state').value,
+                status: 'pending'
+            };
+            
+            DB.add('requests', booking);
+            document.getElementById('booking-modal').classList.add('hidden');
+            Swal.fire('تم التسجيل', 'تم حفظ طلبك بنجاح', 'success');
         });
 
-        // 5. Report Logic
-        document.getElementById('report-form').addEventListener('submit', async (e) => {
+        // Report Logic
+        document.getElementById('report-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            try {
-                await addDoc(collection(db, "complaints"), {
-                    name: document.getElementById('r-name').value,
-                    email: document.getElementById('r-email').value,
-                    desc: document.getElementById('r-desc').value,
-                    createdAt: new Date()
-                });
-                document.getElementById('report-modal').style.display = 'none';
-                Swal.fire('تم الإرسال', 'شكراً لإبلاغنا، سنراجع المشكلة.', 'success');
-            } catch(err) { console.error(err); }
+            DB.add('complaints', {
+                name: document.getElementById('r-name').value,
+                email: document.getElementById('r-email').value,
+                desc: document.getElementById('r-desc').value
+            });
+            document.getElementById('report-modal').style.display = 'none';
+            Swal.fire('تم الإرسال', 'شكراً لإبلاغنا', 'success');
         });
 
 
         // --- ADMIN LOGIC ---
 
-        // Check URL for Admin
-        if (window.location.pathname.includes('/admin1') || window.location.hash === '#admin1') {
+        // Check Admin
+        if (window.location.hash === '#admin1') {
             document.getElementById('user-app').classList.add('hidden');
             document.getElementById('admin-panel').classList.remove('hidden');
-            document.body.style.backgroundColor = "#f3f4f6";
         }
 
         window.checkAdmin = () => {
@@ -656,7 +579,10 @@
                 document.getElementById('admin-login').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.remove('hidden');
                 document.getElementById('admin-dashboard').classList.add('flex');
-                loadAdminData();
+                loadAdminStats();
+                loadAdminRequests();
+                loadAdminComplaints();
+                loadAdminBanners();
             } else {
                 Swal.fire('خطأ', 'بيانات الدخول غير صحيحة', 'error');
             }
@@ -667,178 +593,124 @@
             document.getElementById('adm-'+sec).classList.remove('hidden');
         };
 
-        window.logoutAdmin = () => {
-            window.location.href = window.location.pathname; // Reload to user view
-        };
+        window.logoutAdmin = () => window.location.href = window.location.pathname;
 
-        // Admin: Load Data
-        function loadAdminData() {
-            // 1. Stats
-            // Realtime listeners
-            onSnapshot(collection(db, "requests"), (snap) => {
-                document.getElementById('stat-all').innerText = snap.size;
-                const newReqs = snap.docs.filter(d => d.data().status === 'pending');
-                document.getElementById('stat-new').innerText = newReqs.length;
-                
-                // Update Table
-                renderRequestsTable(snap.docs);
-            });
-
-            // Visits (Fake sim since no backend)
-            document.getElementById('stat-today').innerText = Math.floor(Math.random() * 50) + 10;
-            
-            // Complaints
-            onSnapshot(collection(db, "complaints"), (snap) => {
-                document.getElementById('stat-comp').innerText = snap.size;
-                const list = document.getElementById('complaints-list');
-                list.innerHTML = '';
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    list.innerHTML += `
-                    <div class="bg-white p-4 rounded shadow border-l-4 border-red-500">
-                        <h4 class="font-bold">${d.name} <span class="text-xs text-gray-500">(${d.email})</span></h4>
-                        <p>${d.desc}</p>
-                    </div>`;
-                });
-            });
-            
-            // Load Banners for Admin
-            loadAdminBanners();
+        function loadAdminStats() {
+            document.getElementById('stat-trips').innerText = DB.get('trips').length;
+            const reqs = DB.get('requests');
+            document.getElementById('stat-all').innerText = reqs.length;
+            document.getElementById('stat-new').innerText = reqs.filter(r => r.status === 'pending').length;
+            document.getElementById('stat-comp').innerText = DB.get('complaints').length;
         }
 
-        function renderRequestsTable(docs) {
-            const tbody = document.getElementById('requests-table-body');
-            tbody.innerHTML = '';
-            // Sort by date desc
-            const sorted = docs.sort((a,b) => b.data().createdAt - a.data().createdAt);
-            
-            sorted.forEach(docSnap => {
-                const data = docSnap.data();
-                const statusColors = {
-                    'pending': 'bg-yellow-100 text-yellow-800',
-                    'contacted': 'bg-blue-100 text-blue-800',
-                    'confirmed': 'bg-green-100 text-green-800',
-                    'cancelled': 'bg-red-100 text-red-800'
-                };
-                
-                const tr = `
-                <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-gray-900">${data.name}</td>
-                    <td class="px-6 py-4">${data.state}</td>
-                    <td class="px-6 py-4">${data.phone}</td>
-                    <td class="px-6 py-4">${data.tripName}</td>
-                    <td class="px-6 py-4">
-                        <select onchange="updateStatus('${docSnap.id}', this.value)" class="p-1 rounded ${statusColors[data.status] || ''}">
-                            <option value="pending" ${data.status==='pending'?'selected':''}>قيد الانتظار</option>
-                            <option value="contacted" ${data.status==='contacted'?'selected':''}>تم الاتصال</option>
-                            <option value="confirmed" ${data.status==='confirmed'?'selected':''}>مؤكد</option>
-                            <option value="cancelled" ${data.status==='cancelled'?'selected':''}>ملغى</option>
-                        </select>
-                    </td>
-                    <td class="px-6 py-4">${data.createdAt ? new Date(data.createdAt.seconds*1000).toLocaleDateString('ar-DZ') : '-'}</td>
-                </tr>`;
-                tbody.innerHTML += tr;
-            });
-        }
-
-        window.updateStatus = async (id, newStatus) => {
-            await updateDoc(doc(db, "requests", id), { status: newStatus });
-            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
-            Toast.fire({ icon: 'success', title: 'تم تحديث الحالة' });
-        };
-
-        // Admin: Add Trip
+        // Add Trip
         document.getElementById('new-trip-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.disabled = true; btn.innerText = "جاري الرفع...";
+            
+            // Handle Images
+            const imgFile = document.getElementById('nt-img').files[0];
+            const guideFile = document.getElementById('nt-guide-img').files[0];
+            
+            let imgUrl = '';
+            let guideUrl = '';
 
             try {
-                // Upload Image
-                const imgFile = document.getElementById('nt-img').files[0];
-                let imgUrl = '';
-                if(imgFile) {
-                    const storageRef = ref(storage, 'trips/' + Date.now() + '_' + imgFile.name);
-                    await uploadBytes(storageRef, imgFile);
-                    imgUrl = await getDownloadURL(storageRef);
-                }
-
-                // Guide Image
-                const guideFile = document.getElementById('nt-guide-img').files[0];
-                let guideUrl = '';
-                if(guideFile) {
-                    const gRef = ref(storage, 'guides/' + Date.now() + '_' + guideFile.name);
-                    await uploadBytes(gRef, guideFile);
-                    guideUrl = await getDownloadURL(gRef);
-                }
-
-                await addDoc(collection(db, "trips"), {
-                    title: document.getElementById('nt-title').value,
-                    price: document.getElementById('nt-price').value,
-                    hotel: document.getElementById('nt-hotel').value,
-                    mapType: document.getElementById('nt-maptype').value,
-                    desc: document.getElementById('nt-desc').value,
-                    program: document.getElementById('nt-program').value,
-                    guideName: document.getElementById('nt-guide-name').value,
-                    imageUrl: imgUrl,
-                    guideImg: guideUrl,
-                    createdAt: new Date()
-                });
-
-                Swal.fire('تم!', 'تم إضافة الرحلة بنجاح', 'success');
-                e.target.reset();
+                if(imgFile) imgUrl = await toBase64(imgFile);
+                if(guideFile) guideUrl = await toBase64(guideFile);
             } catch(err) {
-                console.error(err);
-                Swal.fire('خطأ', 'حدث خطأ (تحقق من Rules Storage)', 'error');
+                alert("صورة كبيرة جداً، حاول استخدام صورة أصغر");
+                return;
             }
-            btn.disabled = false; btn.innerText = "نشر الرحلة";
+
+            const trip = {
+                title: document.getElementById('nt-title').value,
+                price: document.getElementById('nt-price').value,
+                hotel: document.getElementById('nt-hotel').value,
+                mapType: document.getElementById('nt-maptype').value,
+                desc: document.getElementById('nt-desc').value,
+                program: document.getElementById('nt-program').value,
+                guideName: document.getElementById('nt-guide-name').value,
+                imageUrl: imgUrl || 'https://via.placeholder.com/400',
+                guideImg: guideUrl
+            };
+
+            DB.add('trips', trip);
+            Swal.fire('تم', 'تم إضافة الرحلة للتخزين المحلي', 'success');
+            e.target.reset();
+            loadAdminStats();
         });
 
-        // Admin: Banners
-        async function loadAdminBanners() {
-            // Ideally fetch collection. For simulation, assume same query as public.
+        // Requests Table
+        function loadAdminRequests() {
+            const reqs = DB.get('requests').reverse();
+            const tbody = document.getElementById('requests-table-body');
+            tbody.innerHTML = '';
+            
+            reqs.forEach(r => {
+                tbody.innerHTML += `
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4">${r.name}</td>
+                    <td class="px-6 py-4">${r.state}</td>
+                    <td class="px-6 py-4">${r.phone}</td>
+                    <td class="px-6 py-4">${r.tripName}</td>
+                    <td class="px-6 py-4">
+                        <select onchange="updateReqStatus('${r.id}', this.value)" class="p-1 border rounded bg-gray-50">
+                            <option ${r.status==='pending'?'selected':''} value="pending">قيد الانتظار</option>
+                            <option ${r.status==='confirmed'?'selected':''} value="confirmed">مؤكد</option>
+                            <option ${r.status==='cancelled'?'selected':''} value="cancelled">ملغى</option>
+                        </select>
+                    </td>
+                    <td class="px-6 py-4 text-xs">${r.createdAt.split('T')[0]}</td>
+                </tr>`;
+            });
+        }
+
+        window.updateReqStatus = (id, status) => {
+            DB.update('requests', id, { status: status });
+            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+            Toast.fire({ icon: 'success', title: 'تم التحديث' });
+            loadAdminStats();
+        };
+
+        // Complaints
+        function loadAdminComplaints() {
+             const list = document.getElementById('complaints-list');
+             list.innerHTML = '';
+             DB.get('complaints').forEach(c => {
+                 list.innerHTML += `<div class="bg-white p-4 rounded shadow border-l-4 border-red-500"><h4 class="font-bold">${c.name}</h4><p>${c.desc}</p></div>`;
+             });
+        }
+
+        // Banners
+        function loadAdminBanners() {
             const list = document.getElementById('banners-list');
             list.innerHTML = '';
-            // Just a placeholder implementation as managing storage files + firestore docs is complex for one file
-            const q = query(collection(db, "banners"));
-            const s = await getDocs(q);
-            s.forEach(d => {
+            DB.get('banners').forEach(b => {
                 list.innerHTML += `
                 <div class="relative group">
-                    <img src="${d.data().imageUrl}" class="w-full h-32 object-cover rounded">
-                    <button onclick="deleteBanner('${d.id}')" class="absolute top-1 right-1 bg-red-600 text-white p-1 rounded"><i class="fas fa-trash"></i></button>
+                    <img src="${b.imageUrl}" class="w-full h-32 object-cover rounded">
+                    <button onclick="deleteBanner('${b.id}')" class="absolute top-1 right-1 bg-red-600 text-white px-2 rounded">X</button>
                 </div>`;
             });
         }
 
         window.uploadBanner = async () => {
-             const file = document.getElementById('new-banner-file').files[0];
-             if(!file) return;
-             try {
-                const storageRef = ref(storage, 'banners/' + Date.now() + '_' + file.name);
-                await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(storageRef);
-                await addDoc(collection(db, "banners"), { imageUrl: url });
-                Swal.fire('تم', 'تم رفع البانر', 'success');
-                loadAdminBanners();
-             } catch(e) { console.error(e); }
-        };
-
-        window.deleteBanner = async (id) => {
-            if(confirm('حذف هذا البانر؟')) {
-                await deleteDoc(doc(db, "banners", id));
+            const file = document.getElementById('new-banner-file').files[0];
+            if(file) {
+                const url = await toBase64(file);
+                DB.add('banners', { imageUrl: url });
                 loadAdminBanners();
             }
         };
+        
+        window.deleteBanner = (id) => {
+            DB.delete('banners', id);
+            loadAdminBanners();
+        }
 
-        // --- INIT ---
-        loadTrips();
-        loadBanners();
-        
-        // Simulating Page Visit Counter
-        // In a real app, use `runTransaction` to increment a counter doc
-        
+        // Initialize User View
+        loadPublicData();
+
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
