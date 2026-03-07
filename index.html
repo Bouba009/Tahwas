@@ -22,34 +22,31 @@
             border: 8px solid white; box-shadow: inset 0 0 50px rgba(0,0,0,0.2), 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        /* 1. SAHARA THEME (Sand & Palms) */
+        /* 1. SAHARA THEME */
         .theme-sahara {
             background-color: #fef3c7;
             background-image: radial-gradient(#fbbf24 2px, transparent 2px);
-            background-size: 30px 30px; /* Sand dots */
+            background-size: 30px 30px;
             border-color: #d97706;
         }
         .theme-sahara .map-path-line { border-left: 6px dashed #d97706; }
         .theme-sahara .map-point-dot { background: #d97706; border-color: #fff; }
 
-        /* 2. MOUNTAIN THEME (Grass & Snow) */
+        /* 2. MOUNTAIN THEME */
         .theme-mountain {
             background-color: #dcfce7;
-            /* Grass pattern attempt with CSS */
-            background-image: linear-gradient(135deg, #86efac 25%, transparent 25%), linear-gradient(225deg, #86efac 25%, transparent 25%), linear-gradient(45deg, #86efac 25%, transparent 25%), linear-gradient(315deg, #86efac 25%, transparent 25%);
-            background-position:  10px 0, 10px 0, 0 0, 0 0;
+            background-image: linear-gradient(135deg, #86efac 25%, transparent 25%), linear-gradient(225deg, #86efac 25%, transparent 25%);
             background-size: 20px 20px;
-            background-repeat: repeat;
             border-color: #166534;
         }
         .theme-mountain .map-path-line { border-left: 6px dashed #15803d; }
         .theme-mountain .map-point-dot { background: #15803d; border-color: #fff; }
 
-        /* 3. COASTAL THEME (Water & Waves) */
+        /* 3. COASTAL THEME */
         .theme-coastal {
             background-color: #e0f2fe;
-            background-image: radial-gradient(circle at 100% 150%, #e0f2fe 24%, #7dd3fc 25%, #7dd3fc 28%, #e0f2fe 29%, #e0f2fe 36%, #7dd3fc 36%, #7dd3fc 40%, transparent 40%, transparent), radial-gradient(circle at 0 150%, #e0f2fe 24%, #7dd3fc 25%, #7dd3fc 28%, #e0f2fe 29%, #e0f2fe 36%, #7dd3fc 36%, #7dd3fc 40%, transparent 40%, transparent);
-            background-size: 50px 50px;
+            background-image: radial-gradient(circle, #7dd3fc 2px, transparent 2.5px);
+            background-size: 30px 30px;
             border-color: #0284c7;
         }
         .theme-coastal .map-path-line { border-left: 6px dashed #0284c7; }
@@ -58,20 +55,16 @@
         /* 4. HISTORICAL THEME */
         .theme-historical {
             background-color: #f5f5f4;
-            background-image: repeating-linear-gradient(45deg, #e7e5e4 25%, transparent 25%, transparent 75%, #e7e5e4 75%, #e7e5e4), repeating-linear-gradient(45deg, #e7e5e4 25%, #f5f5f4 25%, #f5f5f4 75%, #e7e5e4 75%, #e7e5e4);
-            background-position: 0 0, 10px 10px;
+            background-image: repeating-linear-gradient(45deg, #e7e5e4 25%, transparent 25%, transparent 75%, #e7e5e4 75%, #e7e5e4);
             background-size: 20px 20px;
             border-color: #78716c;
         }
 
         /* --- MAP PATH LOGIC --- */
         .map-timeline { position: relative; max-width: 600px; margin: 0 auto; padding-bottom: 50px; }
-        
-        /* The Walking Line */
         .map-path-line {
             position: absolute; top: 0; bottom: 0; left: 50%; width: 0; margin-left: -3px; z-index: 1;
         }
-
         .map-item { position: relative; margin-bottom: 80px; width: 50%; clear: both; z-index: 5; }
         .map-item:nth-child(odd) { float: left; text-align: left; padding-right: 50px; }
         .map-item:nth-child(even) { float: right; text-align: right; padding-left: 50px; }
@@ -92,17 +85,16 @@
         }
         .map-content:hover { transform: scale(1.05); }
 
-        /* Floating Decorations */
         .deco-float { position: absolute; font-size: 3rem; animation: float 6s ease-in-out infinite; z-index: 2; opacity: 0.9; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-        /* --- SLIDER IN MODAL --- */
-        .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 300px; }
+        /* Slider in Modal */
+        .modal-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 350px; }
         .modal-slide { min-width: 100%; height: 100%; scroll-snap-align: center; object-fit: cover; }
         
-        /* Admin Badge */
-        .glowing-badge { animation: glow-text 2s infinite; }
-        @keyframes glow-text { 0% { text-shadow: 0 0 5px red; } 50% { text-shadow: 0 0 20px red; } 100% { text-shadow: 0 0 5px red; } }
+        /* Register Button Animation */
+        .btn-register-pulse { animation: glowing 2s infinite; }
+        @keyframes glowing { 0% { box-shadow: 0 0 5px #2563eb; } 50% { box-shadow: 0 0 20px #2563eb; } 100% { box-shadow: 0 0 5px #2563eb; } }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -123,7 +115,6 @@
     <div id="user-app" class="pt-16">
         <!-- Main Slider -->
         <div id="hero-slider" class="relative h-[400px] bg-gray-200 overflow-hidden">
-             <!-- Injected via JS -->
              <div class="absolute inset-0 flex items-center justify-center text-gray-500"><i class="fas fa-spinner fa-spin fa-2x"></i></div>
         </div>
 
@@ -134,12 +125,14 @@
         </section>
         
         <!-- Footer -->
-        <footer class="bg-slate-900 text-white py-8 text-center mt-12">
+        <footer class="bg-slate-900 text-white py-8 text-center mt-12 relative">
             <p>جميع الحقوق محفوظة © تحواس 2024</p>
+            <!-- رابط احتياطي للأدمن -->
+            <a href="#admin" onclick="forceAdminCheck()" class="text-slate-800 hover:text-slate-700 text-xs absolute bottom-2 right-2">Admin</a>
         </footer>
     </div>
 
-    <!-- TRIP DETAILS MODAL (The Core Feature) -->
+    <!-- TRIP DETAILS MODAL -->
     <div id="trip-modal" class="fixed inset-0 bg-black/95 z-[60] hidden overflow-y-auto backdrop-blur-sm">
         <button onclick="closeTripModal()" class="fixed top-5 left-5 z-[70] bg-white text-red-600 rounded-full p-3 shadow-lg hover:scale-110 transition"><i class="fas fa-times fa-lg"></i></button>
         
@@ -186,22 +179,20 @@
 
     <!-- ADMIN PANEL -->
     <div id="admin-panel" class="hidden min-h-screen bg-gray-100 font-sans">
-        <!-- Admin Login -->
         <div id="admin-login" class="flex items-center justify-center min-h-screen bg-slate-900">
             <div class="bg-white p-8 rounded-xl shadow-2xl w-96 text-center">
                 <h2 class="text-3xl font-black mb-6">لوحة الإدارة</h2>
                 <input type="text" id="adm-user" placeholder="User: admin" class="w-full border p-3 rounded mb-3">
                 <input type="password" id="adm-pass" placeholder="Pass: abobob123" class="w-full border p-3 rounded mb-6">
                 <button onclick="loginAdmin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700">دخول</button>
+                <button onclick="location.href='index.html'" class="text-xs text-gray-400 mt-4 underline">العودة للموقع</button>
             </div>
         </div>
 
-        <!-- Dashboard -->
         <div id="admin-dashboard" class="hidden flex">
             <aside class="w-64 bg-slate-900 text-white min-h-screen fixed right-0 h-full overflow-y-auto z-10 p-4">
                 <div class="text-center mb-8 border-b border-slate-700 pb-4">
-                    <h2 class="text-2xl font-black">Admin Panel</h2>
-                    <p class="text-xs text-gray-400 mt-1">نسخة الادمن 2.0</p>
+                    <h2 class="text-2xl font-black">لوحة التحكم</h2>
                 </div>
                 <nav class="space-y-2">
                     <button onclick="showSection('stats')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-chart-line"></i> الإحصائيات</button>
@@ -216,7 +207,7 @@
             <main class="mr-64 flex-1 p-8 bg-gray-100 min-h-screen">
                 <!-- Stats -->
                 <div id="sec-stats" class="admin-sec">
-                    <h2 class="text-3xl font-bold mb-6">إحصائيات الموقع</h2>
+                    <h2 class="text-3xl font-bold mb-6">الإحصائيات</h2>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div class="bg-white p-6 rounded-xl shadow border-r-4 border-blue-500">
                             <p class="text-gray-500 font-bold">زيارات اليوم</p>
@@ -271,18 +262,15 @@
                         <div class="border p-4 rounded bg-gray-50">
                             <label class="font-bold block mb-2">1. الصورة الرئيسية</label>
                             <input id="nt-main-img" type="file" accept="image/*" class="w-full mb-4">
-                            
-                            <label class="font-bold block mb-2">2. صور إضافية (للسلايدر)</label>
+                            <label class="font-bold block mb-2">2. صور السلايدر (يمكن تحديد أكثر من صورة)</label>
                             <input id="nt-gallery" type="file" accept="image/*" multiple class="w-full">
-                            <p class="text-xs text-red-500 mt-1">* تنبيه: لا ترفع صوراً كثيرة جداً أو كبيرة الحجم لضمان سرعة الموقع.</p>
                         </div>
 
                         <div class="flex gap-4">
                             <input id="nt-guide-name" type="text" placeholder="اسم المرشد" class="border p-3 rounded w-1/2">
                             <input id="nt-guide-img" type="file" class="border p-2 rounded w-1/2">
                         </div>
-                        
-                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded hover:bg-green-700">حفظ ونشر الرحلة</button>
+                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-4 rounded hover:bg-green-700">نشر الرحلة</button>
                     </form>
                 </div>
 
@@ -314,7 +302,7 @@
     <!-- JAVASCRIPT LOGIC -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // --- 1. LOCAL STORAGE DB ---
+        // --- LOCAL DATABASE ---
         const DB = {
             get: (k) => JSON.parse(localStorage.getItem('th_' + k) || '[]'),
             set: (k, v) => localStorage.setItem('th_' + k, JSON.stringify(v)),
@@ -336,29 +324,28 @@
             r.onload = () => res(r.result); r.onerror = rej;
         });
 
-        // --- 2. VISIT TRACKER ---
+        // --- VISIT TRACKER ---
         function trackVisits() {
             if(!sessionStorage.getItem('session_active')) {
-                DB.add('visits', { ts: Date.now() }); // timestamp
+                DB.add('visits', { ts: Date.now() });
                 sessionStorage.setItem('session_active', 'true');
             }
         }
 
-        // --- 3. PUBLIC UI ---
+        // --- PUBLIC UI ---
         function loadPublic() {
             trackVisits();
-            // Load Banners
+            // Banners
             const banners = DB.get('banners');
             const slider = document.getElementById('hero-slider');
             if(banners.length > 0) {
                 slider.innerHTML = banners.map((b, i) => 
                     `<div class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image: url('${b.img}')">
                         <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
-                             <h2 class="text-5xl font-black text-white drop-shadow-lg">اكتشف الجزائر</h2>
+                             <h2 class="text-5xl font-black text-white drop-shadow-lg animate__animated animate__fadeInDown">اكتشف الجزائر</h2>
                         </div>
                     </div>`
                 ).join('');
-                // Simple auto slider
                 let idx = 0;
                 const items = document.querySelectorAll('.slide-item');
                 if(items.length > 1) setInterval(() => {
@@ -366,14 +353,12 @@
                     idx = (idx + 1) % items.length;
                     items[idx].classList.remove('opacity-0'); items[idx].classList.add('opacity-100');
                 }, 4000);
-            } else {
-                slider.innerHTML = '<div class="h-full flex items-center justify-center text-gray-400">لا توجد إعلانات حالياً</div>';
-            }
+            } else { slider.innerHTML = '<div class="h-full flex items-center justify-center text-gray-400">لا توجد إعلانات</div>'; }
 
-            // Load Trips
+            // Trips
             const trips = DB.get('trips');
             const grid = document.getElementById('trips-grid');
-            if(trips.length === 0) grid.innerHTML = '<p class="text-center w-full col-span-3">لا توجد رحلات متاحة حالياً.</p>';
+            if(trips.length === 0) grid.innerHTML = '<p class="text-center w-full col-span-3">لا توجد رحلات متاحة.</p>';
             else grid.innerHTML = trips.map(t => `
                 <div class="bg-white rounded-2xl shadow hover:shadow-xl transition cursor-pointer overflow-hidden group" onclick="openTrip('${t.id}')">
                     <div class="h-60 overflow-hidden relative">
@@ -391,7 +376,7 @@
             `).join('');
         }
 
-        // --- 4. TRIP DETAILS & MAP (THE CORE) ---
+        // --- TRIP MODAL LOGIC (The Scroll Fix) ---
         window.openTrip = (id) => {
             const t = DB.get('trips').find(x => x.id === id);
             if(!t) return;
@@ -399,13 +384,12 @@
             const content = document.getElementById('trip-modal-content');
             modal.classList.remove('hidden');
 
-            // Map Logic
             let themeClass = 'theme-mountain';
             let decos = [];
             if(t.theme === 'sahara') { themeClass = 'theme-sahara'; decos = ['🌴','🐪','☀️','🦂']; }
             else if(t.theme === 'coastal') { themeClass = 'theme-coastal'; decos = ['🏖️','⛵','🐬','🐚']; }
             else if(t.theme === 'historical') { themeClass = 'theme-historical'; decos = ['🏛️','🏺','📜']; }
-            else { themeClass = 'theme-mountain'; decos = ['🌲','🦌','🏔️','❄️']; } // default
+            else { themeClass = 'theme-mountain'; decos = ['🌲','🦌','🏔️','❄️']; }
 
             const points = t.program ? t.program.split(',') : [];
             const mapHTML = points.map((p, i) => {
@@ -415,51 +399,53 @@
                     <div class="map-point-dot"></div>
                     <div class="map-content">
                         <h4 class="font-bold text-lg">${p}</h4>
-                        <span class="text-xs text-gray-500">${i===0?'نقطة الانطلاق':(i===points.length-1?'نهاية الرحلة':'محطة توقف')}</span>
+                        <span class="text-xs text-gray-500">${i===0?'البداية':(i===points.length-1?'النهاية':'محطة')}</span>
                     </div>
                     <div class="deco-float" style="${i%2===0 ? 'left:-60px' : 'right:-60px'}; top: -20px;">${deco}</div>
                 </div>`;
             }).join('');
 
-            // Slider Logic for Modal
-            let sliderHTML = `<img src="${t.mainImg}" class="modal-slide">`; // Default main
+            let sliderHTML = `<img src="${t.mainImg}" class="modal-slide">`;
             if(t.gallery && t.gallery.length > 0) {
                 sliderHTML = t.gallery.map(img => `<img src="${img}" class="modal-slide">`).join('');
             }
 
             content.innerHTML = `
-                <div class="flex flex-col md:flex-row min-h-screen md:min-h-[600px]">
-                    <!-- Left: Images -->
-                    <div class="w-full md:w-1/3 bg-black relative">
-                        <div class="modal-slider">${sliderHTML}</div>
+                <div class="flex flex-col md:flex-row h-full md:h-[80vh]">
+                    <!-- Image Slider -->
+                    <div class="w-full md:w-1/3 bg-black relative h-64 md:h-full">
+                        <div class="modal-slider h-full">${sliderHTML}</div>
                         <div class="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black to-transparent text-white">
                             <h2 class="text-3xl font-black">${t.title}</h2>
                             <p class="text-xl text-yellow-400 font-bold">${t.price} دج</p>
                         </div>
                     </div>
                     
-                    <!-- Right: Info & Map -->
-                    <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto max-h-screen md:max-h-[85vh] p-6 pb-24 relative">
-                        <!-- Quick Stats -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6 text-sm">
-                            <div class="bg-blue-100 p-2 rounded text-blue-800 font-bold text-center"><i class="fas fa-calendar-alt block"></i> الذهاب: ${t.start}</div>
-                            <div class="bg-blue-100 p-2 rounded text-blue-800 font-bold text-center"><i class="fas fa-calendar-check block"></i> العودة: ${t.end}</div>
-                            <div class="bg-orange-100 p-2 rounded text-orange-800 font-bold text-center"><i class="fas fa-bus block"></i> ${t.transport}</div>
-                            <div class="bg-green-100 p-2 rounded text-green-800 font-bold text-center animate-pulse"><i class="fas fa-shield-alt block"></i> تأمين شامل</div>
-                        </div>
-
-                        <!-- The Animated Map -->
-                        <div class="map-container ${themeClass}">
-                            <h3 class="text-center font-bold text-black/50 mb-8"><i class="fas fa-map-marked-alt"></i> مسار الرحلة</h3>
-                            <div class="map-timeline">
-                                <div class="map-path-line"></div>
-                                ${mapHTML}
+                    <!-- Scrollable Content -->
+                    <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto relative h-full">
+                        <div class="p-6">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6 text-sm">
+                                <div class="bg-blue-100 p-2 rounded text-blue-800 font-bold text-center"><i class="fas fa-calendar-alt block"></i> ${t.start}</div>
+                                <div class="bg-blue-100 p-2 rounded text-blue-800 font-bold text-center"><i class="fas fa-calendar-check block"></i> ${t.end}</div>
+                                <div class="bg-orange-100 p-2 rounded text-orange-800 font-bold text-center"><i class="fas fa-bus block"></i> ${t.transport}</div>
+                                <div class="bg-green-100 p-2 rounded text-green-800 font-bold text-center"><i class="fas fa-shield-alt block"></i> تأمين</div>
                             </div>
-                        </div>
 
-                        <!-- Sticky Footer Button -->
-                        <div class="fixed md:absolute bottom-0 left-0 right-0 p-4 bg-white border-t md:rounded-br-3xl flex justify-center z-20">
-                             <button onclick="openBooking('${t.id}', '${t.title}')" class="w-full md:w-auto px-12 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg text-lg">سجل الآن</button>
+                            <div class="map-container ${themeClass}">
+                                <h3 class="text-center font-bold text-black/50 mb-8"><i class="fas fa-map-marked-alt"></i> مرر للأسفل لرؤية البرنامج</h3>
+                                <div class="map-timeline">
+                                    <div class="map-path-line"></div>
+                                    ${mapHTML}
+                                </div>
+                            </div>
+
+                            <!-- Register Button at BOTTOM -->
+                            <div class="mt-8 mb-4 text-center">
+                                 <p class="text-sm text-gray-500 mb-2">هل أعجبك البرنامج؟</p>
+                                 <button onclick="openBooking('${t.id}', '${t.title}')" class="btn-register-pulse w-full md:w-auto px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg text-xl">
+                                    سجل في هذه الرحلة الآن
+                                 </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -467,7 +453,7 @@
         };
         window.closeTripModal = () => document.getElementById('trip-modal').classList.add('hidden');
 
-        // Booking Logic
+        // Booking
         window.openBooking = (id, title) => {
             document.getElementById('booking-trip-id').value = id;
             document.getElementById('booking-trip-name').value = title;
@@ -484,15 +470,21 @@
                 status: 'جديد'
             });
             document.getElementById('booking-modal').classList.add('hidden');
-            Swal.fire('تم!', 'تم استلام طلبك، سنتصل بك قريباً', 'success');
+            Swal.fire('تم!', 'سنتصل بك قريباً', 'success');
         });
 
-        // --- 5. ADMIN LOGIC ---
-        // Check URL for admin
-        if(window.location.hash === '#admin') {
-            document.getElementById('user-app').classList.add('hidden');
-            document.getElementById('admin-panel').classList.remove('hidden');
+        // --- ADMIN LOGIC (FIXED) ---
+        function checkAdminUrl() {
+            if(window.location.hash === '#admin' || window.location.hash === '#admin1') {
+                document.getElementById('user-app').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+            }
         }
+        window.addEventListener('load', checkAdminUrl);
+        window.addEventListener('hashchange', checkAdminUrl);
+        
+        // Force button
+        window.forceAdminCheck = () => { window.location.hash = '#admin'; location.reload(); };
 
         window.loginAdmin = () => {
             const u = document.getElementById('adm-user').value;
@@ -504,7 +496,7 @@
                 updateStats();
             } else { Swal.fire('خطأ', 'بيانات خاطئة', 'error'); }
         }
-        window.logout = () => window.location.reload();
+        window.logout = () => { window.location.hash = ''; window.location.reload(); };
 
         window.showSection = (id) => {
             document.querySelectorAll('.admin-sec').forEach(d => d.classList.add('hidden'));
@@ -521,22 +513,16 @@
             const btn = e.target.querySelector('button'); btn.innerText = 'جاري الرفع...'; btn.disabled = true;
 
             try {
-                // Main Image
                 const mainFile = document.getElementById('nt-main-img').files[0];
                 const mainImg = mainFile ? await toBase64(mainFile) : '';
                 
-                // Gallery
                 const galleryFiles = document.getElementById('nt-gallery').files;
                 let galleryImgs = [];
                 if(galleryFiles.length > 0) {
-                    for(let i=0; i<galleryFiles.length; i++) {
-                        galleryImgs.push(await toBase64(galleryFiles[i]));
-                    }
+                    for(let i=0; i<galleryFiles.length; i++) galleryImgs.push(await toBase64(galleryFiles[i]));
                 }
-                // Prepend Main Image to gallery for slider if needed, or keep separate.
                 if(mainImg) galleryImgs.unshift(mainImg);
 
-                // Guide
                 const guideFile = document.getElementById('nt-guide-img').files[0];
                 const guideImg = guideFile ? await toBase64(guideFile) : '';
 
@@ -557,80 +543,54 @@
 
                 Swal.fire('نجاح', 'تمت إضافة الرحلة', 'success');
                 e.target.reset();
-            } catch(err) { alert('خطأ: الصور قد تكون كبيرة جداً'); }
-            btn.innerText = 'حفظ ونشر'; btn.disabled = false;
+            } catch(err) { alert('خطأ: حجم الصور كبير'); }
+            btn.innerText = 'نشر الرحلة'; btn.disabled = false;
         });
 
-        // Manage Trips (Delete)
+        // Manage Logic
         function renderManageTrips() {
             const list = document.getElementById('manage-list');
-            const trips = DB.get('trips');
-            list.innerHTML = trips.map(t => `
+            list.innerHTML = DB.get('trips').map(t => `
                 <div class="bg-white p-4 rounded shadow flex justify-between items-center">
                     <div class="flex items-center gap-3">
                         <img src="${t.mainImg}" class="w-16 h-16 object-cover rounded">
-                        <div><h4 class="font-bold">${t.title}</h4><span class="text-xs">${t.date}</span></div>
+                        <div><h4 class="font-bold">${t.title}</h4></div>
                     </div>
-                    <button onclick="deleteTrip('${t.id}')" class="bg-red-100 text-red-600 px-3 py-1 rounded hover:bg-red-200">حذف</button>
+                    <button onclick="if(confirm('حذف؟')) { DB.del('trips', '${t.id}'); renderManageTrips(); }" class="bg-red-100 text-red-600 px-3 py-1 rounded">حذف</button>
                 </div>
             `).join('');
-        }
-        window.deleteTrip = (id) => { if(confirm('حذف نهائي؟')) { DB.del('trips', id); renderManageTrips(); } };
-
-        // Manage Banners
-        async function addBanner() {
-            const f = document.getElementById('new-banner').files[0];
-            if(f) {
-                const img = await toBase64(f);
-                DB.add('banners', { img });
-                renderManageBanners();
-            }
         }
         function renderManageBanners() {
             const list = document.getElementById('banners-list');
             list.innerHTML = DB.get('banners').map(b => `
-                <div class="relative group"><img src="${b.img}" class="w-full h-24 object-cover rounded"><button onclick="deleteBanner('${b.id}')" class="absolute top-1 right-1 bg-red-600 text-white px-2 rounded">X</button></div>
+                <div class="relative group"><img src="${b.img}" class="w-full h-24 object-cover rounded"><button onclick="DB.del('banners', '${b.id}'); renderManageBanners();" class="absolute top-1 right-1 bg-red-600 text-white px-2 rounded">X</button></div>
             `).join('');
         }
-        window.deleteBanner = (id) => { DB.del('banners', id); renderManageBanners(); };
-
-        // Requests
+        async function addBanner() {
+            const f = document.getElementById('new-banner').files[0];
+            if(f) { const img = await toBase64(f); DB.add('banners', { img }); renderManageBanners(); }
+        }
         function renderRequests() {
             const list = document.getElementById('req-list');
             list.innerHTML = DB.get('requests').map(r => `
                 <div class="p-4 border-b flex justify-between items-center hover:bg-gray-50">
-                    <div>
-                        <h4 class="font-bold">${r.name} <span class="text-gray-400 font-normal">(${r.age} سنة)</span></h4>
-                        <p class="text-sm text-blue-600">${r.phone}</p>
-                        <p class="text-xs font-bold mt-1 text-gray-500">الرحلة: ${r.trip}</p>
-                    </div>
+                    <div><h4 class="font-bold">${r.name}</h4><p class="text-sm text-blue-600">${r.phone}</p><p class="text-xs text-gray-500">${r.trip}</p></div>
                     <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">${r.status}</span>
                 </div>
             `).join('');
         }
-
-        // Stats Logic
         function updateStats() {
-            const visits = DB.get('visits'); // array of {ts: 123123...}
+            const visits = DB.get('visits');
             const now = new Date();
-            
-            // Daily Count
             const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const daily = visits.filter(v => v.ts >= startOfDay).length;
-
-            // Monthly Count
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-            const monthly = visits.filter(v => v.ts >= startOfMonth).length;
-
-            document.getElementById('stat-day').innerText = daily;
-            document.getElementById('stat-month').innerText = monthly;
+            document.getElementById('stat-day').innerText = visits.filter(v => v.ts >= startOfDay).length;
+            document.getElementById('stat-month').innerText = visits.filter(v => v.ts >= startOfMonth).length;
             document.getElementById('stat-req').innerText = DB.get('requests').length;
             document.getElementById('stat-trips').innerText = DB.get('trips').length;
         }
 
-        // Initialize
         loadPublic();
-
     </script>
 </body>
 </html>
