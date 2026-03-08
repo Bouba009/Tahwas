@@ -328,22 +328,24 @@
     <!-- SCRIPTS - FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-        // Firebase Configuration
+        // UPDATED FIREBASE CONFIG
         const firebaseConfig = {
-          apiKey: "AIzaSyAaXp-gUOQ_G2s-kM8JhaqW8TJcJ4Nqcuo",
-          authDomain: "comondi-fae4b.firebaseapp.com",
-          projectId: "comondi-fae4b",
-          storageBucket: "comondi-fae4b.firebasestorage.app",
-          messagingSenderId: "932777870241",
-          appId: "1:932777870241:web:78b0cf3a3cf14046be01e0",
-          measurementId: "G-M09RX0V18S"
+          apiKey: "AIzaSyCePMwR1Ov1Xknj-1m0FJG-IE3pmSItzzU",
+          authDomain: "thwas-b496b.firebaseapp.com",
+          projectId: "thwas-b496b",
+          storageBucket: "thwas-b496b.firebasestorage.app",
+          messagingSenderId: "435409022648",
+          appId: "1:435409022648:web:85ad4d14546f5d2ccb0e4d",
+          measurementId: "G-C54SBF5ZN6"
         };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
@@ -387,7 +389,7 @@
         
         async function fetchData() {
             try {
-                // Parallel fetching for speed
+                // Parallel fetching
                 const [t, b, req, rep, v, c] = await Promise.all([
                     getDocs(collection(db, 'trips')),
                     getDocs(collection(db, 'banners')),
@@ -404,26 +406,38 @@
                 CACHE.visits = v.docs.map(d => ({id: d.id, ...d.data()}));
                 if(!c.empty) CACHE.content = c.docs[0].data();
 
-                document.getElementById('loader-overlay').classList.add('hidden');
+            } catch (e) { 
+                console.error("Firebase Error:", e);
+            } finally {
+                hideLoader();
                 loadPublic();
-                // If admin is open, refresh that too
                 if(!document.getElementById('admin-dash').classList.contains('hidden')) initAdmin();
+            }
+        }
 
-            } catch (e) { console.error("Firebase Error:", e); }
+        function hideLoader() {
+            const loader = document.getElementById('loader-overlay');
+            if(loader) loader.classList.add('hidden');
         }
 
         async function uploadFileToStorage(file) {
             if(!file) return '';
-            const storageRef = ref(storage, 'uploads/' + Date.now() + '-' + file.name);
-            await uploadBytes(storageRef, file);
-            return await getDownloadURL(storageRef);
+            try {
+                const storageRef = ref(storage, 'uploads/' + Date.now() + '-' + file.name);
+                await uploadBytes(storageRef, file);
+                return await getDownloadURL(storageRef);
+            } catch(e) {
+                console.error("Upload Error:", e);
+                return '';
+            }
         }
 
         // --- PUBLIC UI LOGIC ---
 
         function init(){
             changeLang(curLang);
-            fetchData(); // Fetch from Firebase
+            setTimeout(hideLoader, 4000); 
+            fetchData();
             trackVisit();
             checkRoute(); 
             startGridCountdowns();
@@ -434,13 +448,11 @@
             document.documentElement.dir = l==='ar'?'rtl':'ltr';
             document.body.className = `bg-gray-50 text-gray-800 font-${l==='ar'?'ar':'en'}`;
             
-            // Translate UI
             document.querySelectorAll('[data-key]').forEach(el => {
                 const k = el.getAttribute('data-key');
                 if(LANG[l][k]) el.innerText = LANG[l][k];
             });
 
-            // Update Inputs
             if(document.getElementById('b-name')) {
                 document.getElementById('b-name').placeholder = LANG[l].ph_name;
                 document.getElementById('b-phone').placeholder = LANG[l].ph_phone;
@@ -452,7 +464,6 @@
                 document.getElementById('b-gender').innerHTML = `<option value="male">${LANG[l].gender_m}</option><option value="female">${LANG[l].gender_f}</option>`;
             }
 
-            // Update Content from Cache
             if(CACHE.content) {
                 document.getElementById('about-text').innerText = CACHE.content[`about_${curLang}`] || '...';
                 document.getElementById('policy-text').innerText = CACHE.content[`policy_${curLang}`] || '...';
@@ -460,7 +471,6 @@
                 document.getElementById('contact-text').innerText = CACHE.content[`con_${curLang}`] || '...';
             }
             
-            // Logo Logic
             const savedLogo = CACHE.content?.logo;
             if(savedLogo) {
                 document.getElementById('site-logo').src = savedLogo;
@@ -475,17 +485,22 @@
             // Trips
             const grid = document.getElementById('trips-grid');
             if(!grid) return;
-            grid.innerHTML = CACHE.trips.map(x => {
-                let title = x[`title_${curLang}`] || x.title_ar;
-                return `<div class="bg-white rounded-xl shadow overflow-hidden cursor-pointer" onclick="window.openTrip('${x.id}')">
-                    <div class="h-60 relative">
-                        <img src="${x.mainImg}" class="w-full h-full object-cover">
-                        <span class="absolute top-2 right-2 bg-white px-2 rounded font-bold text-blue-800">${x.price} ${LANG[curLang].price_unit}</span>
-                        <div class="card-countdown" data-date="${x.start}"></div>
-                    </div>
-                    <div class="p-4 text-center"><h3 class="font-bold text-lg">${title}</h3><div class="text-xs text-gray-500 mt-2 flex justify-between"><span>${x.start.replace('T',' ')}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
-                </div>`;
-            }).join('');
+            
+            if(CACHE.trips.length === 0) {
+                grid.innerHTML = '<p class="text-center col-span-3 text-gray-400 py-10">No Trips / لا توجد رحلات</p>';
+            } else {
+                grid.innerHTML = CACHE.trips.map(x => {
+                    let title = x[`title_${curLang}`] || x.title_ar;
+                    return `<div class="bg-white rounded-xl shadow overflow-hidden cursor-pointer" onclick="window.openTrip('${x.id}')">
+                        <div class="h-60 relative">
+                            <img src="${x.mainImg}" class="w-full h-full object-cover">
+                            <span class="absolute top-2 right-2 bg-white px-2 rounded font-bold text-blue-800">${x.price} ${LANG[curLang].price_unit}</span>
+                            <div class="card-countdown" data-date="${x.start}"></div>
+                        </div>
+                        <div class="p-4 text-center"><h3 class="font-bold text-lg">${title}</h3><div class="text-xs text-gray-500 mt-2 flex justify-between"><span>${x.start ? x.start.replace('T',' ') : ''}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
+                    </div>`;
+                }).join('');
+            }
 
             // Banners
             const sl = document.getElementById('hero-slider');
@@ -493,10 +508,11 @@
                 sl.innerHTML = CACHE.banners.map((x,i) => `<div onclick="window.clickBanner('${x.type}','${x.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${x.img}')"></div>`).join('');
                 let idx=0; const it=document.querySelectorAll('.slide-item');
                 if(it.length>1) setInterval(()=>{ it[idx].classList.replace('opacity-100','opacity-0'); idx=(idx+1)%it.length; it[idx].classList.replace('opacity-0','opacity-100') },4000);
+            } else {
+                sl.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-gray-400">تحواس - Tahwas</div>';
             }
         }
 
-        // Functions attached to window for HTML access
         window.clickBanner = (t,v) => { if(t==='url') window.open(v,'_blank'); else if(t==='trip') window.openTrip(v); };
 
         window.openTrip = (id) => {
@@ -526,7 +542,7 @@
                 </div>
                 <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto p-6">
                     <div class="flex justify-between items-center mb-6 bg-white p-3 rounded shadow">
-                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[curLang].start}</span><b class="text-blue-600">${t.start.replace('T',' ')}</b></div>
+                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[curLang].start}</span><b class="text-blue-600">${t.start ? t.start.replace('T',' ') : ''}</b></div>
                         <div class="text-center"><span class="block text-xs text-gray-500">${LANG[curLang].price_unit}</span><b class="text-yellow-500 text-xl">${t.price}</b></div>
                         <div class="text-center"><span class="block text-xs text-gray-500">${LANG[curLang].seats}</span><b class="text-red-500">${t.seats}</b></div>
                     </div>
@@ -541,7 +557,6 @@
                 </div>
             </div>`;
 
-            // Auto Slider
             const sContainer = document.getElementById('modal-slider');
             const slidesCount = 1 + (t.subs ? t.subs.length : 0);
             let sIdx = 0;
@@ -560,7 +575,6 @@
             document.getElementById('booking-modal').classList.remove('hidden');
         };
 
-        // Book Form
         document.getElementById('booking-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button'); btn.disabled=true; btn.innerText="...";
@@ -580,7 +594,6 @@
             btn.disabled=false; btn.innerText=LANG[curLang].confirm;
         });
 
-        // Report Form
         document.getElementById('report-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             await addDoc(collection(db, 'reports'), {
@@ -594,10 +607,10 @@
             fetchData();
         });
 
-        // Countdown Helpers
         function startGridCountdowns() {
             setInterval(() => {
                 document.querySelectorAll('.card-countdown').forEach(el => {
+                    if(!el.dataset.date) return;
                     const date = new Date(el.dataset.date).getTime();
                     const now = new Date().getTime();
                     const dist = date - now;
@@ -610,7 +623,7 @@
             }, 1000);
         }
         function startCountdown(dateStr, elemId){
-            const el = document.getElementById(elemId); if(!el) return;
+            const el = document.getElementById(elemId); if(!el || !dateStr) return;
             const target = new Date(dateStr).getTime();
             const timer = setInterval(()=>{
                 const now = new Date().getTime(); const dist = target - now;
@@ -626,7 +639,7 @@
         // --- ADMIN PANEL LOGIC ---
         
         function checkRoute() {
-            if(location.hash==='#admin'){
+            if(location.hash==='#admin' || location.hash==='#admin1'){
                 document.getElementById('user-app').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
                 document.getElementById('admin-login').classList.remove('hidden');
@@ -657,7 +670,6 @@
 
         function initAdmin(){
             updateStats();
-            // Simple Chart
             const ctx = document.getElementById('visitsChart');
             if(ctx) {
                 const labels=[], data=[];
@@ -681,7 +693,6 @@
             document.getElementById('stat-rep').innerText = CACHE.reports.length;
         }
 
-        // Add Trip
         document.getElementById('form-add-trip').addEventListener('submit', async e => {
             e.preventDefault();
             const btn = e.target.querySelector('button'); btn.disabled=true; btn.innerText="Uploading...";
@@ -712,7 +723,6 @@
             fetchData();
         });
 
-        // Manage Trips
         function loadManage(){
             document.getElementById('manage-list').innerHTML = CACHE.trips.map(t => `
                 <div class="flex items-center gap-2 bg-gray-50 p-2 rounded">
@@ -732,7 +742,6 @@
             if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); fetchData().then(loadManage); }
         }
 
-        // Banners
         window.toggleBanInput = () => {
             const t = document.getElementById('ban-type').value;
             const txtIn = document.getElementById('ban-val');
@@ -765,7 +774,6 @@
             fetchData().then(loadBanners);
         }
 
-        // Requests
         function loadReq(){
             document.getElementById('req-list').innerHTML = CACHE.requests.map(r => `
                 <tr class="border-b hover:bg-gray-50">
@@ -792,7 +800,6 @@
             fetchData().then(loadReq);
         }
 
-        // Reports
         function loadRep(){
             document.getElementById('rep-list').innerHTML = CACHE.reports.map(r => `
                 <div class="p-4 border-b">
@@ -802,7 +809,6 @@
             `).join('');
         }
 
-        // Visits
         async function trackVisit(){ 
             if(!sessionStorage.getItem('v')){
                 await addDoc(collection(db, 'visits'), {ts: Date.now()});
@@ -810,7 +816,6 @@
             } 
         }
 
-        // Helpers
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
         window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
         window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
