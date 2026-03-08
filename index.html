@@ -21,7 +21,7 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--main-color); border-radius: 4px; }
 
-        /* LOADING SPINNER STYLE */
+        /* LOADING SPINNER */
         #loader-overlay { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s; }
         .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -80,16 +80,9 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
 
-    <!-- Loading Screen (Emergency Fix) -->
+    <!-- Loading Screen (Emergency Script) -->
     <div id="loader-overlay"><div class="spinner"></div></div>
-    
-    <!-- Emergency Script to Force Hide Loader if Firebase Fails -->
-    <script>
-        setTimeout(() => {
-            const loader = document.getElementById('loader-overlay');
-            if(loader) loader.style.display = 'none';
-        }, 5000); // سيختفي التحميل إجبارياً بعد 5 ثواني
-    </script>
+    <script>setTimeout(() => { document.getElementById('loader-overlay').style.display='none'; }, 5000);</script>
 
     <!-- Navbar -->
     <header class="bg-white shadow-md fixed w-full z-50">
@@ -100,7 +93,7 @@
                 <h1 id="site-title-text" class="text-3xl font-black text-blue-600">تحواس<span class="text-orange-500">.</span></h1>
             </div>
             <div class="flex items-center gap-4">
-                <select id="lang-switch" onchange="changeLang(this.value)" class="border rounded p-1 text-sm bg-gray-100 outline-none">
+                <select id="lang-switch" onchange="window.changeLang(this.value)" class="border rounded p-1 text-sm bg-gray-100 outline-none">
                     <option value="ar">🇩🇿 العربية</option>
                     <option value="fr">🇫🇷 Français</option>
                     <option value="en">🇬🇧 English</option>
@@ -108,7 +101,7 @@
                 <nav class="hidden md:flex gap-6 font-bold text-gray-600 text-sm">
                     <a href="#" class="hover:text-blue-600 transition" data-key="home">الرئيسية</a>
                     <a href="#trips-section" class="hover:text-blue-600 transition" data-key="trips">رحلات</a>
-                    <button onclick="openModal('report-modal')" class="text-red-500 font-bold" data-key="report">! مشكلة</button>
+                    <button onclick="window.openModal('report-modal')" class="text-red-500 font-bold" data-key="report">! مشكلة</button>
                 </nav>
             </div>
         </div>
@@ -116,12 +109,12 @@
 
     <!-- Sidebar -->
     <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 pt-20 px-6">
-        <button onclick="toggleSidebar()" class="absolute top-4 left-4 text-2xl"><i class="fas fa-times"></i></button>
+        <button onclick="window.toggleSidebar()" class="absolute top-4 left-4 text-2xl"><i class="fas fa-times"></i></button>
         <ul class="space-y-4 font-bold text-lg">
-            <li><a href="#" onclick="toggleSidebar()" data-key="home">الرئيسية</a></li>
-            <li><a href="#trips-section" onclick="toggleSidebar()" data-key="trips">رحلات</a></li>
-            <li><a href="#about-sec" onclick="toggleSidebar()" data-key="about">من نحن</a></li>
-            <li><a href="#contact-sec" onclick="toggleSidebar()" data-key="contact">اتصل بنا</a></li>
+            <li><a href="#" onclick="window.toggleSidebar()" data-key="home">الرئيسية</a></li>
+            <li><a href="#trips-section" onclick="window.toggleSidebar()" data-key="trips">رحلات</a></li>
+            <li><a href="#about-sec" onclick="window.toggleSidebar()" data-key="about">من نحن</a></li>
+            <li><a href="#contact-sec" onclick="window.toggleSidebar()" data-key="contact">اتصل بنا</a></li>
         </ul>
     </div>
 
@@ -145,13 +138,13 @@
         <footer id="contact-sec" class="bg-slate-900 text-white py-10 text-center relative">
             <h3 class="text-xl font-bold mb-4" data-key="contact">اتصل بنا</h3>
             <p id="contact-text" class="mb-4 text-lg">...</p>
-            <button onclick="forceAdmin()" class="absolute bottom-2 right-2 text-xs opacity-20 hover:opacity-100 text-white">Admin</button>
+            <button onclick="window.forceAdmin()" class="absolute bottom-2 right-2 text-xs opacity-20 hover:opacity-100 text-white">Admin</button>
         </footer>
     </div>
 
     <!-- TRIP MODAL -->
     <div id="trip-modal" class="fixed inset-0 bg-black/95 z-[70] hidden overflow-y-auto backdrop-blur-md">
-        <button onclick="closeTripModal()" class="fixed top-6 left-6 z-[80] bg-white text-red-600 rounded-full p-3 shadow-lg hover:scale-110 transition"><i class="fas fa-times fa-lg"></i></button>
+        <button onclick="window.closeTripModal()" class="fixed top-6 left-6 z-[80] bg-white text-red-600 rounded-full p-3 shadow-lg hover:scale-110 transition"><i class="fas fa-times fa-lg"></i></button>
         <div class="min-h-screen flex justify-center md:py-10 p-0">
             <div id="trip-content" class="bg-gray-50 w-full max-w-6xl md:rounded-3xl shadow-2xl overflow-hidden relative animate__animated animate__fadeInUp"></div>
         </div>
@@ -182,7 +175,7 @@
                 <textarea id="r-desc" class="w-full border p-2 rounded h-24"></textarea>
                 <button type="submit" class="w-full bg-red-500 text-white py-2 rounded" data-key="send">إرسال</button>
             </form>
-            <button onclick="closeModal('report-modal')" class="w-full text-center mt-2 text-sm text-gray-500">Close</button>
+            <button onclick="window.closeModal('report-modal')" class="w-full text-center mt-2 text-sm text-gray-500">Close</button>
         </div>
     </div>
 
@@ -193,7 +186,7 @@
                 <h2 class="text-3xl font-black mb-6">ADMIN</h2>
                 <input type="text" id="adm-user" placeholder="User: admin" class="w-full border p-3 rounded mb-3">
                 <input type="password" id="adm-pass" placeholder="Pass: abobob123" class="w-full border p-3 rounded mb-6">
-                <button onclick="adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded">دخول</button>
+                <button onclick="window.adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded">دخول</button>
             </div>
         </div>
 
@@ -202,14 +195,14 @@
             <aside class="w-64 bg-slate-900 text-white min-h-screen fixed right-0 h-full overflow-y-auto p-4 z-10">
                 <h2 class="text-xl font-bold mb-8 text-center border-b border-gray-700 pb-4">لوحة التحكم</h2>
                 <nav class="space-y-2 text-sm">
-                    <button onclick="showAdm('stats')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-chart-pie"></i> الإحصائيات</button>
-                    <button onclick="showAdm('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الطلبات</button>
-                    <button onclick="showAdm('reports')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-exclamation-triangle"></i> الشكاوى</button>
-                    <button onclick="showAdm('add')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-plus"></i> إضافة رحلة</button>
-                    <button onclick="showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة الرحلات</button>
-                    <button onclick="showAdm('banners')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-images"></i> البانرات</button>
-                    <button onclick="showAdm('content')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-edit"></i> المحتوى</button>
-                    <button onclick="adminLogout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> خروج</button>
+                    <button onclick="window.showAdm('stats')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-chart-pie"></i> الإحصائيات</button>
+                    <button onclick="window.showAdm('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الطلبات</button>
+                    <button onclick="window.showAdm('reports')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-exclamation-triangle"></i> الشكاوى</button>
+                    <button onclick="window.showAdm('add')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-plus"></i> إضافة رحلة</button>
+                    <button onclick="window.showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة الرحلات</button>
+                    <button onclick="window.showAdm('banners')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-images"></i> البانرات</button>
+                    <button onclick="window.showAdm('content')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-edit"></i> المحتوى</button>
+                    <button onclick="window.adminLogout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> خروج</button>
                 </nav>
             </aside>
 
@@ -218,10 +211,10 @@
                 <div id="sec-stats" class="adm-sec">
                     <h2 class="text-3xl font-bold mb-6">نظرة عامة</h2>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div onclick="showAdm('requests')" class="cursor-pointer bg-green-500 text-white p-6 rounded shadow hover:scale-105 transition">
+                        <div onclick="window.showAdm('requests')" class="cursor-pointer bg-green-500 text-white p-6 rounded shadow hover:scale-105 transition">
                             <h3 class="font-bold">طلبات جديدة</h3><p class="text-4xl mt-2 font-black" id="stat-req">0</p>
                         </div>
-                        <div onclick="showAdm('reports')" class="cursor-pointer bg-red-500 text-white p-6 rounded shadow hover:scale-105 transition">
+                        <div onclick="window.showAdm('reports')" class="cursor-pointer bg-red-500 text-white p-6 rounded shadow hover:scale-105 transition">
                             <h3 class="font-bold">الشكاوى</h3><p class="text-4xl mt-2 font-black" id="stat-rep">0</p>
                         </div>
                         <div class="bg-blue-500 text-white p-6 rounded shadow">
@@ -240,7 +233,7 @@
                 <!-- Requests Table -->
                 <div id="sec-requests" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">سجل الطلبات</h2>
-                    <div class="mb-4"><button onclick="deleteSelectedReqs()" class="bg-red-600 text-white px-4 py-2 rounded">حذف المحدد</button></div>
+                    <div class="mb-4"><button onclick="window.deleteSelectedReqs()" class="bg-red-600 text-white px-4 py-2 rounded">حذف المحدد</button></div>
                     <div class="overflow-x-auto bg-white rounded shadow">
                         <table class="w-full text-right text-sm text-gray-600">
                             <thead class="bg-gray-100 text-gray-800">
@@ -301,7 +294,7 @@
                 <div id="sec-manage" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">إدارة الرحلات</h2>
                     <div class="bg-white p-4 rounded shadow">
-                        <button onclick="deleteSelectedTrips()" class="bg-red-600 text-white px-4 py-2 rounded mb-4">حذف المحدد</button>
+                        <button onclick="window.deleteSelectedTrips()" class="bg-red-600 text-white px-4 py-2 rounded mb-4">حذف المحدد</button>
                         <div id="manage-list" class="space-y-2"></div>
                     </div>
                 </div>
@@ -312,34 +305,35 @@
                     <div class="bg-white p-4 rounded shadow mb-4 flex flex-col gap-4">
                         <div class="flex gap-4">
                             <input id="new-banner" type="file" class="w-1/3 border p-2">
-                            <select id="ban-type" onchange="toggleBanInput()" class="border p-2"><option value="none">بدون رابط</option><option value="url">رابط خارجي</option><option value="trip">رابط لرحلة</option></select>
+                            <select id="ban-type" onchange="window.toggleBanInput()" class="border p-2"><option value="none">بدون رابط</option><option value="url">رابط خارجي</option><option value="trip">رابط لرحلة</option></select>
                             <div id="ban-input-container" class="flex-1">
                                 <input id="ban-val" type="text" placeholder="الرابط" class="border p-2 w-full hidden">
                                 <select id="ban-trip-select" class="border p-2 w-full hidden"></select>
                             </div>
-                            <button onclick="uploadBanner()" class="bg-blue-600 text-white px-4 rounded">إضافة</button>
+                            <button onclick="window.uploadBanner()" class="bg-blue-600 text-white px-4 rounded">إضافة</button>
                         </div>
                     </div>
-                    <div class="mb-2"><button onclick="deleteSelectedBanners()" class="bg-red-600 text-white px-3 py-1 text-sm rounded">حذف المحدد</button></div>
+                    <div class="mb-2"><button onclick="window.deleteSelectedBanners()" class="bg-red-600 text-white px-3 py-1 text-sm rounded">حذف المحدد</button></div>
                     <div id="banner-list" class="grid grid-cols-2 gap-4"></div>
                 </div>
                 
                 <!-- Content -->
                 <div id="sec-content" class="adm-sec hidden">
                      <h2 class="text-3xl font-bold mb-6">إدارة المحتوى</h2>
-                     <div class="bg-white p-6 rounded"><button onclick="loadContentForm(); Swal.fire('Info','Content forms loaded','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
+                     <div class="bg-white p-6 rounded"><button onclick="window.loadContentForm(); Swal.fire('Info','Content forms loaded','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- SCRIPTS - FIREBASE -->
+    <!-- SCRIPTS - FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
+        // CONFIGURATION
         const firebaseConfig = {
           apiKey: "AIzaSyCePMwR1Ov1Xknj-1m0FJG-IE3pmSItzzU",
           authDomain: "thwas-b496b.firebaseapp.com",
@@ -351,10 +345,10 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
+        // STATE
         let CACHE = { trips: [], banners: [], requests: [], reports: [], visits: [], content: {} };
         let curLang = localStorage.getItem('lang') || 'ar';
         let sliderInterval = null;
@@ -389,7 +383,8 @@
             }
         };
 
-        // CORE FUNCTIONS
+        // --- GLOBAL FUNCTIONS FOR HTML ACCESS ---
+        
         async function fetchData() {
             try {
                 const [t, b, req, rep, v, c] = await Promise.all([
@@ -408,18 +403,12 @@
                 CACHE.visits = v.docs.map(d => ({id: d.id, ...d.data()}));
                 if(!c.empty) CACHE.content = c.docs[0].data();
 
-            } catch (e) { 
-                console.error("Firebase Error (Check Rules):", e);
-            } finally {
-                hideLoader();
+            } catch (e) { console.error("Firebase:", e); } 
+            finally {
+                document.getElementById('loader-overlay').style.display='none';
                 loadPublic();
                 if(!document.getElementById('admin-dash').classList.contains('hidden')) initAdmin();
             }
-        }
-
-        function hideLoader() {
-            const loader = document.getElementById('loader-overlay');
-            if(loader) loader.classList.add('hidden');
         }
 
         async function uploadFileToStorage(file) {
@@ -428,21 +417,11 @@
                 const storageRef = ref(storage, 'uploads/' + Date.now() + '-' + file.name);
                 await uploadBytes(storageRef, file);
                 return await getDownloadURL(storageRef);
-            } catch(e) {
-                console.error("Upload Error:", e);
-                return '';
-            }
+            } catch(e) { console.error(e); return ''; }
         }
 
-        function init(){
-            changeLang(curLang);
-            fetchData();
-            trackVisit();
-            checkRoute(); 
-            startGridCountdowns();
-        }
-
-        function changeLang(l){
+        // Expose functions to window
+        window.changeLang = function(l){
             curLang=l; localStorage.setItem('lang',l);
             document.documentElement.dir = l==='ar'?'rtl':'ltr';
             document.body.className = `bg-gray-50 text-gray-800 font-${l==='ar'?'ar':'en'}`;
@@ -452,6 +431,7 @@
                 if(LANG[l][k]) el.innerText = LANG[l][k];
             });
 
+            // Inputs Update
             if(document.getElementById('b-name')) {
                 document.getElementById('b-name').placeholder = LANG[l].ph_name;
                 document.getElementById('b-phone').placeholder = LANG[l].ph_phone;
@@ -462,23 +442,15 @@
                 document.getElementById('r-desc').placeholder = LANG[l].desc;
                 document.getElementById('b-gender').innerHTML = `<option value="male">${LANG[l].gender_m}</option><option value="female">${LANG[l].gender_f}</option>`;
             }
-
-            if(CACHE.content) {
-                document.getElementById('about-text').innerText = CACHE.content[`about_${curLang}`] || '...';
-                document.getElementById('policy-text').innerText = CACHE.content[`policy_${curLang}`] || '...';
-                document.getElementById('location-text').innerText = CACHE.content[`loc_${curLang}`] || '...';
-                document.getElementById('contact-text').innerText = CACHE.content[`con_${curLang}`] || '...';
-            }
-            
-            const savedLogo = CACHE.content?.logo;
-            if(savedLogo) {
-                document.getElementById('site-logo').src = savedLogo;
-                document.getElementById('site-logo').classList.remove('hidden');
-                document.getElementById('site-title-text').classList.add('hidden');
-            }
-
             loadPublic();
-        }
+        };
+
+        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
+        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
+        window.forceAdmin = () => { location.hash='#admin'; location.reload(); };
+        window.adminLogout = () => { location.hash=''; location.reload(); };
+        window.closeTripModal = () => { document.getElementById('trip-modal').classList.add('hidden'); if(sliderInterval) clearInterval(sliderInterval); };
 
         function loadPublic(){
             const grid = document.getElementById('trips-grid');
@@ -505,8 +477,6 @@
                 sl.innerHTML = CACHE.banners.map((x,i) => `<div onclick="window.clickBanner('${x.type}','${x.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${x.img}')"></div>`).join('');
                 let idx=0; const it=document.querySelectorAll('.slide-item');
                 if(it.length>1) setInterval(()=>{ it[idx].classList.replace('opacity-100','opacity-0'); idx=(idx+1)%it.length; it[idx].classList.replace('opacity-0','opacity-100') },4000);
-            } else {
-                sl.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-gray-400">تحواس - Tahwas</div>';
             }
         }
 
@@ -573,80 +543,6 @@
             document.getElementById('booking-modal').classList.remove('hidden');
         };
 
-        document.getElementById('booking-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.disabled=true; btn.innerText="...";
-            await addDoc(collection(db, 'requests'), {
-                ts: Date.now(),
-                name: document.getElementById('b-name').value,
-                phone: document.getElementById('b-phone').value,
-                age: document.getElementById('b-age').value,
-                state: document.getElementById('b-state').value,
-                gender: document.getElementById('b-gender').value,
-                trip: document.getElementById('b-trip-name').value,
-                status: 'pending'
-            });
-            document.getElementById('booking-modal').classList.add('hidden');
-            Swal.fire('OK', 'Success', 'success');
-            fetchData();
-            btn.disabled=false; btn.innerText=LANG[curLang].confirm;
-        });
-
-        document.getElementById('report-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, 'reports'), {
-                name: document.getElementById('r-name').value,
-                email: document.getElementById('r-email').value,
-                desc: document.getElementById('r-desc').value,
-                ts: Date.now()
-            });
-            document.getElementById('report-modal').classList.add('hidden');
-            Swal.fire('OK', 'Sent', 'success');
-            fetchData();
-        });
-
-        function startGridCountdowns() {
-            setInterval(() => {
-                document.querySelectorAll('.card-countdown').forEach(el => {
-                    if(!el.dataset.date) return;
-                    const date = new Date(el.dataset.date).getTime();
-                    const now = new Date().getTime();
-                    const dist = date - now;
-                    if(dist < 0) { el.innerHTML = ""; return; }
-                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
-                    el.style.cssText = "position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; display:flex; justify-content:center; gap:8px; padding:5px; direction:ltr;";
-                    el.innerHTML = `<div><b class='text-yellow-400'>${d}</b> <span class='text-xs'>${LANG[curLang].day}</span></div>
-                                    <div><b class='text-yellow-400'>${h}</b> <span class='text-xs'>${LANG[curLang].hour}</span></div>`;
-                });
-            }, 1000);
-        }
-        function startCountdown(dateStr, elemId){
-            const el = document.getElementById(elemId); if(!el || !dateStr) return;
-            const target = new Date(dateStr).getTime();
-            const timer = setInterval(()=>{
-                const now = new Date().getTime(); const dist = target - now;
-                if(dist < 0) { clearInterval(timer); el.innerHTML = ""; return; }
-                const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
-                el.innerHTML = `<div class="countdown-box"><div class="countdown-digit">${d}</div><div class="countdown-label">${LANG[curLang].day}</div></div>
-                                <div class="countdown-box"><div class="countdown-digit">${h}</div><div class="countdown-label">${LANG[curLang].hour}</div></div>
-                                <div class="countdown-box"><div class="countdown-digit">${m}</div><div class="countdown-label">${LANG[curLang].min}</div></div>
-                                <div class="countdown-box"><div class="countdown-digit">${s}</div><div class="countdown-label">${LANG[curLang].sec}</div></div>`;
-            }, 1000);
-        }
-
-        // --- ADMIN ---
-        function checkRoute() {
-            if(location.hash==='#admin' || location.hash==='#admin1'){
-                document.getElementById('user-app').classList.add('hidden');
-                document.getElementById('admin-panel').classList.remove('hidden');
-                document.getElementById('admin-login').classList.remove('hidden');
-                document.getElementById('admin-dash').classList.add('hidden');
-            } else {
-                document.getElementById('user-app').classList.remove('hidden');
-                document.getElementById('admin-panel').classList.add('hidden');
-            }
-        }
-
         window.adminLogin = () => {
             if(document.getElementById('adm-user').value==='admin') {
                 document.getElementById('admin-login').classList.add('hidden');
@@ -690,36 +586,38 @@
             document.getElementById('stat-rep').innerText = CACHE.reports.length;
         }
 
-        function loadManage(){
-            document.getElementById('manage-list').innerHTML = CACHE.trips.map(t => `
-                <div class="flex items-center gap-2 bg-gray-50 p-2 rounded">
-                    <input type="checkbox" class="trip-chk" value="${t.id}">
-                    <img src="${t.mainImg}" class="w-10 h-10 rounded">
-                    <span class="flex-1 font-bold">${t.title_ar}</span>
-                    <button onclick="window.editSeats('${t.id}')" class="text-blue-600 text-xs underline">تعديل مقاعد (${t.seats})</button>
-                </div>`).join('');
-        }
-        window.deleteSelectedTrips = async () => {
-            const sels = document.querySelectorAll('.trip-chk:checked');
-            for(let c of sels) await deleteDoc(doc(db, 'trips', c.value));
-            fetchData().then(loadManage);
-        }
-        window.editSeats = async (id) => {
-            const n = prompt("New seats count:"); 
-            if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); fetchData().then(loadManage); }
-        }
+        // Add Trip Handler
+        document.getElementById('form-add-trip').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button'); btn.disabled=true; btn.innerText="Uploading...";
+            
+            const mf = document.getElementById('t-img-main').files[0];
+            const gf = document.getElementById('t-guide-img').files[0];
+            const subf = document.querySelectorAll('.sub-img');
+            
+            let mI = await uploadFileToStorage(mf);
+            let gI = await uploadFileToStorage(gf);
+            let sI = [];
+            for(let f of subf) if(f.files[0]) sI.push(await uploadFileToStorage(f.files[0]));
 
-        window.toggleBanInput = () => {
-            const t = document.getElementById('ban-type').value;
-            const txtIn = document.getElementById('ban-val');
-            const selIn = document.getElementById('ban-trip-select');
-            if(t === 'trip') {
-                txtIn.classList.add('hidden'); selIn.classList.remove('hidden');
-                selIn.innerHTML = CACHE.trips.map(tr => `<option value="${tr.id}">${tr.title_ar}</option>`).join('');
-            } else {
-                selIn.classList.add('hidden'); txtIn.classList.remove('hidden');
-            }
-        }
+            await addDoc(collection(db, 'trips'), {
+                title_ar: document.getElementById('t-title-ar').value, title_fr: document.getElementById('t-title-fr').value, title_en: document.getElementById('t-title-en').value,
+                prog_ar: document.getElementById('t-prog-ar').value, prog_fr: document.getElementById('t-prog-fr').value, prog_en: document.getElementById('t-prog-en').value,
+                start: document.getElementById('t-date-start').value,
+                seats: document.getElementById('t-seats').value,
+                price: document.getElementById('t-price').value,
+                theme: document.getElementById('t-theme').value,
+                guideName: document.getElementById('t-guide-name').value,
+                mainImg: mI, guideImg: gI, subs: sI
+            });
+            
+            Swal.fire('Success', 'Trip Added', 'success');
+            e.target.reset();
+            btn.disabled=false; btn.innerText="نشر الرحلة";
+            fetchData();
+        });
+
+        // Banner Handler
         window.uploadBanner = async () => {
             const f = document.getElementById('new-banner').files[0];
             const t = document.getElementById('ban-type').value;
@@ -731,66 +629,78 @@
                 fetchData().then(loadBanners);
             }
         }
-        function loadBanners(){
-            document.getElementById('banner-list').innerHTML = CACHE.banners.map(b => `
-                <div class="relative"><input type="checkbox" class="ban-chk absolute top-1 left-1" value="${b.id}"><img src="${b.img}" class="h-20 w-full object-cover"></div>`).join('');
-        }
-        window.deleteSelectedBanners = async () => {
-            const sels = document.querySelectorAll('.ban-chk:checked');
-            for(let c of sels) await deleteDoc(doc(db, 'banners', c.value));
-            fetchData().then(loadBanners);
-        }
 
-        function loadReq(){
-            document.getElementById('req-list').innerHTML = CACHE.requests.map(r => `
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="p-3"><input type="checkbox" class="req-chk" value="${r.id}"></td>
-                    <td class="p-3 text-xs text-gray-500">${new Date(r.ts).toLocaleString()}</td>
-                    <td class="p-3 font-bold">${r.name}</td>
-                    <td class="p-3 text-blue-600">${r.phone}</td>
-                    <td class="p-3">${r.state}</td>
-                    <td class="p-3 text-sm text-gray-600">${r.trip}</td>
-                    <td class="p-3">
-                        <select onchange="window.updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs ${r.status==='confirmed'?'bg-green-100':(r.status==='cancelled'?'bg-red-100':'bg-yellow-100')}">
-                            <option value="pending" ${r.status==='pending'?'selected':''}>${LANG[curLang].req_pending}</option>
-                            <option value="confirmed" ${r.status==='confirmed'?'selected':''}>${LANG[curLang].req_confirmed}</option>
-                            <option value="cancelled" ${r.status==='cancelled'?'selected':''}>${LANG[curLang].req_cancelled}</option>
-                        </select>
-                    </td>
-                </tr>
-            `).join('');
-        }
+        // Helper Functions for Admin (Made Global)
+        function loadManage(){ document.getElementById('manage-list').innerHTML = CACHE.trips.map(t => `<div class="flex items-center gap-2 bg-gray-50 p-2 rounded"><input type="checkbox" class="trip-chk" value="${t.id}"><img src="${t.mainImg}" class="w-10 h-10 rounded"><span class="flex-1 font-bold">${t.title_ar}</span><button onclick="window.editSeats('${t.id}')" class="text-blue-600 text-xs underline">تعديل مقاعد (${t.seats})</button></div>`).join(''); }
+        window.deleteSelectedTrips = async () => { const sels = document.querySelectorAll('.trip-chk:checked'); for(let c of sels) await deleteDoc(doc(db, 'trips', c.value)); fetchData().then(loadManage); }
+        window.editSeats = async (id) => { const n = prompt("New seats count:"); if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); fetchData().then(loadManage); } }
+        window.toggleBanInput = () => { const t = document.getElementById('ban-type').value; const txtIn = document.getElementById('ban-val'); const selIn = document.getElementById('ban-trip-select'); if(t === 'trip') { txtIn.classList.add('hidden'); selIn.classList.remove('hidden'); selIn.innerHTML = CACHE.trips.map(tr => `<option value="${tr.id}">${tr.title_ar}</option>`).join(''); } else { selIn.classList.add('hidden'); txtIn.classList.remove('hidden'); } }
+        function loadBanners(){ document.getElementById('banner-list').innerHTML = CACHE.banners.map(b => `<div class="relative"><input type="checkbox" class="ban-chk absolute top-1 left-1" value="${b.id}"><img src="${b.img}" class="h-20 w-full object-cover"></div>`).join(''); }
+        window.deleteSelectedBanners = async () => { const sels = document.querySelectorAll('.ban-chk:checked'); for(let c of sels) await deleteDoc(doc(db, 'banners', c.value)); fetchData().then(loadBanners); }
+        function loadReq(){ document.getElementById('req-list').innerHTML = CACHE.requests.map(r => `<tr class="border-b hover:bg-gray-50"><td class="p-3"><input type="checkbox" class="req-chk" value="${r.id}"></td><td class="p-3 text-xs text-gray-500">${new Date(r.ts).toLocaleString()}</td><td class="p-3 font-bold">${r.name}</td><td class="p-3 text-blue-600">${r.phone}</td><td class="p-3">${r.state}</td><td class="p-3 text-sm text-gray-600">${r.trip}</td><td class="p-3"><select onchange="window.updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs ${r.status==='confirmed'?'bg-green-100':(r.status==='cancelled'?'bg-red-100':'bg-yellow-100')}"><option value="pending" ${r.status==='pending'?'selected':''}>${LANG[curLang].req_pending}</option><option value="confirmed" ${r.status==='confirmed'?'selected':''}>${LANG[curLang].req_confirmed}</option><option value="cancelled" ${r.status==='cancelled'?'selected':''}>${LANG[curLang].req_cancelled}</option></select></td></tr>`).join(''); }
         window.updateReqStatus = async (id, st) => { await updateDoc(doc(db, 'requests', id), {status: st}); fetchData(); }
-        window.deleteSelectedReqs = async () => {
-            const sels = document.querySelectorAll('.req-chk:checked');
-            for(let c of sels) await deleteDoc(doc(db, 'requests', c.value));
-            fetchData().then(loadReq);
+        window.deleteSelectedReqs = async () => { const sels = document.querySelectorAll('.req-chk:checked'); for(let c of sels) await deleteDoc(doc(db, 'requests', c.value)); fetchData().then(loadReq); }
+        function loadRep(){ document.getElementById('rep-list').innerHTML = CACHE.reports.map(r => `<div class="p-4 border-b"><div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500">(${r.email})</span></div><p class="text-sm mt-1">${r.desc}</p></div>`).join(''); }
+
+        // Start
+        window.changeLang(curLang);
+        fetchData();
+        
+        function checkRoute() {
+            if(location.hash==='#admin' || location.hash==='#admin1'){
+                document.getElementById('user-app').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                document.getElementById('admin-login').classList.remove('hidden');
+                document.getElementById('admin-dash').classList.add('hidden');
+            } else {
+                document.getElementById('user-app').classList.remove('hidden');
+                document.getElementById('admin-panel').classList.add('hidden');
+            }
         }
+        window.addEventListener('hashchange', checkRoute);
+        checkRoute();
 
-        function loadRep(){
-            document.getElementById('rep-list').innerHTML = CACHE.reports.map(r => `
-                <div class="p-4 border-b">
-                    <div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500">(${r.email})</span></div>
-                    <p class="text-sm mt-1">${r.desc}</p>
-                </div>
-            `).join('');
+        // Forms Event Listeners
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, 'requests'), { ts: Date.now(), name: document.getElementById('b-name').value, phone: document.getElementById('b-phone').value, age: document.getElementById('b-age').value, state: document.getElementById('b-state').value, gender: document.getElementById('b-gender').value, trip: document.getElementById('b-trip-name').value, status: 'pending' });
+            document.getElementById('booking-modal').classList.add('hidden');
+            Swal.fire('OK', 'Success', 'success'); fetchData();
+        });
+        document.getElementById('report-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, 'reports'), { name: document.getElementById('r-name').value, email: document.getElementById('r-email').value, desc: document.getElementById('r-desc').value, ts: Date.now() });
+            document.getElementById('report-modal').classList.add('hidden');
+            Swal.fire('OK', 'Sent', 'success'); fetchData();
+        });
+
+        // Countdowns
+        function startGridCountdowns() {
+            setInterval(() => {
+                document.querySelectorAll('.card-countdown').forEach(el => {
+                    if(!el.dataset.date) return;
+                    const date = new Date(el.dataset.date).getTime();
+                    const now = new Date().getTime();
+                    const dist = date - now;
+                    if(dist < 0) { el.innerHTML = ""; return; }
+                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
+                    el.style.cssText = "position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; display:flex; justify-content:center; gap:8px; padding:5px; direction:ltr;";
+                    el.innerHTML = `<div><b class='text-yellow-400'>${d}</b> <span class='text-xs'>${LANG[curLang].day}</span></div><div><b class='text-yellow-400'>${h}</b> <span class='text-xs'>${LANG[curLang].hour}</span></div>`;
+                });
+            }, 1000);
         }
-
-        async function trackVisit(){ 
-            if(!sessionStorage.getItem('v')){
-                await addDoc(collection(db, 'visits'), {ts: Date.now()});
-                sessionStorage.setItem('v','1');
-            } 
+        function startCountdown(dateStr, elemId){
+            const el = document.getElementById(elemId); if(!el || !dateStr) return;
+            const target = new Date(dateStr).getTime();
+            const timer = setInterval(()=>{
+                const now = new Date().getTime(); const dist = target - now;
+                if(dist < 0) { clearInterval(timer); el.innerHTML = ""; return; }
+                const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
+                el.innerHTML = `<div class="countdown-box"><div class="countdown-digit">${d}</div><div class="countdown-label">${LANG[curLang].day}</div></div><div class="countdown-box"><div class="countdown-digit">${h}</div><div class="countdown-label">${LANG[curLang].hour}</div></div><div class="countdown-box"><div class="countdown-digit">${m}</div><div class="countdown-label">${LANG[curLang].min}</div></div><div class="countdown-box"><div class="countdown-digit">${s}</div><div class="countdown-label">${LANG[curLang].sec}</div></div>`;
+            }, 1000);
         }
-
-        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
-        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
-        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
-        window.forceAdmin = () => { location.hash='#admin'; location.reload(); };
-        window.adminLogout = () => { location.hash=''; location.reload(); };
-        window.closeTripModal = () => { document.getElementById('trip-modal').classList.add('hidden'); if(sliderInterval) clearInterval(sliderInterval); };
-
-        init();
+        startGridCountdowns();
+        async function trackVisit(){ if(!sessionStorage.getItem('v')){ await addDoc(collection(db, 'visits'), {ts: Date.now()}); sessionStorage.setItem('v','1'); } }
     </script>
 </body>
 </html>
