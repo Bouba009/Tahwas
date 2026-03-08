@@ -389,7 +389,6 @@
         
         async function fetchData() {
             try {
-                // Parallel fetching
                 const [t, b, req, rep, v, c] = await Promise.all([
                     getDocs(collection(db, 'trips')),
                     getDocs(collection(db, 'banners')),
@@ -407,7 +406,7 @@
                 if(!c.empty) CACHE.content = c.docs[0].data();
 
             } catch (e) { 
-                console.error("Firebase Error:", e);
+                console.error("Firebase Connection Error (Check Rules):", e);
             } finally {
                 hideLoader();
                 loadPublic();
@@ -428,6 +427,7 @@
                 return await getDownloadURL(storageRef);
             } catch(e) {
                 console.error("Upload Error:", e);
+                alert("فشل رفع الصورة: تأكد من تفعيل Storage Rules");
                 return '';
             }
         }
@@ -436,7 +436,7 @@
 
         function init(){
             changeLang(curLang);
-            setTimeout(hideLoader, 4000); 
+            setTimeout(hideLoader, 3000); // Safety Timer 3s
             fetchData();
             trackVisit();
             checkRoute(); 
@@ -557,6 +557,7 @@
                 </div>
             </div>`;
 
+            // Auto Slider
             const sContainer = document.getElementById('modal-slider');
             const slidesCount = 1 + (t.subs ? t.subs.length : 0);
             let sIdx = 0;
