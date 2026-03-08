@@ -66,18 +66,22 @@
         /* Countdown Style */
         .countdown-box { background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 8px; text-align: center; min-width: 50px; }
         .countdown-label { font-size: 10px; opacity: 0.9; }
-        .countdown-digit { font-size: 18px; font-weight: bold; font-family: 'Poppins', sans-serif; } /* Latin numbers */
+        .countdown-digit { font-size: 18px; font-weight: bold; font-family: 'Poppins', sans-serif; }
 
         .btn-glow { animation: pulse-blue 2s infinite; }
         @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
         
         .chart-container { position: relative; height: 300px; width: 100%; }
-        
-        /* Slider Auto Scroll */
         .modal-slider { scroll-behavior: smooth; }
+        
+        /* Loading Overlay */
+        #loader-overlay { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
+
+    <!-- Loading Screen -->
+    <div id="loader-overlay"><div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600"></div></div>
 
     <!-- Navbar -->
     <header class="bg-white shadow-md fixed w-full z-50">
@@ -321,11 +325,35 @@
         </div>
     </div>
 
-    <!-- SCRIPTS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // FULL TRANSLATION DICTIONARY
-        const LANG={
+    <!-- SCRIPTS - FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyAaXp-gUOQ_G2s-kM8JhaqW8TJcJ4Nqcuo",
+          authDomain: "comondi-fae4b.firebaseapp.com",
+          projectId: "comondi-fae4b",
+          storageBucket: "comondi-fae4b.firebasestorage.app",
+          messagingSenderId: "932777870241",
+          appId: "1:932777870241:web:78b0cf3a3cf14046be01e0",
+          measurementId: "G-M09RX0V18S"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Global State
+        let CACHE = { trips: [], banners: [], requests: [], reports: [], visits: [], content: {} };
+        let curLang = localStorage.getItem('lang') || 'ar';
+        let sliderInterval = null;
+
+        // --- TRANSLATION ---
+        const LANG = {
             ar:{
                 home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل",policy:"السياسة",location:"مقرنا",report:"مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة",confirm:"تأكيد التسجيل",
                 price_unit:"دج",start:"الانطلاق",end:"العودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل",
@@ -355,49 +383,101 @@
             }
         };
 
-        const DB={
-            get:k=>JSON.parse(localStorage.getItem('t_'+k)||'[]'),
-            set:(k,v)=>localStorage.setItem('t_'+k,JSON.stringify(v)),
-            add:(k,i)=>{let d=DB.get(k);i.id=Date.now().toString();i.ts=Date.now();d.push(i);DB.set(k,d)},
-            del:(k,id)=>{let d=DB.get(k);DB.set(k,d.filter(x=>x.id!==id))},
-            update:(k,id,newVal)=>{let d=DB.get(k); let i=d.findIndex(x=>x.id===id); if(i!==-1){d[i]={...d[i],...newVal}; DB.set(k,d);}}
-        };
-        let curLang=localStorage.getItem('lang')||'ar';
-        const toBase64=f=>new Promise(r=>{let R=new FileReader();R.readAsDataURL(f);R.onload=()=>r(R.result)});
-        let sliderInterval = null;
+        // --- CORE FUNCTIONS (Async) ---
+        
+        async function fetchData() {
+            try {
+                // Parallel fetching for speed
+                const [t, b, req, rep, v, c] = await Promise.all([
+                    getDocs(collection(db, 'trips')),
+                    getDocs(collection(db, 'banners')),
+                    getDocs(query(collection(db, 'requests'), orderBy('ts', 'desc'))),
+                    getDocs(collection(db, 'reports')),
+                    getDocs(collection(db, 'visits')),
+                    getDocs(collection(db, 'content'))
+                ]);
 
-        function init(){changeLang(curLang);loadPublic();trackVisit();checkRoute(); startGridCountdowns();}
-        function checkRoute(){
-            if(location.hash==='#admin'){document.getElementById('user-app').classList.add('hidden');document.getElementById('admin-panel').classList.remove('hidden');document.getElementById('admin-login').classList.remove('hidden');}
+                CACHE.trips = t.docs.map(d => ({id: d.id, ...d.data()}));
+                CACHE.banners = b.docs.map(d => ({id: d.id, ...d.data()}));
+                CACHE.requests = req.docs.map(d => ({id: d.id, ...d.data()}));
+                CACHE.reports = rep.docs.map(d => ({id: d.id, ...d.data()}));
+                CACHE.visits = v.docs.map(d => ({id: d.id, ...d.data()}));
+                if(!c.empty) CACHE.content = c.docs[0].data();
+
+                document.getElementById('loader-overlay').classList.add('hidden');
+                loadPublic();
+                // If admin is open, refresh that too
+                if(!document.getElementById('admin-dash').classList.contains('hidden')) initAdmin();
+
+            } catch (e) { console.error("Firebase Error:", e); }
         }
-        window.addEventListener('hashchange',checkRoute);
+
+        async function uploadFileToStorage(file) {
+            if(!file) return '';
+            const storageRef = ref(storage, 'uploads/' + Date.now() + '-' + file.name);
+            await uploadBytes(storageRef, file);
+            return await getDownloadURL(storageRef);
+        }
+
+        // --- PUBLIC UI LOGIC ---
+
+        function init(){
+            changeLang(curLang);
+            fetchData(); // Fetch from Firebase
+            trackVisit();
+            checkRoute(); 
+            startGridCountdowns();
+        }
 
         function changeLang(l){
-            curLang=l;localStorage.setItem('lang',l);document.documentElement.dir=l==='ar'?'rtl':'ltr';
-            document.body.className=`bg-gray-50 text-gray-800 font-${l==='ar'?'ar':'en'}`;
-            document.querySelectorAll('[data-key]').forEach(el=>el.innerText=LANG[l][el.getAttribute('data-key')]||el.innerText);
+            curLang=l; localStorage.setItem('lang',l);
+            document.documentElement.dir = l==='ar'?'rtl':'ltr';
+            document.body.className = `bg-gray-50 text-gray-800 font-${l==='ar'?'ar':'en'}`;
             
-            // Update Placeholders
-            document.getElementById('b-name').placeholder = LANG[l].ph_name;
-            document.getElementById('b-phone').placeholder = LANG[l].ph_phone;
-            document.getElementById('b-age').placeholder = LANG[l].ph_age;
-            document.getElementById('b-state').placeholder = LANG[l].ph_state;
-            document.getElementById('r-name').placeholder = LANG[l].ph_name;
-            document.getElementById('r-email').placeholder = LANG[l].email;
-            document.getElementById('r-desc').placeholder = LANG[l].desc;
+            // Translate UI
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const k = el.getAttribute('data-key');
+                if(LANG[l][k]) el.innerText = LANG[l][k];
+            });
 
-            // Update Selects
-            document.getElementById('b-gender').innerHTML = `<option value="male">${LANG[l].gender_m}</option><option value="female">${LANG[l].gender_f}</option>`;
+            // Update Inputs
+            if(document.getElementById('b-name')) {
+                document.getElementById('b-name').placeholder = LANG[l].ph_name;
+                document.getElementById('b-phone').placeholder = LANG[l].ph_phone;
+                document.getElementById('b-age').placeholder = LANG[l].ph_age;
+                document.getElementById('b-state').placeholder = LANG[l].ph_state;
+                document.getElementById('r-name').placeholder = LANG[l].ph_name;
+                document.getElementById('r-email').placeholder = LANG[l].email;
+                document.getElementById('r-desc').placeholder = LANG[l].desc;
+                document.getElementById('b-gender').innerHTML = `<option value="male">${LANG[l].gender_m}</option><option value="female">${LANG[l].gender_f}</option>`;
+            }
+
+            // Update Content from Cache
+            if(CACHE.content) {
+                document.getElementById('about-text').innerText = CACHE.content[`about_${curLang}`] || '...';
+                document.getElementById('policy-text').innerText = CACHE.content[`policy_${curLang}`] || '...';
+                document.getElementById('location-text').innerText = CACHE.content[`loc_${curLang}`] || '...';
+                document.getElementById('contact-text').innerText = CACHE.content[`con_${curLang}`] || '...';
+            }
+            
+            // Logo Logic
+            const savedLogo = CACHE.content?.logo;
+            if(savedLogo) {
+                document.getElementById('site-logo').src = savedLogo;
+                document.getElementById('site-logo').classList.remove('hidden');
+                document.getElementById('site-title-text').classList.add('hidden');
+            }
 
             loadPublic();
         }
 
         function loadPublic(){
             // Trips
-            const t=DB.get('trips');
-            document.getElementById('trips-grid').innerHTML=t.map(x=>{
-                let title=x[`title_${curLang}`]||x.title_ar;
-                return `<div class="bg-white rounded-xl shadow overflow-hidden cursor-pointer" onclick="openTrip('${x.id}')">
+            const grid = document.getElementById('trips-grid');
+            if(!grid) return;
+            grid.innerHTML = CACHE.trips.map(x => {
+                let title = x[`title_${curLang}`] || x.title_ar;
+                return `<div class="bg-white rounded-xl shadow overflow-hidden cursor-pointer" onclick="window.openTrip('${x.id}')">
                     <div class="h-60 relative">
                         <img src="${x.mainImg}" class="w-full h-full object-cover">
                         <span class="absolute top-2 right-2 bg-white px-2 rounded font-bold text-blue-800">${x.price} ${LANG[curLang].price_unit}</span>
@@ -406,54 +486,37 @@
                     <div class="p-4 text-center"><h3 class="font-bold text-lg">${title}</h3><div class="text-xs text-gray-500 mt-2 flex justify-between"><span>${x.start.replace('T',' ')}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
                 </div>`;
             }).join('');
-            
+
             // Banners
-            const b=DB.get('banners');
-            const sl=document.getElementById('hero-slider');
-            if(b.length){
-                sl.innerHTML=b.map((x,i)=>`<div onclick="clickBanner('${x.type}','${x.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${x.img}')"></div>`).join('');
-                let idx=0;const it=document.querySelectorAll('.slide-item');
-                if(it.length>1) setInterval(()=>{it[idx].classList.replace('opacity-100','opacity-0');idx=(idx+1)%it.length;it[idx].classList.replace('opacity-0','opacity-100')},4000);
+            const sl = document.getElementById('hero-slider');
+            if(CACHE.banners.length > 0){
+                sl.innerHTML = CACHE.banners.map((x,i) => `<div onclick="window.clickBanner('${x.type}','${x.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${x.img}')"></div>`).join('');
+                let idx=0; const it=document.querySelectorAll('.slide-item');
+                if(it.length>1) setInterval(()=>{ it[idx].classList.replace('opacity-100','opacity-0'); idx=(idx+1)%it.length; it[idx].classList.replace('opacity-0','opacity-100') },4000);
             }
         }
 
-        function startGridCountdowns() {
-            setInterval(() => {
-                document.querySelectorAll('.card-countdown').forEach(el => {
-                    const date = new Date(el.dataset.date).getTime();
-                    const now = new Date().getTime();
-                    const dist = date - now;
-                    if(dist < 0) { el.innerHTML = ""; return; }
-                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
-                    // Absolute positioning overlay
-                    el.style.cssText = "position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; display:flex; justify-content:center; gap:8px; padding:5px; direction:ltr;";
-                    el.innerHTML = `<div><b class='text-yellow-400'>${d}</b> <span class='text-xs'>${LANG[curLang].day}</span></div>
-                                    <div><b class='text-yellow-400'>${h}</b> <span class='text-xs'>${LANG[curLang].hour}</span></div>
-                                    <div><b class='text-yellow-400'>${m}</b> <span class='text-xs'>${LANG[curLang].min}</span></div>`;
-                });
-            }, 1000);
-        }
+        // Functions attached to window for HTML access
+        window.clickBanner = (t,v) => { if(t==='url') window.open(v,'_blank'); else if(t==='trip') window.openTrip(v); };
 
-        window.clickBanner=(t,v)=>{ if(t==='url') window.open(v,'_blank'); else if(t==='trip') openTrip(v); };
-
-        window.openTrip=(id)=>{
-            const t=DB.get('trips').find(x=>x.id===id); if(!t)return;
+        window.openTrip = (id) => {
+            const t = CACHE.trips.find(x => x.id === id); if(!t) return;
             document.getElementById('trip-modal').classList.remove('hidden');
-            const cont=document.getElementById('trip-content');
-            let title=t[`title_${curLang}`]||t.title_ar;
-            let prog=t[`prog_${curLang}`]||t.prog_ar||"";
+            const cont = document.getElementById('trip-content');
+            let title = t[`title_${curLang}`] || t.title_ar;
+            let prog = t[`prog_${curLang}`] || t.prog_ar || "";
             
-            let points=prog.split(/,|،/).map(s=>{ let p=s.split('|'); return {txt:p[0].trim(), ico:p[1]||'📍'}; });
-            let mapHTML=`<div class="snake-map-container theme-${t.theme}"><div class="snake-line"></div>`;
-            mapHTML+=points.map((p,i)=>`<div class="snake-item"><div class="snake-dot"><i class="fas fa-map-marker-alt"></i></div><div class="snake-card"><div class="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl bg-white rounded-full p-1">${p.ico}</div><h4 class="font-bold mt-4 text-center">${p.txt}</h4></div></div>`).join('');
-            mapHTML+=`<div style="clear:both"></div></div>`;
+            let points = prog.split(/,|،/).map(s => { let p = s.split('|'); return {txt:p[0].trim(), ico:p[1]||'📍'}; });
+            let mapHTML = `<div class="snake-map-container theme-${t.theme}"><div class="snake-line"></div>`;
+            mapHTML += points.map((p,i) => `<div class="snake-item"><div class="snake-dot"><i class="fas fa-map-marker-alt"></i></div><div class="snake-card"><div class="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl bg-white rounded-full p-1">${p.ico}</div><h4 class="font-bold mt-4 text-center">${p.txt}</h4></div></div>`).join('');
+            mapHTML += `<div style="clear:both"></div></div>`;
 
             startCountdown(t.start, 'countdown-box');
 
-            let imgs=`<img src="${t.mainImg}" class="flex-shrink-0 min-w-full h-full object-cover">`;
-            if(t.subs) imgs+=t.subs.map(s=>`<img src="${s}" class="flex-shrink-0 min-w-full h-full object-cover">`).join('');
+            let imgs = `<img src="${t.mainImg}" class="flex-shrink-0 min-w-full h-full object-cover">`;
+            if(t.subs) imgs += t.subs.map(s => `<img src="${s}" class="flex-shrink-0 min-w-full h-full object-cover">`).join('');
 
-            cont.innerHTML=`<div class="flex flex-col md:flex-row h-[90vh]">
+            cont.innerHTML = `<div class="flex flex-col md:flex-row h-[90vh]">
                 <div class="w-full md:w-1/3 bg-black relative h-64 md:h-full overflow-hidden">
                     <div id="modal-slider" class="flex h-full w-full transition-transform duration-500 ease-in-out">${imgs}</div>
                     <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-black to-transparent text-white">
@@ -474,11 +537,11 @@
                     </div>
                     ${mapHTML}
                     <div class="h-20"></div>
-                    <div class="text-center pb-8"><button onclick="openBook('${t.id}','${title}')" class="btn-glow px-10 py-3 bg-blue-600 text-white font-bold rounded-full">${LANG[curLang].book_now}</button></div>
+                    <div class="text-center pb-8"><button onclick="window.openBook('${t.id}','${title}')" class="btn-glow px-10 py-3 bg-blue-600 text-white font-bold rounded-full">${LANG[curLang].book_now}</button></div>
                 </div>
             </div>`;
 
-            // Auto Slider Logic (2 Seconds)
+            // Auto Slider
             const sContainer = document.getElementById('modal-slider');
             const slidesCount = 1 + (t.subs ? t.subs.length : 0);
             let sIdx = 0;
@@ -489,13 +552,63 @@
                     sContainer.style.transform = `translateX(${curLang==='ar' ? sIdx * 100 : -sIdx * 100}%)`;
                 }, 2000);
             }
-        }
-        
-        window.closeTripModal = () => {
-            document.getElementById('trip-modal').classList.add('hidden');
-            if(sliderInterval) clearInterval(sliderInterval);
-        }
+        };
 
+        window.openBook = (id, tit) => {
+            document.getElementById('b-trip-id').value = id;
+            document.getElementById('b-trip-name').value = tit;
+            document.getElementById('booking-modal').classList.remove('hidden');
+        };
+
+        // Book Form
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button'); btn.disabled=true; btn.innerText="...";
+            await addDoc(collection(db, 'requests'), {
+                ts: Date.now(),
+                name: document.getElementById('b-name').value,
+                phone: document.getElementById('b-phone').value,
+                age: document.getElementById('b-age').value,
+                state: document.getElementById('b-state').value,
+                gender: document.getElementById('b-gender').value,
+                trip: document.getElementById('b-trip-name').value,
+                status: 'pending'
+            });
+            document.getElementById('booking-modal').classList.add('hidden');
+            Swal.fire('OK', 'Success', 'success');
+            fetchData();
+            btn.disabled=false; btn.innerText=LANG[curLang].confirm;
+        });
+
+        // Report Form
+        document.getElementById('report-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, 'reports'), {
+                name: document.getElementById('r-name').value,
+                email: document.getElementById('r-email').value,
+                desc: document.getElementById('r-desc').value,
+                ts: Date.now()
+            });
+            document.getElementById('report-modal').classList.add('hidden');
+            Swal.fire('OK', 'Sent', 'success');
+            fetchData();
+        });
+
+        // Countdown Helpers
+        function startGridCountdowns() {
+            setInterval(() => {
+                document.querySelectorAll('.card-countdown').forEach(el => {
+                    const date = new Date(el.dataset.date).getTime();
+                    const now = new Date().getTime();
+                    const dist = date - now;
+                    if(dist < 0) { el.innerHTML = ""; return; }
+                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
+                    el.style.cssText = "position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; display:flex; justify-content:center; gap:8px; padding:5px; direction:ltr;";
+                    el.innerHTML = `<div><b class='text-yellow-400'>${d}</b> <span class='text-xs'>${LANG[curLang].day}</span></div>
+                                    <div><b class='text-yellow-400'>${h}</b> <span class='text-xs'>${LANG[curLang].hour}</span></div>`;
+                });
+            }, 1000);
+        }
         function startCountdown(dateStr, elemId){
             const el = document.getElementById(elemId); if(!el) return;
             const target = new Date(dateStr).getTime();
@@ -510,85 +623,114 @@
             }, 1000);
         }
 
-        window.openBook=(id,tit)=>{ document.getElementById('b-trip-id').value=id;document.getElementById('b-trip-name').value=tit;document.getElementById('booking-modal').classList.remove('hidden'); }
-        document.getElementById('booking-form').addEventListener('submit',e=>{
-            e.preventDefault();
-            DB.add('requests',{
-                name:document.getElementById('b-name').value,
-                phone:document.getElementById('b-phone').value,
-                age:document.getElementById('b-age').value,
-                state:document.getElementById('b-state').value,
-                gender:document.getElementById('b-gender').value,
-                trip:document.getElementById('b-trip-name').value,
-                status: 'pending' // Default status
-            });
-            document.getElementById('booking-modal').classList.add('hidden'); Swal.fire('OK','Saved','success');
-        });
-        document.getElementById('report-form').addEventListener('submit',e=>{
-            e.preventDefault(); DB.add('reports',{name:document.getElementById('r-name').value,email:document.getElementById('r-email').value,desc:document.getElementById('r-desc').value});
-            document.getElementById('report-modal').classList.add('hidden'); Swal.fire('OK','Sent','success');
-        });
+        // --- ADMIN PANEL LOGIC ---
+        
+        function checkRoute() {
+            if(location.hash==='#admin'){
+                document.getElementById('user-app').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                document.getElementById('admin-login').classList.remove('hidden');
+                document.getElementById('admin-dash').classList.add('hidden');
+            } else {
+                document.getElementById('user-app').classList.remove('hidden');
+                document.getElementById('admin-panel').classList.add('hidden');
+            }
+        }
 
-        // --- ADMIN ---
-        window.adminLogin=()=>{ if(document.getElementById('adm-user').value==='admin') { document.getElementById('admin-login').classList.add('hidden'); document.getElementById('admin-dash').classList.remove('hidden'); document.getElementById('admin-dash').classList.add('flex'); initAdmin(); } };
-        window.showAdm=(id)=>{ document.querySelectorAll('.adm-sec').forEach(d=>d.classList.add('hidden')); document.getElementById('sec-'+id).classList.remove('hidden'); if(id==='manage')loadManage(); if(id==='banners')loadBanners(); if(id==='requests')loadReq(); if(id==='reports')loadRep(); };
-        window.forceAdmin=()=>{location.hash='#admin';location.reload()};
+        window.adminLogin = () => {
+            if(document.getElementById('adm-user').value==='admin') {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-dash').classList.remove('hidden');
+                document.getElementById('admin-dash').classList.add('flex');
+                initAdmin();
+            }
+        };
+
+        window.showAdm = (id) => {
+            document.querySelectorAll('.adm-sec').forEach(d => d.classList.add('hidden'));
+            document.getElementById('sec-'+id).classList.remove('hidden');
+            if(id === 'manage') loadManage();
+            if(id === 'banners') loadBanners();
+            if(id === 'requests') loadReq();
+            if(id === 'reports') loadRep();
+        };
 
         function initAdmin(){
             updateStats();
-            const ctx=document.getElementById('visitsChart');
-            const visits=DB.get('visits');
-            const labels=[], data=[];
-            for(let i=29;i>=0;i--){
-                let d=new Date(); d.setDate(d.getDate()-i);
-                let ds=d.toDateString(); labels.push(d.getDate()+'/'+(d.getMonth()+1));
-                data.push(visits.filter(v=>new Date(v.ts).toDateString()===ds).length);
+            // Simple Chart
+            const ctx = document.getElementById('visitsChart');
+            if(ctx) {
+                const labels=[], data=[];
+                for(let i=29; i>=0; i--){
+                    let d = new Date(); d.setDate(d.getDate()-i);
+                    let ds = d.toDateString();
+                    labels.push(d.getDate());
+                    data.push(CACHE.visits.filter(v => new Date(v.ts).toDateString() === ds).length);
+                }
+                new Chart(ctx, {type:'line', data:{labels, datasets:[{label:'Visits', data, borderColor:'#2563eb', tension:0.4}]}});
             }
-            new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Visits',data,borderColor:'#2563eb',tension:0.4}]}});
         }
 
         function updateStats(){
-            const v=DB.get('visits'); const now=new Date();
-            document.getElementById('stat-day').innerText=v.filter(x=>new Date(x.ts).toDateString()===now.toDateString()).length;
-            document.getElementById('stat-month').innerText=v.filter(x=>new Date(x.ts).getMonth()===now.getMonth()).length;
-            document.getElementById('stat-req').innerText=DB.get('requests').length;
-            document.getElementById('stat-rep').innerText=DB.get('reports').length;
+            const now = new Date();
+            const today = now.toDateString();
+            const month = now.getMonth();
+            document.getElementById('stat-day').innerText = CACHE.visits.filter(v => new Date(v.ts).toDateString() === today).length;
+            document.getElementById('stat-month').innerText = CACHE.visits.filter(v => new Date(v.ts).getMonth() === month).length;
+            document.getElementById('stat-req').innerText = CACHE.requests.length;
+            document.getElementById('stat-rep').innerText = CACHE.reports.length;
         }
 
         // Add Trip
-        document.getElementById('form-add-trip').addEventListener('submit',async e=>{
+        document.getElementById('form-add-trip').addEventListener('submit', async e => {
             e.preventDefault();
-            const mf=document.getElementById('t-img-main').files[0];
-            const gf=document.getElementById('t-guide-img').files[0];
-            const subf=document.querySelectorAll('.sub-img');
-            let mI=mf?await toBase64(mf):'', gI=gf?await toBase64(gf):'', sI=[];
-            for(let f of subf)if(f.files[0])sI.push(await toBase64(f.files[0]));
+            const btn = e.target.querySelector('button'); btn.disabled=true; btn.innerText="Uploading...";
             
-            DB.add('trips',{
-                title_ar:document.getElementById('t-title-ar').value, title_fr:document.getElementById('t-title-fr').value, title_en:document.getElementById('t-title-en').value,
-                prog_ar:document.getElementById('t-prog-ar').value, prog_fr:document.getElementById('t-prog-fr').value, prog_en:document.getElementById('t-prog-en').value,
-                start:document.getElementById('t-date-start').value,
-                seats:document.getElementById('t-seats').value,
-                price:document.getElementById('t-price').value,
-                theme:document.getElementById('t-theme').value,
-                guideName:document.getElementById('t-guide-name').value,
-                mainImg:mI, guideImg:gI, subs:sI
+            const mf = document.getElementById('t-img-main').files[0];
+            const gf = document.getElementById('t-guide-img').files[0];
+            const subf = document.querySelectorAll('.sub-img');
+            
+            let mI = await uploadFileToStorage(mf);
+            let gI = await uploadFileToStorage(gf);
+            let sI = [];
+            for(let f of subf) if(f.files[0]) sI.push(await uploadFileToStorage(f.files[0]));
+
+            await addDoc(collection(db, 'trips'), {
+                title_ar: document.getElementById('t-title-ar').value, title_fr: document.getElementById('t-title-fr').value, title_en: document.getElementById('t-title-en').value,
+                prog_ar: document.getElementById('t-prog-ar').value, prog_fr: document.getElementById('t-prog-fr').value, prog_en: document.getElementById('t-prog-en').value,
+                start: document.getElementById('t-date-start').value,
+                seats: document.getElementById('t-seats').value,
+                price: document.getElementById('t-price').value,
+                theme: document.getElementById('t-theme').value,
+                guideName: document.getElementById('t-guide-name').value,
+                mainImg: mI, guideImg: gI, subs: sI
             });
-            Swal.fire('OK','Trip Added','success'); e.target.reset();
+            
+            Swal.fire('Success', 'Trip Added', 'success');
+            e.target.reset();
+            btn.disabled=false; btn.innerText="نشر الرحلة";
+            fetchData();
         });
 
         // Manage Trips
         function loadManage(){
-            document.getElementById('manage-list').innerHTML=DB.get('trips').map(t=>`
+            document.getElementById('manage-list').innerHTML = CACHE.trips.map(t => `
                 <div class="flex items-center gap-2 bg-gray-50 p-2 rounded">
                     <input type="checkbox" class="trip-chk" value="${t.id}">
                     <img src="${t.mainImg}" class="w-10 h-10 rounded">
                     <span class="flex-1 font-bold">${t.title_ar}</span>
-                    <button onclick="editSeats('${t.id}')" class="text-blue-600 text-xs underline">تعديل مقاعد (${t.seats})</button>
+                    <button onclick="window.editSeats('${t.id}')" class="text-blue-600 text-xs underline">تعديل مقاعد (${t.seats})</button>
                 </div>`).join('');
         }
-        window.deleteSelectedTrips=()=>{ document.querySelectorAll('.trip-chk:checked').forEach(c=>DB.del('trips',c.value)); loadManage(); }
-        window.editSeats=(id)=>{ const n=prompt("New seats count:"); if(n){ DB.update('trips', id, {seats:n}); loadManage();}}
+        window.deleteSelectedTrips = async () => {
+            const sels = document.querySelectorAll('.trip-chk:checked');
+            for(let c of sels) await deleteDoc(doc(db, 'trips', c.value));
+            fetchData().then(loadManage);
+        }
+        window.editSeats = async (id) => {
+            const n = prompt("New seats count:"); 
+            if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); fetchData().then(loadManage); }
+        }
 
         // Banners
         window.toggleBanInput = () => {
@@ -597,27 +739,35 @@
             const selIn = document.getElementById('ban-trip-select');
             if(t === 'trip') {
                 txtIn.classList.add('hidden'); selIn.classList.remove('hidden');
-                selIn.innerHTML = DB.get('trips').map(tr => `<option value="${tr.id}">${tr.title_ar}</option>`).join('');
+                selIn.innerHTML = CACHE.trips.map(tr => `<option value="${tr.id}">${tr.title_ar}</option>`).join('');
             } else {
                 selIn.classList.add('hidden'); txtIn.classList.remove('hidden');
             }
         }
-        window.uploadBanner=async()=>{
-            const f=document.getElementById('new-banner').files[0];
-            const t=document.getElementById('ban-type').value;
+        window.uploadBanner = async () => {
+            const f = document.getElementById('new-banner').files[0];
+            const t = document.getElementById('ban-type').value;
             let v = document.getElementById('ban-val').value;
             if(t === 'trip') v = document.getElementById('ban-trip-select').value;
-            if(f) { DB.add('banners',{img:await toBase64(f),type:t,val:v}); loadBanners(); }
+            if(f) { 
+                const url = await uploadFileToStorage(f);
+                await addDoc(collection(db, 'banners'), {img:url, type:t, val:v});
+                fetchData().then(loadBanners);
+            }
         }
         function loadBanners(){
-            document.getElementById('banner-list').innerHTML=DB.get('banners').map(b=>`
+            document.getElementById('banner-list').innerHTML = CACHE.banners.map(b => `
                 <div class="relative"><input type="checkbox" class="ban-chk absolute top-1 left-1" value="${b.id}"><img src="${b.img}" class="h-20 w-full object-cover"></div>`).join('');
         }
-        window.deleteSelectedBanners=()=>{ document.querySelectorAll('.ban-chk:checked').forEach(c=>DB.del('banners',c.value)); loadBanners(); }
+        window.deleteSelectedBanners = async () => {
+            const sels = document.querySelectorAll('.ban-chk:checked');
+            for(let c of sels) await deleteDoc(doc(db, 'banners', c.value));
+            fetchData().then(loadBanners);
+        }
 
-        // Requests Logic
+        // Requests
         function loadReq(){
-            document.getElementById('req-list').innerHTML = DB.get('requests').reverse().map(r => `
+            document.getElementById('req-list').innerHTML = CACHE.requests.map(r => `
                 <tr class="border-b hover:bg-gray-50">
                     <td class="p-3"><input type="checkbox" class="req-chk" value="${r.id}"></td>
                     <td class="p-3 text-xs text-gray-500">${new Date(r.ts).toLocaleString()}</td>
@@ -626,7 +776,7 @@
                     <td class="p-3">${r.state}</td>
                     <td class="p-3 text-sm text-gray-600">${r.trip}</td>
                     <td class="p-3">
-                        <select onchange="updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs ${r.status==='confirmed'?'bg-green-100':(r.status==='cancelled'?'bg-red-100':'bg-yellow-100')}">
+                        <select onchange="window.updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs ${r.status==='confirmed'?'bg-green-100':(r.status==='cancelled'?'bg-red-100':'bg-yellow-100')}">
                             <option value="pending" ${r.status==='pending'?'selected':''}>${LANG[curLang].req_pending}</option>
                             <option value="confirmed" ${r.status==='confirmed'?'selected':''}>${LANG[curLang].req_confirmed}</option>
                             <option value="cancelled" ${r.status==='cancelled'?'selected':''}>${LANG[curLang].req_cancelled}</option>
@@ -635,18 +785,38 @@
                 </tr>
             `).join('');
         }
-        window.updateReqStatus = (id, st) => { DB.update('requests', id, {status: st}); loadReq(); }
-        window.deleteSelectedReqs = () => { document.querySelectorAll('.req-chk:checked').forEach(c=>DB.del('requests',c.value)); loadReq(); }
+        window.updateReqStatus = async (id, st) => { await updateDoc(doc(db, 'requests', id), {status: st}); fetchData(); }
+        window.deleteSelectedReqs = async () => {
+            const sels = document.querySelectorAll('.req-chk:checked');
+            for(let c of sels) await deleteDoc(doc(db, 'requests', c.value));
+            fetchData().then(loadReq);
+        }
 
-        // Reports Logic
-        function loadRep(){ document.getElementById('rep-list').innerHTML=DB.get('reports').map(r=>`<div class="p-3 border-b text-red-600"><b>${r.name}</b> (${r.email}): <br> ${r.desc}</div>`).join(''); }
-        
-        function trackVisit(){ if(!sessionStorage.getItem('v')){DB.add('visits',{});sessionStorage.setItem('v','1');} }
+        // Reports
+        function loadRep(){
+            document.getElementById('rep-list').innerHTML = CACHE.reports.map(r => `
+                <div class="p-4 border-b">
+                    <div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500">(${r.email})</span></div>
+                    <p class="text-sm mt-1">${r.desc}</p>
+                </div>
+            `).join('');
+        }
 
-        window.closeModal=(id)=>document.getElementById(id).classList.add('hidden');
-        window.openModal=(id)=>document.getElementById(id).classList.remove('hidden');
-        window.toggleSidebar=()=>document.getElementById('sidebar').classList.toggle('translate-x-full');
-        window.adminLogout=()=>{location.hash='';location.reload()};
+        // Visits
+        async function trackVisit(){ 
+            if(!sessionStorage.getItem('v')){
+                await addDoc(collection(db, 'visits'), {ts: Date.now()});
+                sessionStorage.setItem('v','1');
+            } 
+        }
+
+        // Helpers
+        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
+        window.forceAdmin = () => { location.hash='#admin'; location.reload(); };
+        window.adminLogout = () => { location.hash=''; location.reload(); };
+        window.closeTripModal = () => { document.getElementById('trip-modal').classList.add('hidden'); if(sliderInterval) clearInterval(sliderInterval); };
 
         init();
     </script>
