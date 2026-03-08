@@ -10,42 +10,36 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js for Admin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root { --main-color: #2563eb; }
         body.font-ar { font-family: 'Tajawal', sans-serif; }
         body.font-en { font-family: 'Poppins', sans-serif; }
+        
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--main-color); border-radius: 4px; }
 
-        /* --- WAVY SNAKE MAP STYLE --- */
+        /* --- WAVY SNAKE MAP --- */
         .snake-map-container { position: relative; padding: 40px 0; overflow: hidden; margin-top: 20px; }
-        
-        /* The Wavy Line using SVG Background */
         .snake-line {
             position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; margin-left: -20px; z-index: 1;
             background-image: url("data:image/svg+xml,%3Csvg width='40' height='100' viewBox='0 0 40 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0 Q40 25 20 50 T20 100' fill='none' stroke='%23cbd5e1' stroke-width='3' stroke-dasharray='8 4'/%3E%3C/svg%3E");
             background-repeat: repeat-y; background-position: center top;
         }
-
         .snake-item { position: relative; width: 50%; margin-bottom: 60px; clear: both; z-index: 2; }
         
-        /* Desktop: ZigZag */
         @media (min-width: 768px) {
             html[dir="rtl"] .snake-item:nth-child(odd) { float: right; padding-left: 60px; text-align: left; }
             html[dir="rtl"] .snake-item:nth-child(even) { float: left; padding-right: 60px; text-align: right; }
             html[dir="ltr"] .snake-item:nth-child(odd) { float: left; padding-right: 60px; text-align: right; }
             html[dir="ltr"] .snake-item:nth-child(even) { float: right; padding-left: 60px; text-align: left; }
         }
-
-        /* Mobile: Optimize for small screens (Vertical align but keep style) */
         @media (max-width: 767px) {
-            .snake-line { left: 30px; margin-left: 0; } /* Line to the left */
+            .snake-line { left: 30px; margin-left: 0; }
             .snake-item { width: 100%; float: none !important; padding-right: 0 !important; padding-left: 70px !important; text-align: right !important; }
             html[dir="ltr"] .snake-item { padding-left: 70px !important; text-align: left !important; }
-            /* Adjust Dot position for mobile */
             .snake-dot { left: 15px !important; right: auto !important; } 
         }
 
@@ -61,7 +55,7 @@
             font-size: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
-        /* Themes Colors */
+        /* Themes */
         .theme-sahara .snake-card { border-bottom: 5px solid #d97706; }
         .theme-sahara .snake-dot { border-color: #d97706; color: #d97706; }
         .theme-mountain .snake-card { border-bottom: 5px solid #166534; }
@@ -69,16 +63,26 @@
         .theme-coastal .snake-card { border-bottom: 5px solid #0284c7; }
         .theme-coastal .snake-dot { border-color: #0284c7; color: #0284c7; }
 
-        /* Countdown */
+        /* Card Countdown Overlay */
+        .card-countdown {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
+            color: white; padding: 8px; text-align: center;
+            font-weight: bold; font-size: 0.9rem;
+            display: flex; justify-content: center; gap: 10px;
+        }
+        .cc-item { display: flex; flex-direction: column; line-height: 1; }
+        .cc-val { font-size: 1.1rem; font-weight: 900; color: #fbbf24; }
+        .cc-label { font-size: 0.6rem; text-transform: uppercase; opacity: 0.8; }
+
+        /* Modal Countdown */
         .countdown-box { background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 8px; text-align: center; min-width: 60px; }
         .countdown-label { font-size: 10px; opacity: 0.8; text-transform: uppercase; }
         .countdown-digit { font-size: 20px; font-weight: bold; }
 
-        /* Animations */
         .btn-glow { animation: pulse-blue 2s infinite; }
         @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
         
-        /* Admin Chart Container */
         .chart-container { position: relative; height: 300px; width: 100%; }
     </style>
 </head>
@@ -158,8 +162,8 @@
                 <input type="hidden" id="b-trip-id"> <input type="hidden" id="b-trip-name">
                 <input type="text" id="b-name" class="w-full border p-3 rounded" placeholder="Name" required>
                 <input type="tel" id="b-phone" class="w-full border p-3 rounded" placeholder="Phone" required>
-                <div class="flex gap-2"><input type="number" id="b-age" class="w-1/2 border p-3 rounded" placeholder="Age"><input type="text" id="b-state" class="w-1/2 border p-3 rounded" placeholder="State"></div>
-                <select id="b-gender" class="w-full border p-3 rounded"><option value="m">Male</option><option value="f">Female</option></select>
+                <div class="flex gap-2"><input type="number" id="b-age" class="w-1/2 border p-3 rounded" placeholder="Age" required><input type="text" id="b-state" class="w-1/2 border p-3 rounded" placeholder="State" required></div>
+                <select id="b-gender" class="w-full border p-3 rounded"><option value="male">Male</option><option value="female">Female</option></select>
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-4 rounded hover:bg-blue-700" data-key="confirm">تأكيد</button>
             </form>
         </div>
@@ -210,38 +214,45 @@
                 <!-- Stats Section -->
                 <div id="sec-stats" class="adm-sec">
                     <h2 class="text-3xl font-bold mb-6">نظرة عامة</h2>
-                    <!-- Colored Boxes -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                         <div onclick="showAdm('requests')" class="cursor-pointer bg-green-500 text-white p-6 rounded shadow hover:scale-105 transition">
-                            <h3 class="font-bold">طلبات جديدة</h3>
-                            <p class="text-4xl mt-2 font-black" id="stat-req">0</p>
+                            <h3 class="font-bold">طلبات جديدة</h3><p class="text-4xl mt-2 font-black" id="stat-req">0</p>
                         </div>
                         <div onclick="showAdm('reports')" class="cursor-pointer bg-red-500 text-white p-6 rounded shadow hover:scale-105 transition">
-                            <h3 class="font-bold">الإبلاغات</h3>
-                            <p class="text-4xl mt-2 font-black" id="stat-rep">0</p>
+                            <h3 class="font-bold">الإبلاغات</h3><p class="text-4xl mt-2 font-black" id="stat-rep">0</p>
                         </div>
                         <div class="bg-blue-500 text-white p-6 rounded shadow">
-                            <h3 class="font-bold">زيارات اليوم</h3>
-                            <p class="text-4xl mt-2 font-black" id="stat-day">0</p>
+                            <h3 class="font-bold">زيارات اليوم</h3><p class="text-4xl mt-2 font-black" id="stat-day">0</p>
                         </div>
                         <div class="bg-indigo-500 text-white p-6 rounded shadow">
-                            <h3 class="font-bold">زيارات الشهر</h3>
-                            <p class="text-4xl mt-2 font-black" id="stat-month">0</p>
+                            <h3 class="font-bold">زيارات الشهر</h3><p class="text-4xl mt-2 font-black" id="stat-month">0</p>
                         </div>
                     </div>
-                    <!-- Chart -->
                     <div class="bg-white p-6 rounded shadow">
                         <h3 class="font-bold mb-4 text-gray-700">منحنى الزيارات (30 يوم)</h3>
-                        <div class="chart-container">
-                            <canvas id="visitsChart"></canvas>
-                        </div>
+                        <div class="chart-container"><canvas id="visitsChart"></canvas></div>
                     </div>
                 </div>
 
-                <!-- Requests Table -->
+                <!-- Requests Table (Organized) -->
                 <div id="sec-requests" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">سجل الطلبات</h2>
-                    <div id="req-list" class="bg-white rounded shadow overflow-hidden"></div>
+                    <div class="overflow-x-auto bg-white rounded shadow">
+                        <table class="w-full text-right text-sm text-gray-600">
+                            <thead class="bg-gray-100 text-gray-800">
+                                <tr>
+                                    <th class="p-4">التاريخ</th>
+                                    <th class="p-4">الاسم</th>
+                                    <th class="p-4">الهاتف</th>
+                                    <th class="p-4">الولاية</th>
+                                    <th class="p-4">السن</th>
+                                    <th class="p-4">الجنس</th>
+                                    <th class="p-4">الرحلة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="req-list"></tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Reports Table -->
@@ -255,7 +266,7 @@
                     <h2 class="text-3xl font-bold mb-6">إضافة رحلة</h2>
                     <form id="form-add-trip" class="bg-white p-6 rounded shadow space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b pb-4">
-                            <div><label class="text-xs font-bold text-green-700">AR</label><input id="t-title-ar" class="w-full border p-2 rounded" placeholder="العنوان"><textarea id="t-prog-ar" class="w-full border p-2 rounded h-20" placeholder="محطات: محطة|ايموجي (مثال: انطلاق|🚩, غداء|🍔)"></textarea></div>
+                            <div><label class="text-xs font-bold text-green-700">AR</label><input id="t-title-ar" class="w-full border p-2 rounded" placeholder="العنوان"><textarea id="t-prog-ar" class="w-full border p-2 rounded h-20" placeholder="محطات: محطة|ايموجي (مثال: انطلاق|🚩)"></textarea></div>
                             <div><label class="text-xs font-bold text-blue-700">FR</label><input id="t-title-fr" class="w-full border p-2 rounded" placeholder="Titre"><textarea id="t-prog-fr" class="w-full border p-2 rounded h-20" placeholder="Arrêts..."></textarea></div>
                             <div><label class="text-xs font-bold text-purple-700">EN</label><input id="t-title-en" class="w-full border p-2 rounded" placeholder="Title"><textarea id="t-prog-en" class="w-full border p-2 rounded h-20" placeholder="Stops..."></textarea></div>
                         </div>
@@ -294,23 +305,27 @@
                 <!-- Banners -->
                 <div id="sec-banners" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">البانرات</h2>
-                    <div class="bg-white p-4 rounded shadow mb-4 flex gap-4">
-                        <input id="new-banner" type="file" class="w-1/3">
-                        <select id="ban-type" class="border p-2"><option value="none">بدون رابط</option><option value="url">رابط خارجي</option><option value="trip">رابط لرحلة</option></select>
-                        <input id="ban-val" type="text" placeholder="الرابط أو ID الرحلة" class="border p-2 flex-1">
-                        <button onclick="uploadBanner()" class="bg-blue-600 text-white px-4 rounded">إضافة</button>
+                    <div class="bg-white p-4 rounded shadow mb-4 flex flex-col gap-4">
+                        <div class="flex gap-4">
+                            <input id="new-banner" type="file" class="w-1/3 border p-2">
+                            <select id="ban-type" onchange="toggleBanInput()" class="border p-2"><option value="none">بدون رابط</option><option value="url">رابط خارجي</option><option value="trip">رابط لرحلة</option></select>
+                            <div id="ban-input-container" class="flex-1">
+                                <!-- Dynamic Input -->
+                                <input id="ban-val" type="text" placeholder="الرابط" class="border p-2 w-full hidden">
+                                <select id="ban-trip-select" class="border p-2 w-full hidden"></select>
+                            </div>
+                            <button onclick="uploadBanner()" class="bg-blue-600 text-white px-4 rounded">إضافة</button>
+                        </div>
                     </div>
                     <div class="mb-2"><button onclick="deleteSelectedBanners()" class="bg-red-600 text-white px-3 py-1 text-sm rounded">حذف المحدد</button></div>
                     <div id="banner-list" class="grid grid-cols-2 gap-4"></div>
                 </div>
                 
-                <!-- Content (Same as before) -->
+                <!-- Content -->
                 <div id="sec-content" class="adm-sec hidden">
-                     <!-- Simplified for length, keeping previous logic -->
                      <h2 class="text-3xl font-bold mb-6">إدارة المحتوى</h2>
                      <div class="bg-white p-6 rounded"><button onclick="loadContentForm(); Swal.fire('Info','Content forms loaded','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
                 </div>
-
             </main>
         </div>
     </div>
@@ -318,12 +333,12 @@
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const LANG={ar:{home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل",policy:"السياسة",location:"مقرنا",report:"مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة",confirm:"تأكيد",price_unit:"دج",start:"انطلاق",end:"عودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل"},fr:{home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Offres",book_now:"Réserver",confirm:"Confirmer",price_unit:"DA",start:"Départ",end:"Retour",stop:"Arrêt",transport:"Transport",seats:"Places",guide:"Guide",insurance:"Assurance Santé"},en:{home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Offers",book_now:"Book Now",confirm:"Confirm",price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance"}};
+        const LANG={ar:{home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل",policy:"السياسة",location:"مقرنا",report:"مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة",confirm:"تأكيد",price_unit:"دج",start:"انطلاق",end:"عودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل",gender_m:"ذكر",gender_f:"أنثى",state:"ولاية",age:"سن",phone:"هاتف",time:"توقيت",delete:"حذف",select_trip:"اختر رحلة",external_link:"رابط خارجي"},fr:{home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Offres",book_now:"Réserver",confirm:"Confirmer",price_unit:"DA",start:"Départ",end:"Retour",stop:"Arrêt",transport:"Transport",seats:"Places",guide:"Guide",insurance:"Assurance Santé",gender_m:"Homme",gender_f:"Femme",state:"Wilaya",age:"Âge",phone:"Tél",time:"Temps",delete:"Supprimer",select_trip:"Choisir Voyage",external_link:"Lien Externe"},en:{home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Offers",book_now:"Book Now",confirm:"Confirm",price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance",gender_m:"Male",gender_f:"Female",state:"State",age:"Age",phone:"Phone",time:"Time",delete:"Delete",select_trip:"Select Trip",external_link:"External Link"}};
         const DB={get:k=>JSON.parse(localStorage.getItem('t_'+k)||'[]'),set:(k,v)=>localStorage.setItem('t_'+k,JSON.stringify(v)),add:(k,i)=>{let d=DB.get(k);i.id=Date.now().toString();i.ts=Date.now();d.push(i);DB.set(k,d)},del:(k,id)=>{let d=DB.get(k);DB.set(k,d.filter(x=>x.id!==id))}};
         let curLang=localStorage.getItem('lang')||'ar';
         const toBase64=f=>new Promise(r=>{let R=new FileReader();R.readAsDataURL(f);R.onload=()=>r(R.result)});
 
-        function init(){changeLang(curLang);loadPublic();trackVisit();checkRoute();}
+        function init(){changeLang(curLang);loadPublic();trackVisit();checkRoute(); startGridCountdowns();}
         function checkRoute(){
             if(location.hash==='#admin'){document.getElementById('user-app').classList.add('hidden');document.getElementById('admin-panel').classList.remove('hidden');document.getElementById('admin-login').classList.remove('hidden');}
         }
@@ -342,8 +357,13 @@
             document.getElementById('trips-grid').innerHTML=t.map(x=>{
                 let title=x[`title_${curLang}`]||x.title_ar;
                 return `<div class="bg-white rounded-xl shadow overflow-hidden cursor-pointer" onclick="openTrip('${x.id}')">
-                    <div class="h-60 relative"><img src="${x.mainImg}" class="w-full h-full object-cover"><span class="absolute top-2 right-2 bg-white px-2 rounded font-bold text-blue-800">${x.price} ${LANG[curLang].price_unit}</span></div>
-                    <div class="p-4 text-center"><h3 class="font-bold text-lg">${title}</h3><div class="text-xs text-gray-500 mt-2 flex justify-between"><span>${x.start}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
+                    <div class="h-60 relative">
+                        <img src="${x.mainImg}" class="w-full h-full object-cover">
+                        <span class="absolute top-2 right-2 bg-white px-2 rounded font-bold text-blue-800">${x.price} ${LANG[curLang].price_unit}</span>
+                        <!-- Card Countdown Overlay -->
+                        <div class="card-countdown" data-date="${x.start}"></div>
+                    </div>
+                    <div class="p-4 text-center"><h3 class="font-bold text-lg">${title}</h3><div class="text-xs text-gray-500 mt-2 flex justify-between"><span>${x.start.replace('T',' ')}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
                 </div>`;
             }).join('');
             
@@ -355,6 +375,25 @@
                 let idx=0;const it=document.querySelectorAll('.slide-item');
                 if(it.length>1) setInterval(()=>{it[idx].classList.replace('opacity-100','opacity-0');idx=(idx+1)%it.length;it[idx].classList.replace('opacity-0','opacity-100')},4000);
             }
+        }
+
+        // --- GRID COUNTDOWN ANIMATION ---
+        function startGridCountdowns() {
+            setInterval(() => {
+                document.querySelectorAll('.card-countdown').forEach(el => {
+                    const date = new Date(el.dataset.date).getTime();
+                    const now = new Date().getTime();
+                    const dist = date - now;
+                    if(dist < 0) { el.innerHTML = "Started"; return; }
+                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
+                    el.innerHTML = `
+                        <div class="cc-item"><span class="cc-val">${d}</span><span class="cc-label">D</span></div>
+                        <div class="cc-item"><span class="cc-val">${h}</span><span class="cc-label">H</span></div>
+                        <div class="cc-item"><span class="cc-val">${m}</span><span class="cc-label">M</span></div>
+                        <div class="cc-item"><span class="cc-val">${s}</span><span class="cc-label">S</span></div>
+                    `;
+                });
+            }, 1000);
         }
 
         window.clickBanner=(t,v)=>{ if(t==='url') window.open(v,'_blank'); else if(t==='trip') openTrip(v); };
@@ -372,7 +411,7 @@
             mapHTML+=points.map((p,i)=>`<div class="snake-item"><div class="snake-dot"><i class="fas fa-map-marker-alt"></i></div><div class="snake-card"><div class="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl bg-white rounded-full p-1">${p.ico}</div><h4 class="font-bold mt-4 text-center">${p.txt}</h4></div></div>`).join('');
             mapHTML+=`<div style="clear:both"></div></div>`;
 
-            // Countdown
+            // Countdown in Modal
             startCountdown(t.start, 'countdown-box');
 
             // Images
@@ -421,7 +460,14 @@
         window.openBook=(id,tit)=>{ document.getElementById('b-trip-id').value=id;document.getElementById('b-trip-name').value=tit;document.getElementById('booking-modal').classList.remove('hidden'); }
         document.getElementById('booking-form').addEventListener('submit',e=>{
             e.preventDefault();
-            DB.add('requests',{name:document.getElementById('b-name').value,phone:document.getElementById('b-phone').value,trip:document.getElementById('b-trip-name').value});
+            DB.add('requests',{
+                name:document.getElementById('b-name').value,
+                phone:document.getElementById('b-phone').value,
+                age:document.getElementById('b-age').value,
+                state:document.getElementById('b-state').value,
+                gender:document.getElementById('b-gender').value,
+                trip:document.getElementById('b-trip-name').value
+            });
             document.getElementById('booking-modal').classList.add('hidden'); Swal.fire('OK','Saved','success');
         });
         document.getElementById('report-form').addEventListener('submit',e=>{
@@ -439,7 +485,6 @@
             // Chart
             const ctx=document.getElementById('visitsChart');
             const visits=DB.get('visits');
-            // Mock data grouping for last 30 days
             const labels=[], data=[];
             for(let i=29;i>=0;i--){
                 let d=new Date(); d.setDate(d.getDate()-i);
@@ -467,9 +512,8 @@
             for(let f of subf)if(f.files[0])sI.push(await toBase64(f.files[0]));
             
             DB.add('trips',{
-                title_ar:document.getElementById('t-title-ar').value,
-                prog_ar:document.getElementById('t-prog-ar').value,
-                // Add other langs similarly
+                title_ar:document.getElementById('t-title-ar').value, title_fr:document.getElementById('t-title-fr').value, title_en:document.getElementById('t-title-en').value,
+                prog_ar:document.getElementById('t-prog-ar').value, prog_fr:document.getElementById('t-prog-fr').value, prog_en:document.getElementById('t-prog-en').value,
                 start:document.getElementById('t-date-start').value,
                 seats:document.getElementById('t-seats').value,
                 price:document.getElementById('t-price').value,
@@ -490,20 +534,33 @@
                     <button onclick="editSeats('${t.id}')" class="text-blue-600 text-xs underline">تعديل مقاعد (${t.seats})</button>
                 </div>`).join('');
         }
-        window.deleteSelectedTrips=()=>{
-            document.querySelectorAll('.trip-chk:checked').forEach(c=>DB.del('trips',c.value));
-            loadManage();
-        }
-        window.editSeats=(id)=>{
-            const n=prompt("New seats count:"); 
-            if(n){ let all=DB.get('trips'); let t=all.find(x=>x.id===id); if(t){t.seats=n;DB.set('trips',all);loadManage();}}
+        window.deleteSelectedTrips=()=>{ document.querySelectorAll('.trip-chk:checked').forEach(c=>DB.del('trips',c.value)); loadManage(); }
+        window.editSeats=(id)=>{ const n=prompt("New seats count:"); if(n){ let all=DB.get('trips'); let t=all.find(x=>x.id===id); if(t){t.seats=n;DB.set('trips',all);loadManage();}} }
+
+        // Banners - Toggle Input
+        window.toggleBanInput = () => {
+            const t = document.getElementById('ban-type').value;
+            const txtIn = document.getElementById('ban-val');
+            const selIn = document.getElementById('ban-trip-select');
+            
+            if(t === 'trip') {
+                txtIn.classList.add('hidden');
+                selIn.classList.remove('hidden');
+                // Populate trips
+                selIn.innerHTML = DB.get('trips').map(tr => `<option value="${tr.id}">${tr.title_ar}</option>`).join('');
+            } else {
+                selIn.classList.add('hidden');
+                txtIn.classList.remove('hidden');
+                if(t === 'none') txtIn.classList.add('hidden');
+            }
         }
 
-        // Banners
         window.uploadBanner=async()=>{
             const f=document.getElementById('new-banner').files[0];
             const t=document.getElementById('ban-type').value;
-            const v=document.getElementById('ban-val').value;
+            let v = document.getElementById('ban-val').value;
+            if(t === 'trip') v = document.getElementById('ban-trip-select').value;
+            
             if(f) { DB.add('banners',{img:await toBase64(f),type:t,val:v}); loadBanners(); }
         }
         function loadBanners(){
@@ -512,8 +569,20 @@
         }
         window.deleteSelectedBanners=()=>{ document.querySelectorAll('.ban-chk:checked').forEach(c=>DB.del('banners',c.value)); loadBanners(); }
 
-        // Load Tables
-        function loadReq(){ document.getElementById('req-list').innerHTML=DB.get('requests').map(r=>`<div class="p-3 border-b flex justify-between"><span>${r.name}</span><span>${r.trip}</span></div>`).join(''); }
+        // Load Tables - Organized
+        function loadReq(){
+            document.getElementById('req-list').innerHTML = DB.get('requests').reverse().map(r => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3 text-xs text-gray-500">${new Date(r.ts).toLocaleString()}</td>
+                    <td class="p-3 font-bold">${r.name}</td>
+                    <td class="p-3 text-blue-600">${r.phone}</td>
+                    <td class="p-3">${r.state}</td>
+                    <td class="p-3">${r.age}</td>
+                    <td class="p-3">${r.gender==='male'?'M':'F'}</td>
+                    <td class="p-3 text-sm text-gray-600">${r.trip}</td>
+                </tr>
+            `).join('');
+        }
         function loadRep(){ document.getElementById('rep-list').innerHTML=DB.get('reports').map(r=>`<div class="p-3 border-b text-red-600"><b>${r.name}</b>: ${r.desc}</div>`).join(''); }
         
         function trackVisit(){ if(!sessionStorage.getItem('v')){DB.add('visits',{});sessionStorage.setItem('v','1');} }
