@@ -21,7 +21,12 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--main-color); border-radius: 4px; }
 
-        /* --- WAVY SNAKE MAP --- */
+        /* LOADING SPINNER STYLE */
+        #loader-overlay { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* SNAKE MAP */
         .snake-map-container { position: relative; padding: 40px 0; overflow: hidden; margin-top: 20px; }
         .snake-line {
             position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; margin-left: -20px; z-index: 1;
@@ -55,7 +60,6 @@
             font-size: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
-        /* Themes */
         .theme-sahara .snake-card { border-bottom: 5px solid #d97706; }
         .theme-sahara .snake-dot { border-color: #d97706; color: #d97706; }
         .theme-mountain .snake-card { border-bottom: 5px solid #166534; }
@@ -63,7 +67,6 @@
         .theme-coastal .snake-card { border-bottom: 5px solid #0284c7; }
         .theme-coastal .snake-dot { border-color: #0284c7; color: #0284c7; }
 
-        /* Countdown Style */
         .countdown-box { background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 8px; text-align: center; min-width: 50px; }
         .countdown-label { font-size: 10px; opacity: 0.9; }
         .countdown-digit { font-size: 18px; font-weight: bold; font-family: 'Poppins', sans-serif; }
@@ -73,15 +76,20 @@
         
         .chart-container { position: relative; height: 300px; width: 100%; }
         .modal-slider { scroll-behavior: smooth; }
-        
-        /* Loading Overlay */
-        #loader-overlay { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
 
-    <!-- Loading Screen -->
-    <div id="loader-overlay"><div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600"></div></div>
+    <!-- Loading Screen (Emergency Fix) -->
+    <div id="loader-overlay"><div class="spinner"></div></div>
+    
+    <!-- Emergency Script to Force Hide Loader if Firebase Fails -->
+    <script>
+        setTimeout(() => {
+            const loader = document.getElementById('loader-overlay');
+            if(loader) loader.style.display = 'none';
+        }, 5000); // سيختفي التحميل إجبارياً بعد 5 ثواني
+    </script>
 
     <!-- Navbar -->
     <header class="bg-white shadow-md fixed w-full z-50">
@@ -332,7 +340,6 @@
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-        // UPDATED FIREBASE CONFIG
         const firebaseConfig = {
           apiKey: "AIzaSyCePMwR1Ov1Xknj-1m0FJG-IE3pmSItzzU",
           authDomain: "thwas-b496b.firebaseapp.com",
@@ -343,18 +350,15 @@
           measurementId: "G-C54SBF5ZN6"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // Global State
         let CACHE = { trips: [], banners: [], requests: [], reports: [], visits: [], content: {} };
         let curLang = localStorage.getItem('lang') || 'ar';
         let sliderInterval = null;
 
-        // --- TRANSLATION ---
         const LANG = {
             ar:{
                 home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل",policy:"السياسة",location:"مقرنا",report:"مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة",confirm:"تأكيد التسجيل",
@@ -385,8 +389,7 @@
             }
         };
 
-        // --- CORE FUNCTIONS (Async) ---
-        
+        // CORE FUNCTIONS
         async function fetchData() {
             try {
                 const [t, b, req, rep, v, c] = await Promise.all([
@@ -406,7 +409,7 @@
                 if(!c.empty) CACHE.content = c.docs[0].data();
 
             } catch (e) { 
-                console.error("Firebase Connection Error (Check Rules):", e);
+                console.error("Firebase Error (Check Rules):", e);
             } finally {
                 hideLoader();
                 loadPublic();
@@ -427,16 +430,12 @@
                 return await getDownloadURL(storageRef);
             } catch(e) {
                 console.error("Upload Error:", e);
-                alert("فشل رفع الصورة: تأكد من تفعيل Storage Rules");
                 return '';
             }
         }
 
-        // --- PUBLIC UI LOGIC ---
-
         function init(){
             changeLang(curLang);
-            setTimeout(hideLoader, 3000); // Safety Timer 3s
             fetchData();
             trackVisit();
             checkRoute(); 
@@ -482,7 +481,6 @@
         }
 
         function loadPublic(){
-            // Trips
             const grid = document.getElementById('trips-grid');
             if(!grid) return;
             
@@ -502,7 +500,6 @@
                 }).join('');
             }
 
-            // Banners
             const sl = document.getElementById('hero-slider');
             if(CACHE.banners.length > 0){
                 sl.innerHTML = CACHE.banners.map((x,i) => `<div onclick="window.clickBanner('${x.type}','${x.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${x.img}')"></div>`).join('');
@@ -637,8 +634,7 @@
             }, 1000);
         }
 
-        // --- ADMIN PANEL LOGIC ---
-        
+        // --- ADMIN ---
         function checkRoute() {
             if(location.hash==='#admin' || location.hash==='#admin1'){
                 document.getElementById('user-app').classList.add('hidden');
@@ -693,36 +689,6 @@
             document.getElementById('stat-req').innerText = CACHE.requests.length;
             document.getElementById('stat-rep').innerText = CACHE.reports.length;
         }
-
-        document.getElementById('form-add-trip').addEventListener('submit', async e => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.disabled=true; btn.innerText="Uploading...";
-            
-            const mf = document.getElementById('t-img-main').files[0];
-            const gf = document.getElementById('t-guide-img').files[0];
-            const subf = document.querySelectorAll('.sub-img');
-            
-            let mI = await uploadFileToStorage(mf);
-            let gI = await uploadFileToStorage(gf);
-            let sI = [];
-            for(let f of subf) if(f.files[0]) sI.push(await uploadFileToStorage(f.files[0]));
-
-            await addDoc(collection(db, 'trips'), {
-                title_ar: document.getElementById('t-title-ar').value, title_fr: document.getElementById('t-title-fr').value, title_en: document.getElementById('t-title-en').value,
-                prog_ar: document.getElementById('t-prog-ar').value, prog_fr: document.getElementById('t-prog-fr').value, prog_en: document.getElementById('t-prog-en').value,
-                start: document.getElementById('t-date-start').value,
-                seats: document.getElementById('t-seats').value,
-                price: document.getElementById('t-price').value,
-                theme: document.getElementById('t-theme').value,
-                guideName: document.getElementById('t-guide-name').value,
-                mainImg: mI, guideImg: gI, subs: sI
-            });
-            
-            Swal.fire('Success', 'Trip Added', 'success');
-            e.target.reset();
-            btn.disabled=false; btn.innerText="نشر الرحلة";
-            fetchData();
-        });
 
         function loadManage(){
             document.getElementById('manage-list').innerHTML = CACHE.trips.map(t => `
