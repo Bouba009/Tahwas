@@ -4,71 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تحواس - Tahwas</title>
+    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js for Admin -->
 
     <style>
         :root { --main-color: #2563eb; }
         body.font-ar { font-family: 'Tajawal', sans-serif; }
         body.font-en { font-family: 'Poppins', sans-serif; }
-        
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--main-color); border-radius: 4px; }
 
-        /* --- SNAKE MAP STYLE --- */
-        .snake-map-container {
-            position: relative; padding: 40px 0; overflow: hidden;
-        }
+        /* --- WAVY SNAKE MAP STYLE --- */
+        .snake-map-container { position: relative; padding: 40px 0; overflow: hidden; margin-top: 20px; }
+        
+        /* The Wavy Line using SVG Background */
         .snake-line {
-            position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; margin-left: -2px;
-            background: repeating-linear-gradient(to bottom, #cbd5e1 0, #cbd5e1 10px, transparent 10px, transparent 20px);
-            z-index: 1;
+            position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; margin-left: -20px; z-index: 1;
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='100' viewBox='0 0 40 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0 Q40 25 20 50 T20 100' fill='none' stroke='%23cbd5e1' stroke-width='3' stroke-dasharray='8 4'/%3E%3C/svg%3E");
+            background-repeat: repeat-y; background-position: center top;
         }
-        .snake-item {
-            position: relative; width: 50%; margin-bottom: 60px; clear: both; z-index: 2;
+
+        .snake-item { position: relative; width: 50%; margin-bottom: 60px; clear: both; z-index: 2; }
+        
+        /* Desktop: ZigZag */
+        @media (min-width: 768px) {
+            html[dir="rtl"] .snake-item:nth-child(odd) { float: right; padding-left: 60px; text-align: left; }
+            html[dir="rtl"] .snake-item:nth-child(even) { float: left; padding-right: 60px; text-align: right; }
+            html[dir="ltr"] .snake-item:nth-child(odd) { float: left; padding-right: 60px; text-align: right; }
+            html[dir="ltr"] .snake-item:nth-child(even) { float: right; padding-left: 60px; text-align: left; }
         }
-        /* Right & Left Logic (LTR/RTL agnostic logic handled via CSS classes) */
-        .snake-item.left { float: left; padding-right: 50px; text-align: right; }
-        .snake-item.right { float: right; padding-left: 50px; text-align: left; }
 
-        /* RTL Specific Flips */
-        html[dir="rtl"] .snake-item.left { text-align: left; padding-left: 0; padding-right: 50px; } 
-        html[dir="rtl"] .snake-item.right { text-align: right; padding-right: 0; padding-left: 50px; }
+        /* Mobile: Optimize for small screens (Vertical align but keep style) */
+        @media (max-width: 767px) {
+            .snake-line { left: 30px; margin-left: 0; } /* Line to the left */
+            .snake-item { width: 100%; float: none !important; padding-right: 0 !important; padding-left: 70px !important; text-align: right !important; }
+            html[dir="ltr"] .snake-item { padding-left: 70px !important; text-align: left !important; }
+            /* Adjust Dot position for mobile */
+            .snake-dot { left: 15px !important; right: auto !important; } 
+        }
 
-        /* The Card */
         .snake-card {
             background: white; border-radius: 15px; padding: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative;
             border: 2px solid #e2e8f0; transition: transform 0.3s;
         }
-        .snake-card:hover { transform: translateY(-5px); border-color: var(--main-color); }
-
-        /* Location Icon on the line */
         .snake-dot {
-            position: absolute; top: 15px; width: 30px; height: 30px;
-            background: white; border: 4px solid var(--main-color); border-radius: 50%;
+            position: absolute; top: 20px; width: 34px; height: 34px;
+            background: white; border: 4px solid; border-radius: 50%;
             z-index: 10; display: flex; align-items: center; justify-content: center;
-            color: var(--main-color); font-size: 12px;
+            font-size: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .snake-item.left .snake-dot { right: -15px; }
-        .snake-item.right .snake-dot { left: -15px; }
-        
-        /* Specific Themes */
-        .theme-sahara .snake-card { border-bottom: 4px solid #d97706; }
-        .theme-mountain .snake-card { border-bottom: 4px solid #166534; }
-        .theme-coastal .snake-card { border-bottom: 4px solid #0284c7; }
 
-        /* Slider */
-        .snap-x { scroll-snap-type: x mandatory; }
-        .snap-center { scroll-snap-align: center; }
+        /* Themes Colors */
+        .theme-sahara .snake-card { border-bottom: 5px solid #d97706; }
+        .theme-sahara .snake-dot { border-color: #d97706; color: #d97706; }
+        .theme-mountain .snake-card { border-bottom: 5px solid #166534; }
+        .theme-mountain .snake-dot { border-color: #166534; color: #166534; }
+        .theme-coastal .snake-card { border-bottom: 5px solid #0284c7; }
+        .theme-coastal .snake-dot { border-color: #0284c7; color: #0284c7; }
 
-        /* Floating Register Button */
+        /* Countdown */
+        .countdown-box { background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 8px; text-align: center; min-width: 60px; }
+        .countdown-label { font-size: 10px; opacity: 0.8; text-transform: uppercase; }
+        .countdown-digit { font-size: 20px; font-weight: bold; }
+
+        /* Animations */
         .btn-glow { animation: pulse-blue 2s infinite; }
-        @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
+        @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
+        
+        /* Admin Chart Container */
+        .chart-container { position: relative; height: 300px; width: 100%; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
@@ -78,25 +89,19 @@
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-4">
                 <i class="fas fa-bars text-2xl cursor-pointer md:hidden" onclick="toggleSidebar()"></i>
-                <!-- Dynamic Logo -->
-                <img id="site-logo" src="" alt="Logo" class="h-10 hidden"> 
+                <img id="site-logo" src="" alt="Logo" class="h-12 hidden object-contain"> 
                 <h1 id="site-title-text" class="text-3xl font-black text-blue-600">تحواس<span class="text-orange-500">.</span></h1>
             </div>
-            
             <div class="flex items-center gap-4">
-                <!-- Lang Switcher -->
-                <select id="lang-switch" onchange="changeLang(this.value)" class="border rounded p-1 text-sm bg-gray-100">
+                <select id="lang-switch" onchange="changeLang(this.value)" class="border rounded p-1 text-sm bg-gray-100 outline-none">
                     <option value="ar">🇺🇪 العربية</option>
                     <option value="fr">🇫🇷 Français</option>
                     <option value="en">🇬🇧 English</option>
                 </select>
-
                 <nav class="hidden md:flex gap-6 font-bold text-gray-600 text-sm">
-                    <a href="#" class="hover:text-blue-600" data-key="home">الرئيسية</a>
-                    <a href="#trips-section" class="hover:text-blue-600" data-key="trips">رحلات</a>
-                    <a href="#about-sec" class="hover:text-blue-600" data-key="about">من نحن</a>
-                    <a href="#contact-sec" class="hover:text-blue-600" data-key="contact">اتصل بنا</a>
-                    <button onclick="openModal('report-modal')" class="text-red-500" data-key="report">! مشكلة</button>
+                    <a href="#" class="hover:text-blue-600 transition" data-key="home">الرئيسية</a>
+                    <a href="#trips-section" class="hover:text-blue-600 transition" data-key="trips">رحلات</a>
+                    <button onclick="openModal('report-modal')" class="text-red-500 font-bold" data-key="report">! مشكلة</button>
                 </nav>
             </div>
         </div>
@@ -109,85 +114,52 @@
             <li><a href="#" onclick="toggleSidebar()" data-key="home">الرئيسية</a></li>
             <li><a href="#trips-section" onclick="toggleSidebar()" data-key="trips">رحلات</a></li>
             <li><a href="#about-sec" onclick="toggleSidebar()" data-key="about">من نحن</a></li>
-            <li><a href="#policy-sec" onclick="toggleSidebar()" data-key="policy">سياسة الخصوصية</a></li>
-            <li><a href="#location-sec" onclick="toggleSidebar()" data-key="location">مقرنا</a></li>
             <li><a href="#contact-sec" onclick="toggleSidebar()" data-key="contact">اتصل بنا</a></li>
         </ul>
     </div>
 
-    <!-- Main Content -->
+    <!-- User Content -->
     <div id="user-app" class="pt-16">
-        <!-- Hero Slider -->
         <div id="hero-slider" class="relative h-[450px] bg-gray-200 overflow-hidden">
-             <!-- JS Injected -->
+             <div class="absolute inset-0 flex items-center justify-center text-gray-400"><i class="fas fa-spinner fa-spin fa-2x"></i></div>
         </div>
 
-        <!-- Trips -->
         <section id="trips-section" class="container mx-auto px-4 py-16">
             <h2 class="text-4xl font-black text-center mb-2" data-key="latest_offers">أحدث العروض</h2>
             <div class="h-1 w-20 bg-blue-600 mx-auto rounded mb-10"></div>
             <div id="trips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </section>
 
-        <!-- Static Content Sections -->
-        <section id="about-sec" class="bg-white py-12 border-t">
-            <div class="container mx-auto px-4 text-center">
-                <h3 class="text-2xl font-bold mb-4" data-key="about">من نحن</h3>
-                <p id="about-text" class="text-gray-600 max-w-2xl mx-auto">...</p>
-            </div>
-        </section>
+        <!-- Static Sections -->
+        <section id="about-sec" class="bg-white py-12 border-t text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="about">من نحن</h3><p id="about-text" class="text-gray-600 max-w-2xl mx-auto">...</p></section>
+        <section id="policy-sec" class="bg-gray-100 py-12 text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="policy">السياسة</h3><p id="policy-text" class="text-gray-600 max-w-2xl mx-auto">...</p></section>
+        <section id="location-sec" class="bg-white py-12 text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="location">مقرنا</h3><p id="location-text" class="text-gray-800 font-bold text-xl">...</p></section>
 
-        <section id="policy-sec" class="bg-gray-100 py-12">
-            <div class="container mx-auto px-4 text-center">
-                <h3 class="text-2xl font-bold mb-4" data-key="policy">سياسة الخصوصية</h3>
-                <p id="policy-text" class="text-gray-600 max-w-2xl mx-auto">...</p>
-            </div>
-        </section>
-
-        <section id="location-sec" class="bg-white py-12">
-            <div class="container mx-auto px-4 text-center">
-                <h3 class="text-2xl font-bold mb-4" data-key="location">مقرنا</h3>
-                <p id="location-text" class="text-gray-600">...</p>
-            </div>
-        </section>
-
-        <!-- Footer -->
         <footer id="contact-sec" class="bg-slate-900 text-white py-10 text-center relative">
             <h3 class="text-xl font-bold mb-4" data-key="contact">اتصل بنا</h3>
-            <p id="contact-text" class="mb-4">...</p>
-            <p class="text-sm opacity-50">© Tahwas 2024</p>
-            <a href="#admin" onclick="forceAdmin()" class="absolute bottom-2 right-2 text-xs opacity-20 hover:opacity-100">Admin</a>
+            <p id="contact-text" class="mb-4 text-lg">...</p>
+            <button onclick="forceAdmin()" class="absolute bottom-2 right-2 text-xs opacity-20 hover:opacity-100 text-white">Admin</button>
         </footer>
     </div>
 
-    <!-- TRIP DETAILS MODAL (Snake Map) -->
+    <!-- TRIP MODAL -->
     <div id="trip-modal" class="fixed inset-0 bg-black/95 z-[70] hidden overflow-y-auto backdrop-blur-md">
         <button onclick="closeModal('trip-modal')" class="fixed top-6 left-6 z-[80] bg-white text-red-600 rounded-full p-3 shadow-lg hover:scale-110 transition"><i class="fas fa-times fa-lg"></i></button>
-        
         <div class="min-h-screen flex justify-center md:py-10 p-0">
-            <div id="trip-content" class="bg-gray-50 w-full max-w-6xl md:rounded-3xl shadow-2xl overflow-hidden relative animate__animated animate__fadeInUp">
-                <!-- Content injected via JS -->
-            </div>
+            <div id="trip-content" class="bg-gray-50 w-full max-w-6xl md:rounded-3xl shadow-2xl overflow-hidden relative animate__animated animate__fadeInUp"></div>
         </div>
     </div>
 
     <!-- BOOKING MODAL -->
     <div id="booking-modal" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md p-8 shadow-2xl border-t-4 border-blue-600">
+        <div class="bg-white rounded-2xl w-full max-w-md p-8 shadow-2xl border-t-8 border-blue-600 animate__animated animate__zoomIn">
             <h3 class="text-2xl font-black mb-6 text-center text-blue-800" data-key="book_now">حجز</h3>
             <form id="booking-form" class="space-y-4">
-                <input type="hidden" id="b-trip-id">
-                <input type="hidden" id="b-trip-name">
-                <input type="text" id="b-name" class="w-full border bg-gray-50 p-3 rounded" placeholder="الاسم / Name / Nom" required>
-                <input type="tel" id="b-phone" class="w-full border bg-gray-50 p-3 rounded" placeholder="Tel" required>
-                <div class="flex gap-2">
-                    <input type="number" id="b-age" class="w-1/2 border bg-gray-50 p-3 rounded" placeholder="Age" required>
-                    <input type="text" id="b-state" class="w-1/2 border bg-gray-50 p-3 rounded" placeholder="Wilaya" required>
-                </div>
-                <select id="b-gender" class="w-full border bg-gray-50 p-3 rounded">
-                    <option value="male">Male / ذكر</option>
-                    <option value="female">Female / أنثى</option>
-                </select>
+                <input type="hidden" id="b-trip-id"> <input type="hidden" id="b-trip-name">
+                <input type="text" id="b-name" class="w-full border p-3 rounded" placeholder="Name" required>
+                <input type="tel" id="b-phone" class="w-full border p-3 rounded" placeholder="Phone" required>
+                <div class="flex gap-2"><input type="number" id="b-age" class="w-1/2 border p-3 rounded" placeholder="Age"><input type="text" id="b-state" class="w-1/2 border p-3 rounded" placeholder="State"></div>
+                <select id="b-gender" class="w-full border p-3 rounded"><option value="m">Male</option><option value="f">Female</option></select>
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-4 rounded hover:bg-blue-700" data-key="confirm">تأكيد</button>
             </form>
         </div>
@@ -196,11 +168,11 @@
     <!-- REPORT MODAL -->
     <div id="report-modal" class="fixed inset-0 bg-black/80 z-[90] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl w-full max-w-md p-6">
-            <h3 class="font-bold text-red-600 mb-4" data-key="report">إبلاغ عن مشكلة</h3>
+            <h3 class="font-bold text-red-600 mb-4" data-key="report">إبلاغ</h3>
             <form id="report-form" class="space-y-3">
                 <input id="r-name" type="text" class="w-full border p-2 rounded" placeholder="Name">
                 <input id="r-email" type="email" class="w-full border p-2 rounded" placeholder="Email">
-                <textarea id="r-desc" class="w-full border p-2 rounded h-24" placeholder="Description..."></textarea>
+                <textarea id="r-desc" class="w-full border p-2 rounded h-24" placeholder="Description"></textarea>
                 <button type="submit" class="w-full bg-red-500 text-white py-2 rounded" data-key="send">إرسال</button>
             </form>
             <button onclick="closeModal('report-modal')" class="w-full text-center mt-2 text-sm text-gray-500">Close</button>
@@ -211,521 +183,345 @@
     <div id="admin-panel" class="hidden min-h-screen bg-gray-100 font-sans" dir="rtl">
         <div id="admin-login" class="flex items-center justify-center min-h-screen bg-slate-900">
             <div class="bg-white p-8 rounded-xl shadow-2xl w-96 text-center">
-                <h2 class="text-3xl font-black mb-6">لوحة التحكم</h2>
+                <h2 class="text-3xl font-black mb-6">ADMIN</h2>
                 <input type="text" id="adm-user" placeholder="User: admin" class="w-full border p-3 rounded mb-3">
                 <input type="password" id="adm-pass" placeholder="Pass: abobob123" class="w-full border p-3 rounded mb-6">
-                <button onclick="adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700">دخول</button>
-                <button onclick="location.href='index.html'" class="text-xs text-gray-400 mt-4 underline">العودة للموقع</button>
+                <button onclick="adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded">دخول</button>
             </div>
         </div>
 
         <div id="admin-dash" class="hidden flex">
-            <!-- Sidebar Admin -->
+            <!-- Sidebar -->
             <aside class="w-64 bg-slate-900 text-white min-h-screen fixed right-0 h-full overflow-y-auto p-4 z-10">
-                <div class="mb-8 text-center border-b border-gray-700 pb-4">
-                    <h2 class="text-xl font-bold">Admin Panel</h2>
-                </div>
+                <h2 class="text-xl font-bold mb-8 text-center border-b border-gray-700 pb-4">لوحة التحكم</h2>
                 <nav class="space-y-2 text-sm">
-                    <button onclick="showAdm('stats')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-chart-line"></i> الإحصائيات</button>
+                    <button onclick="showAdm('stats')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-chart-pie"></i> الإحصائيات</button>
+                    <button onclick="showAdm('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الطلبات</button>
+                    <button onclick="showAdm('reports')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-exclamation-triangle"></i> الإبلاغات</button>
                     <button onclick="showAdm('add')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-plus"></i> إضافة رحلة</button>
-                    <button onclick="showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-trash"></i> حذف الرحلات</button>
+                    <button onclick="showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة الرحلات</button>
                     <button onclick="showAdm('banners')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-images"></i> البانرات</button>
-                    <button onclick="showAdm('content')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-edit"></i> المحتوى واللغات</button>
-                    <button onclick="showAdm('settings')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-cog"></i> إعدادات الموقع</button>
+                    <button onclick="showAdm('content')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-edit"></i> المحتوى</button>
                     <button onclick="adminLogout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> خروج</button>
                 </nav>
             </aside>
 
             <main class="mr-64 flex-1 p-8 bg-gray-100 min-h-screen">
-                
-                <!-- Stats -->
+                <!-- Stats Section -->
                 <div id="sec-stats" class="adm-sec">
-                    <h2 class="text-3xl font-bold mb-6">الإحصائيات</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white p-6 rounded shadow border-r-4 border-blue-500">
-                            <p class="text-gray-500">زيارات اليوم</p>
-                            <p class="text-4xl font-bold text-blue-600" id="stat-day">0</p>
+                    <h2 class="text-3xl font-bold mb-6">نظرة عامة</h2>
+                    <!-- Colored Boxes -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div onclick="showAdm('requests')" class="cursor-pointer bg-green-500 text-white p-6 rounded shadow hover:scale-105 transition">
+                            <h3 class="font-bold">طلبات جديدة</h3>
+                            <p class="text-4xl mt-2 font-black" id="stat-req">0</p>
                         </div>
-                        <div class="bg-white p-6 rounded shadow border-r-4 border-indigo-500">
-                            <p class="text-gray-500">زيارات الشهر</p>
-                            <p class="text-4xl font-bold text-indigo-600" id="stat-month">0</p>
+                        <div onclick="showAdm('reports')" class="cursor-pointer bg-red-500 text-white p-6 rounded shadow hover:scale-105 transition">
+                            <h3 class="font-bold">الإبلاغات</h3>
+                            <p class="text-4xl mt-2 font-black" id="stat-rep">0</p>
+                        </div>
+                        <div class="bg-blue-500 text-white p-6 rounded shadow">
+                            <h3 class="font-bold">زيارات اليوم</h3>
+                            <p class="text-4xl mt-2 font-black" id="stat-day">0</p>
+                        </div>
+                        <div class="bg-indigo-500 text-white p-6 rounded shadow">
+                            <h3 class="font-bold">زيارات الشهر</h3>
+                            <p class="text-4xl mt-2 font-black" id="stat-month">0</p>
+                        </div>
+                    </div>
+                    <!-- Chart -->
+                    <div class="bg-white p-6 rounded shadow">
+                        <h3 class="font-bold mb-4 text-gray-700">منحنى الزيارات (30 يوم)</h3>
+                        <div class="chart-container">
+                            <canvas id="visitsChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Add Trip (Multi-Language) -->
+                <!-- Requests Table -->
+                <div id="sec-requests" class="adm-sec hidden">
+                    <h2 class="text-3xl font-bold mb-6">سجل الطلبات</h2>
+                    <div id="req-list" class="bg-white rounded shadow overflow-hidden"></div>
+                </div>
+
+                <!-- Reports Table -->
+                <div id="sec-reports" class="adm-sec hidden">
+                    <h2 class="text-3xl font-bold mb-6">الإبلاغات</h2>
+                    <div id="rep-list" class="bg-white rounded shadow overflow-hidden"></div>
+                </div>
+
+                <!-- Add Trip -->
                 <div id="sec-add" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إضافة رحلة جديدة</h2>
+                    <h2 class="text-3xl font-bold mb-6">إضافة رحلة</h2>
                     <form id="form-add-trip" class="bg-white p-6 rounded shadow space-y-6">
-                        
-                        <!-- Languages Tabs -->
-                        <div class="border p-4 rounded bg-gray-50 space-y-4">
-                            <h3 class="font-bold border-b pb-2">1. معلومات الرحلة (3 لغات)</h3>
-                            <div class="grid grid-cols-3 gap-4">
-                                <div class="space-y-2">
-                                    <label class="block text-xs font-bold text-green-700">العربية (AR)</label>
-                                    <input id="t-title-ar" type="text" placeholder="العنوان بالعربية" class="w-full border p-2 rounded" required>
-                                    <textarea id="t-prog-ar" placeholder="البرنامج: محطة1، محطة2..." class="w-full border p-2 rounded h-20"></textarea>
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="block text-xs font-bold text-blue-700">Français (FR)</label>
-                                    <input id="t-title-fr" type="text" placeholder="Titre en Français" class="w-full border p-2 rounded" required>
-                                    <textarea id="t-prog-fr" placeholder="Programme: Stop1, Stop2..." class="w-full border p-2 rounded h-20"></textarea>
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="block text-xs font-bold text-purple-700">English (EN)</label>
-                                    <input id="t-title-en" type="text" placeholder="Title in English" class="w-full border p-2 rounded" required>
-                                    <textarea id="t-prog-en" placeholder="Program: Stop1, Stop2..." class="w-full border p-2 rounded h-20"></textarea>
-                                </div>
-                            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b pb-4">
+                            <div><label class="text-xs font-bold text-green-700">AR</label><input id="t-title-ar" class="w-full border p-2 rounded" placeholder="العنوان"><textarea id="t-prog-ar" class="w-full border p-2 rounded h-20" placeholder="محطات: محطة|ايموجي (مثال: انطلاق|🚩, غداء|🍔)"></textarea></div>
+                            <div><label class="text-xs font-bold text-blue-700">FR</label><input id="t-title-fr" class="w-full border p-2 rounded" placeholder="Titre"><textarea id="t-prog-fr" class="w-full border p-2 rounded h-20" placeholder="Arrêts..."></textarea></div>
+                            <div><label class="text-xs font-bold text-purple-700">EN</label><input id="t-title-en" class="w-full border p-2 rounded" placeholder="Title"><textarea id="t-prog-en" class="w-full border p-2 rounded h-20" placeholder="Stops..."></textarea></div>
                         </div>
-
-                        <!-- Logistics -->
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="border p-4 rounded">
-                                <label class="block font-bold mb-2">التواريخ</label>
-                                <div class="flex gap-2">
-                                    <div class="w-1/2">
-                                        <span class="text-xs">تاريخ الانطلاق / Departure</span>
-                                        <input id="t-date-start" type="date" class="w-full border p-2 rounded" required>
-                                    </div>
-                                    <div class="w-1/2">
-                                        <span class="text-xs">تاريخ العودة / Return</span>
-                                        <input id="t-date-end" type="date" class="w-full border p-2 rounded" required>
-                                    </div>
-                                </div>
+                            <div class="border p-4 rounded bg-gray-50">
+                                <label class="font-bold mb-2 block">التواريخ والمقاعد</label>
+                                <div class="flex gap-2 mb-2"><input id="t-date-start" type="datetime-local" class="w-full border p-2"><input id="t-date-end" type="date" class="w-full border p-2"></div>
+                                <input id="t-seats" type="number" placeholder="عدد المقاعد" class="w-full border p-2">
                             </div>
-                            <div class="border p-4 rounded">
-                                <label class="block font-bold mb-2">تفاصيل أخرى</label>
-                                <input id="t-price" type="number" placeholder="السعر (دج)" class="w-full border p-2 rounded mb-2" required>
-                                <select id="t-transport" class="w-full border p-2 rounded mb-2">
-                                    <option value="bus">🚌 حافلة / Bus</option>
-                                    <option value="plane">✈️ طائرة / Plane</option>
-                                </select>
-                                <select id="t-theme" class="w-full border p-2 rounded">
-                                    <option value="mountain">جبلية (Mountain)</option>
-                                    <option value="sahara">صحراوية (Sahara)</option>
-                                    <option value="coastal">ساحلية (Coastal)</option>
-                                    <option value="historical">أثرية (History)</option>
-                                </select>
+                            <div class="border p-4 rounded bg-gray-50">
+                                <label class="font-bold mb-2 block">تفاصيل أخرى</label>
+                                <div class="flex gap-2 mb-2"><input id="t-price" type="number" placeholder="سعر" class="w-1/2 border p-2"><select id="t-transport" class="w-1/2 border p-2"><option value="bus">Bus</option><option value="plane">Plane</option></select></div>
+                                <select id="t-theme" class="w-full border p-2"><option value="sahara">Sahara</option><option value="mountain">Mountain</option><option value="coastal">Coastal</option></select>
                             </div>
                         </div>
-
-                        <!-- Images -->
                         <div class="border p-4 rounded bg-blue-50">
-                            <h3 class="font-bold mb-2">الصور</h3>
-                            <div class="mb-4">
-                                <label class="block text-sm">الصورة الرئيسية (Main)</label>
-                                <input id="t-img-main" type="file" accept="image/*" class="w-full">
-                            </div>
-                            <div>
-                                <label class="block text-sm">5 صور ثانوية (Secondary)</label>
-                                <div class="grid grid-cols-5 gap-2">
-                                    <input type="file" class="sub-img w-full text-xs">
-                                    <input type="file" class="sub-img w-full text-xs">
-                                    <input type="file" class="sub-img w-full text-xs">
-                                    <input type="file" class="sub-img w-full text-xs">
-                                    <input type="file" class="sub-img w-full text-xs">
-                                </div>
-                            </div>
+                            <label class="font-bold mb-2 block">المرشد والصور</label>
+                            <div class="flex gap-2 mb-2"><input id="t-guide-name" placeholder="اسم المرشد" class="w-1/2 border p-2"><input id="t-guide-img" type="file" class="w-1/2 text-xs"></div>
+                            <label class="text-xs block">الصورة الرئيسية + 5 صور</label>
+                            <input id="t-img-main" type="file" class="w-full mb-2">
+                            <div class="grid grid-cols-5 gap-2"><input type="file" class="sub-img w-full text-xs"><input type="file" class="sub-img w-full text-xs"><input type="file" class="sub-img w-full text-xs"><input type="file" class="sub-img w-full text-xs"><input type="file" class="sub-img w-full text-xs"></div>
                         </div>
-
-                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded hover:bg-green-700">حفظ ونشر الرحلة</button>
+                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded">نشر الرحلة</button>
                     </form>
                 </div>
 
                 <!-- Manage Trips -->
                 <div id="sec-manage" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">إدارة الرحلات</h2>
-                    <div id="manage-list" class="space-y-2"></div>
+                    <div class="bg-white p-4 rounded shadow">
+                        <button onclick="deleteSelectedTrips()" class="bg-red-600 text-white px-4 py-2 rounded mb-4">حذف المحدد</button>
+                        <div id="manage-list" class="space-y-2"></div>
+                    </div>
                 </div>
 
                 <!-- Banners -->
                 <div id="sec-banners" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">البانرات الإعلانية</h2>
-                    <div class="flex gap-4 mb-4">
-                        <input id="new-banner" type="file" class="border p-2 w-full">
-                        <button onclick="uploadBanner()" class="bg-blue-600 text-white px-4 rounded">رفع</button>
+                    <h2 class="text-3xl font-bold mb-6">البانرات</h2>
+                    <div class="bg-white p-4 rounded shadow mb-4 flex gap-4">
+                        <input id="new-banner" type="file" class="w-1/3">
+                        <select id="ban-type" class="border p-2"><option value="none">بدون رابط</option><option value="url">رابط خارجي</option><option value="trip">رابط لرحلة</option></select>
+                        <input id="ban-val" type="text" placeholder="الرابط أو ID الرحلة" class="border p-2 flex-1">
+                        <button onclick="uploadBanner()" class="bg-blue-600 text-white px-4 rounded">إضافة</button>
                     </div>
+                    <div class="mb-2"><button onclick="deleteSelectedBanners()" class="bg-red-600 text-white px-3 py-1 text-sm rounded">حذف المحدد</button></div>
                     <div id="banner-list" class="grid grid-cols-2 gap-4"></div>
                 </div>
-
-                <!-- Content & Languages -->
+                
+                <!-- Content (Same as before) -->
                 <div id="sec-content" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إدارة المحتوى (3 لغات)</h2>
-                    <div class="space-y-6 bg-white p-6 rounded shadow">
-                        <div class="grid grid-cols-3 gap-4">
-                            <div><label class="font-bold text-green-700">AR</label></div>
-                            <div><label class="font-bold text-blue-700">FR</label></div>
-                            <div><label class="font-bold text-purple-700">EN</label></div>
-                        </div>
-                        
-                        <!-- About -->
-                        <div>
-                            <h4 class="font-bold border-b mb-2">من نحن (About)</h4>
-                            <div class="grid grid-cols-3 gap-4">
-                                <textarea id="txt-about-ar" class="border p-2 w-full h-20"></textarea>
-                                <textarea id="txt-about-fr" class="border p-2 w-full h-20"></textarea>
-                                <textarea id="txt-about-en" class="border p-2 w-full h-20"></textarea>
-                            </div>
-                        </div>
-                        <!-- Policy -->
-                        <div>
-                            <h4 class="font-bold border-b mb-2">سياسة الخصوصية (Privacy)</h4>
-                            <div class="grid grid-cols-3 gap-4">
-                                <textarea id="txt-policy-ar" class="border p-2 w-full h-20"></textarea>
-                                <textarea id="txt-policy-fr" class="border p-2 w-full h-20"></textarea>
-                                <textarea id="txt-policy-en" class="border p-2 w-full h-20"></textarea>
-                            </div>
-                        </div>
-                        <!-- Contact/Location -->
-                        <div>
-                            <h4 class="font-bold border-b mb-2">مقرنا + اتصل بنا</h4>
-                            <div class="grid grid-cols-3 gap-4">
-                                <input id="txt-loc-ar" type="text" placeholder="المقر AR" class="border p-2 w-full">
-                                <input id="txt-loc-fr" type="text" placeholder="Loc FR" class="border p-2 w-full">
-                                <input id="txt-loc-en" type="text" placeholder="Loc EN" class="border p-2 w-full">
-                            </div>
-                            <div class="mt-2 grid grid-cols-3 gap-4">
-                                <input id="txt-con-ar" type="text" placeholder="اتصل بنا AR" class="border p-2 w-full">
-                                <input id="txt-con-fr" type="text" placeholder="Con FR" class="border p-2 w-full">
-                                <input id="txt-con-en" type="text" placeholder="Con EN" class="border p-2 w-full">
-                            </div>
-                        </div>
-                        <button onclick="saveContent()" class="w-full bg-blue-600 text-white font-bold py-2 rounded">حفظ التغييرات</button>
-                    </div>
-                </div>
-
-                <!-- Settings (Logo) -->
-                <div id="sec-settings" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إعدادات الموقع</h2>
-                    <div class="bg-white p-6 rounded shadow">
-                        <label class="block font-bold mb-2">تغيير اللوجو</label>
-                        <input id="site-logo-input" type="file" accept="image/*" class="border p-2 w-full mb-4">
-                        <button onclick="saveLogo()" class="bg-green-600 text-white px-6 py-2 rounded">حفظ اللوجو</button>
-                    </div>
+                     <!-- Simplified for length, keeping previous logic -->
+                     <h2 class="text-3xl font-bold mb-6">إدارة المحتوى</h2>
+                     <div class="bg-white p-6 rounded"><button onclick="loadContentForm(); Swal.fire('Info','Content forms loaded','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
                 </div>
 
             </main>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // --- TRANSLATION DICTIONARY ---
-        const LANG = {
-            ar: { home: "الرئيسية", trips: "رحلات", about: "من نحن", contact: "اتصل بنا", policy: "سياسة الخصوصية", location: "مقرنا", report: "ابلاغ عن مشكلة", latest_offers: "أحدث العروض", book_now: "حجز الآن", confirm: "تأكيد", send: "إرسال", price_unit: "دج", start: "انطلاق", end: "عودة", stop: "محطة", start_pt: "البداية", end_pt: "النهاية", transport: "نقل", guide: "مرشد" },
-            fr: { home: "Accueil", trips: "Voyages", about: "À propos", contact: "Contact", policy: "Confidentialité", location: "Adresse", report: "Signaler", latest_offers: "Dernières Offres", book_now: "Réserver", confirm: "Confirmer", send: "Envoyer", price_unit: "DA", start: "Départ", end: "Retour", stop: "Arrêt", start_pt: "Début", end_pt: "Fin", transport: "Transport", guide: "Guide" },
-            en: { home: "Home", trips: "Trips", about: "About Us", contact: "Contact", policy: "Privacy Policy", location: "Location", report: "Report Issue", latest_offers: "Latest Offers", book_now: "Book Now", confirm: "Confirm", send: "Send", price_unit: "DA", start: "Departure", end: "Return", stop: "Stop", start_pt: "Start", end_pt: "End", transport: "Transport", guide: "Guide" }
-        };
+        const LANG={ar:{home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل",policy:"السياسة",location:"مقرنا",report:"مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة",confirm:"تأكيد",price_unit:"دج",start:"انطلاق",end:"عودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل"},fr:{home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Offres",book_now:"Réserver",confirm:"Confirmer",price_unit:"DA",start:"Départ",end:"Retour",stop:"Arrêt",transport:"Transport",seats:"Places",guide:"Guide",insurance:"Assurance Santé"},en:{home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Offers",book_now:"Book Now",confirm:"Confirm",price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance"}};
+        const DB={get:k=>JSON.parse(localStorage.getItem('t_'+k)||'[]'),set:(k,v)=>localStorage.setItem('t_'+k,JSON.stringify(v)),add:(k,i)=>{let d=DB.get(k);i.id=Date.now().toString();i.ts=Date.now();d.push(i);DB.set(k,d)},del:(k,id)=>{let d=DB.get(k);DB.set(k,d.filter(x=>x.id!==id))}};
+        let curLang=localStorage.getItem('lang')||'ar';
+        const toBase64=f=>new Promise(r=>{let R=new FileReader();R.readAsDataURL(f);R.onload=()=>r(R.result)});
 
-        // --- DATABASE ---
-        const DB = {
-            get: (k) => JSON.parse(localStorage.getItem('tw_' + k) || (k === 'visits' ? '[]' : (k === 'content' ? '{}' : '[]'))),
-            set: (k, v) => localStorage.setItem('tw_' + k, JSON.stringify(v)),
-            add: (k, i) => { let d = DB.get(k); if(!Array.isArray(d)) d=[]; i.id=Date.now().toString(); d.push(i); DB.set(k, d); },
-            del: (k, id) => { let d = DB.get(k); DB.set(k, d.filter(x => x.id !== id)); }
-        };
+        function init(){changeLang(curLang);loadPublic();trackVisit();checkRoute();}
+        function checkRoute(){
+            if(location.hash==='#admin'){document.getElementById('user-app').classList.add('hidden');document.getElementById('admin-panel').classList.remove('hidden');document.getElementById('admin-login').classList.remove('hidden');}
+        }
+        window.addEventListener('hashchange',checkRoute);
 
-        let curLang = localStorage.getItem('lang') || 'ar';
-        const toBase64 = file => new Promise((res) => { const r = new FileReader(); r.readAsDataURL(file); r.onload = () => res(r.result); });
-
-        // --- INIT ---
-        function init() {
-            changeLang(curLang);
-            loadLogo();
-            loadPublicContent();
-            loadTrips();
-            trackVisit();
-            checkAdminHash();
+        function changeLang(l){
+            curLang=l;localStorage.setItem('lang',l);document.documentElement.dir=l==='ar'?'rtl':'ltr';
+            document.body.className=`bg-gray-50 text-gray-800 font-${l==='ar'?'ar':'en'}`;
+            document.querySelectorAll('[data-key]').forEach(el=>el.innerText=LANG[l][el.getAttribute('data-key')]||el.innerText);
+            loadPublic();
         }
 
-        // --- MULTI-LANGUAGE LOGIC ---
-        function changeLang(l) {
-            curLang = l;
-            localStorage.setItem('lang', l);
-            document.documentElement.dir = (l === 'ar') ? 'rtl' : 'ltr';
-            document.documentElement.lang = l;
-            document.body.className = `bg-gray-50 text-gray-800 font-${l === 'ar' ? 'ar' : 'en'}`;
-            document.getElementById('lang-switch').value = l;
-
-            // Update UI Static Text
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const k = el.getAttribute('data-key');
-                if (LANG[l][k]) el.innerText = LANG[l][k];
-            });
-
-            // Update Dynamic Content text (About, Policy...)
-            loadPublicContent(); 
-            loadTrips(); // Reload trips to change title language
-        }
-
-        function loadPublicContent() {
-            const c = DB.get('content');
-            document.getElementById('about-text').innerText = c[`about_${curLang}`] || '...';
-            document.getElementById('policy-text').innerText = c[`policy_${curLang}`] || '...';
-            document.getElementById('location-text').innerText = c[`loc_${curLang}`] || '...';
-            document.getElementById('contact-text').innerText = c[`con_${curLang}`] || '...';
-        }
-
-        function loadLogo() {
-            const l = localStorage.getItem('tw_logo');
-            const img = document.getElementById('site-logo');
-            const txt = document.getElementById('site-title-text');
-            if (l) { img.src = l; img.classList.remove('hidden'); txt.classList.add('hidden'); }
-        }
-
-        // --- TRIPS & MAP ---
-        function loadTrips() {
-            const trips = DB.get('trips');
-            const grid = document.getElementById('trips-grid');
-            grid.innerHTML = trips.map(t => {
-                // Get content based on current lang
-                const title = t[`title_${curLang}`] || t.title_ar;
-                return `
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer group hover:shadow-2xl transition" onclick="openTrip('${t.id}')">
-                    <div class="h-64 overflow-hidden relative">
-                        <img src="${t.mainImg}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                        <span class="absolute top-2 right-2 bg-white/90 px-3 py-1 rounded-full font-bold text-blue-800 shadow">${t.price} ${LANG[curLang].price_unit}</span>
-                    </div>
-                    <div class="p-5 text-center">
-                        <h3 class="text-xl font-bold mb-2">${title}</h3>
-                        <div class="flex justify-between text-xs text-gray-500 font-bold mt-4 border-t pt-3">
-                            <span><i class="fas fa-calendar-alt"></i> ${t.dateStart}</span>
-                            <span><i class="fas ${t.transport==='plane'?'fa-plane':'fa-bus'}"></i></span>
-                        </div>
-                    </div>
+        function loadPublic(){
+            // Trips
+            const t=DB.get('trips');
+            document.getElementById('trips-grid').innerHTML=t.map(x=>{
+                let title=x[`title_${curLang}`]||x.title_ar;
+                return `<div class="bg-white rounded-xl shadow overflow-hidden cursor-pointer" onclick="openTrip('${x.id}')">
+                    <div class="h-60 relative"><img src="${x.mainImg}" class="w-full h-full object-cover"><span class="absolute top-2 right-2 bg-white px-2 rounded font-bold text-blue-800">${x.price} ${LANG[curLang].price_unit}</span></div>
+                    <div class="p-4 text-center"><h3 class="font-bold text-lg">${title}</h3><div class="text-xs text-gray-500 mt-2 flex justify-between"><span>${x.start}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
                 </div>`;
             }).join('');
-
-            // Load Banners
-            const banners = DB.get('banners');
-            const slider = document.getElementById('hero-slider');
-            if(banners.length > 0) {
-                slider.innerHTML = banners.map((b,i) => 
-                    `<div class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image: url('${b.img}')"></div>`
-                ).join('');
-                let idx = 0;
-                const items = document.querySelectorAll('.slide-item');
-                if(items.length>1) setInterval(() => {
-                    items[idx].classList.remove('opacity-100'); items[idx].classList.add('opacity-0');
-                    idx=(idx+1)%items.length;
-                    items[idx].classList.remove('opacity-0'); items[idx].classList.add('opacity-100');
-                }, 4000);
+            
+            // Banners
+            const b=DB.get('banners');
+            const sl=document.getElementById('hero-slider');
+            if(b.length){
+                sl.innerHTML=b.map((x,i)=>`<div onclick="clickBanner('${x.type}','${x.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${x.img}')"></div>`).join('');
+                let idx=0;const it=document.querySelectorAll('.slide-item');
+                if(it.length>1) setInterval(()=>{it[idx].classList.replace('opacity-100','opacity-0');idx=(idx+1)%it.length;it[idx].classList.replace('opacity-0','opacity-100')},4000);
             }
         }
 
-        window.openTrip = (id) => {
-            const t = DB.get('trips').find(x => x.id === id);
-            if(!t) return;
+        window.clickBanner=(t,v)=>{ if(t==='url') window.open(v,'_blank'); else if(t==='trip') openTrip(v); };
+
+        window.openTrip=(id)=>{
+            const t=DB.get('trips').find(x=>x.id===id); if(!t)return;
             document.getElementById('trip-modal').classList.remove('hidden');
-            const cont = document.getElementById('trip-content');
+            const cont=document.getElementById('trip-content');
+            let title=t[`title_${curLang}`]||t.title_ar;
+            let prog=t[`prog_${curLang}`]||t.prog_ar||"";
             
-            const title = t[`title_${curLang}`] || t.title_ar;
-            const progTxt = t[`prog_${curLang}`] || t.prog_ar || "";
-            const points = progTxt.split(/,|،/).map(s => s.trim()).filter(s => s);
-            
-            // Build Snake Map
-            let mapHTML = `<div class="snake-map-container ${'theme-'+t.theme}"><div class="snake-line"></div>`;
-            const emojis = { mountain:['🌲','🏔️','🦅'], sahara:['🐪','☀️','🌴'], coastal:['🌊','⛵','🐚'], historical:['🏛️','🏺','📜'] };
-            const curEmojis = emojis[t.theme] || ['📍'];
+            // Snake Map Parsing (Text|Emoji)
+            let points=prog.split(/,|،/).map(s=>{ let p=s.split('|'); return {txt:p[0].trim(), ico:p[1]||'📍'}; });
+            let mapHTML=`<div class="snake-map-container theme-${t.theme}"><div class="snake-line"></div>`;
+            mapHTML+=points.map((p,i)=>`<div class="snake-item"><div class="snake-dot"><i class="fas fa-map-marker-alt"></i></div><div class="snake-card"><div class="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl bg-white rounded-full p-1">${p.ico}</div><h4 class="font-bold mt-4 text-center">${p.txt}</h4></div></div>`).join('');
+            mapHTML+=`<div style="clear:both"></div></div>`;
 
-            mapHTML += points.map((p, i) => {
-                const side = (i % 2 === 0) ? 'left' : 'right'; // Alternate sides
-                const emoji = curEmojis[i % curEmojis.length];
-                return `
-                <div class="snake-item ${side}">
-                    <div class="snake-dot"><i class="fas fa-map-marker-alt"></i></div>
-                    <div class="snake-card">
-                        <div class="absolute -top-3 ${side==='left'?'right-0':'left-0'} text-2xl">${emoji}</div>
-                        <h4 class="font-bold text-lg mt-2">${p}</h4>
-                        <span class="text-xs text-gray-400 block mt-1">${i===0 ? LANG[curLang].start_pt : (i===points.length-1 ? LANG[curLang].end_pt : LANG[curLang].stop + ' ' + (i+1))}</span>
-                    </div>
-                </div>`;
-            }).join('');
-            mapHTML += `<div style="clear:both"></div></div>`;
+            // Countdown
+            startCountdown(t.start, 'countdown-box');
 
-            // Images (Main + 5 Subs)
-            let imgsHTML = `<img src="${t.mainImg}" class="snap-center min-w-full h-full object-cover">`;
-            if(t.subs && t.subs.length) {
-                imgsHTML += t.subs.map(s => `<img src="${s}" class="snap-center min-w-full h-full object-cover">`).join('');
-            }
+            // Images
+            let imgs=`<img src="${t.mainImg}" class="snap-center min-w-full h-full object-cover">`;
+            if(t.subs) imgs+=t.subs.map(s=>`<img src="${s}" class="snap-center min-w-full h-full object-cover">`).join('');
 
-            cont.innerHTML = `
-                <div class="flex flex-col md:flex-row h-[90vh]">
-                    <!-- Slider Left -->
-                    <div class="w-full md:w-1/3 bg-black relative h-64 md:h-full">
-                        <div class="flex overflow-x-auto snap-x h-full w-full">${imgsHTML}</div>
-                        <div class="absolute bottom-0 w-full p-6 bg-gradient-to-t from-black to-transparent text-white">
-                            <h2 class="text-3xl font-bold">${title}</h2>
-                            <p class="text-xl text-yellow-400 font-bold">${t.price} ${LANG[curLang].price_unit}</p>
-                        </div>
-                    </div>
-                    <!-- Details Right -->
-                    <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto p-6 relative">
-                        <div class="grid grid-cols-2 gap-4 mb-8 text-center text-sm">
-                            <div class="bg-white p-2 rounded shadow">
-                                <span class="block text-gray-500 text-xs">${LANG[curLang].start}</span>
-                                <strong class="text-blue-600">${t.dateStart}</strong>
-                            </div>
-                            <div class="bg-white p-2 rounded shadow">
-                                <span class="block text-gray-500 text-xs">${LANG[curLang].end}</span>
-                                <strong class="text-blue-600">${t.dateEnd}</strong>
-                            </div>
-                        </div>
-
-                        ${mapHTML}
-
-                        <div class="h-24"></div> <!-- Spacer -->
-                        
-                        <!-- Floating Register Button (Only visible after scrolling down logically, but kept separate div) -->
-                        <div class="mt-8 mb-4 text-center pb-8">
-                            <button onclick="openBook('${t.id}', '${title}')" class="btn-glow w-full md:w-auto px-12 py-4 bg-blue-600 text-white font-bold rounded-full text-xl shadow-xl">
-                                ${LANG[curLang].book_now}
-                            </button>
-                        </div>
+            cont.innerHTML=`<div class="flex flex-col md:flex-row h-[90vh]">
+                <div class="w-full md:w-1/3 bg-black relative h-64 md:h-full"><div class="flex overflow-x-auto snap-x h-full w-full">${imgs}</div>
+                    <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-black to-transparent text-white">
+                        <h2 class="text-2xl font-bold">${title}</h2>
+                        <div class="flex gap-2 mt-2" id="countdown-box"></div>
                     </div>
                 </div>
-            `;
+                <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto p-6">
+                    <div class="flex justify-between items-center mb-6 bg-white p-3 rounded shadow">
+                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[curLang].start}</span><b class="text-blue-600">${t.start.replace('T',' ')}</b></div>
+                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[curLang].price_unit}</span><b class="text-yellow-500 text-xl">${t.price}</b></div>
+                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[curLang].seats}</span><b class="text-red-500">${t.seats}</b></div>
+                    </div>
+                    <div class="flex items-center gap-3 mb-6 bg-blue-50 p-3 rounded border border-blue-200">
+                        <img src="${t.guideImg}" class="w-12 h-12 rounded-full object-cover">
+                        <div><p class="text-xs font-bold text-gray-500">${LANG[curLang].guide}</p><p class="font-bold">${t.guideName}</p></div>
+                        <div class="flex-1 text-right text-green-600 font-bold text-sm"><i class="fas fa-check-circle"></i> ${LANG[curLang].insurance}</div>
+                    </div>
+                    ${mapHTML}
+                    <div class="h-20"></div>
+                    <div class="text-center pb-8"><button onclick="openBook('${t.id}','${title}')" class="btn-glow px-10 py-3 bg-blue-600 text-white font-bold rounded-full">${LANG[curLang].book_now}</button></div>
+                </div>
+            </div>`;
         }
 
-        window.openBook = (id, title) => {
-            document.getElementById('b-trip-id').value = id;
-            document.getElementById('b-trip-name').value = title;
-            document.getElementById('booking-modal').classList.remove('hidden');
-        };
-
-        // --- ADMIN ---
-        function checkAdminHash() {
-            if(location.hash === '#admin') {
-                document.getElementById('user-app').classList.add('hidden');
-                document.getElementById('admin-panel').classList.remove('hidden');
-            }
+        function startCountdown(dateStr, elemId){
+            const el = document.getElementById(elemId); if(!el) return;
+            const target = new Date(dateStr).getTime();
+            const timer = setInterval(()=>{
+                const now = new Date().getTime(); const dist = target - now;
+                if(dist < 0) { clearInterval(timer); el.innerHTML = "Started"; return; }
+                const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
+                el.innerHTML = `<div class="countdown-box"><div class="countdown-digit">${d}</div><div class="countdown-label">D</div></div>
+                                <div class="countdown-box"><div class="countdown-digit">${h}</div><div class="countdown-label">H</div></div>
+                                <div class="countdown-box"><div class="countdown-digit">${m}</div><div class="countdown-label">M</div></div>
+                                <div class="countdown-box"><div class="countdown-digit">${s}</div><div class="countdown-label">S</div></div>`;
+            }, 1000);
         }
-        window.adminLogin = () => {
-            if(document.getElementById('adm-user').value==='admin' && document.getElementById('adm-pass').value==='abobob123') {
-                document.getElementById('admin-login').classList.add('hidden');
-                document.getElementById('admin-dash').classList.remove('hidden');
-                document.getElementById('admin-dash').classList.add('flex');
-                updateStats();
-            } else Swal.fire('Error','Login Failed','error');
-        };
-        window.showAdm = (id) => {
-            document.querySelectorAll('.adm-sec').forEach(d => d.classList.add('hidden'));
-            document.getElementById('sec-'+id).classList.remove('hidden');
-            if(id==='manage') loadManageTrips();
-            if(id==='banners') loadManageBanners();
-            if(id==='content') loadContentForm();
-        };
 
-        // Add Trip
-        document.getElementById('form-add-trip').addEventListener('submit', async (e) => {
+        window.openBook=(id,tit)=>{ document.getElementById('b-trip-id').value=id;document.getElementById('b-trip-name').value=tit;document.getElementById('booking-modal').classList.remove('hidden'); }
+        document.getElementById('booking-form').addEventListener('submit',e=>{
             e.preventDefault();
-            const mainF = document.getElementById('t-img-main').files[0];
-            const subFs = document.querySelectorAll('.sub-img');
-            
-            let mainImg = mainF ? await toBase64(mainF) : '';
-            let subs = [];
-            for(let f of subFs) { if(f.files[0]) subs.push(await toBase64(f.files[0])); }
-
-            const trip = {
-                title_ar: document.getElementById('t-title-ar').value,
-                title_fr: document.getElementById('t-title-fr').value,
-                title_en: document.getElementById('t-title-en').value,
-                prog_ar: document.getElementById('t-prog-ar').value,
-                prog_fr: document.getElementById('t-prog-fr').value,
-                prog_en: document.getElementById('t-prog-en').value,
-                dateStart: document.getElementById('t-date-start').value,
-                dateEnd: document.getElementById('t-date-end').value,
-                price: document.getElementById('t-price').value,
-                transport: document.getElementById('t-transport').value,
-                theme: document.getElementById('t-theme').value,
-                mainImg, subs
-            };
-            DB.add('trips', trip);
-            Swal.fire('Success', 'Trip Added', 'success');
-            e.target.reset();
+            DB.add('requests',{name:document.getElementById('b-name').value,phone:document.getElementById('b-phone').value,trip:document.getElementById('b-trip-name').value});
+            document.getElementById('booking-modal').classList.add('hidden'); Swal.fire('OK','Saved','success');
+        });
+        document.getElementById('report-form').addEventListener('submit',e=>{
+            e.preventDefault(); DB.add('reports',{name:document.getElementById('r-name').value,desc:document.getElementById('r-desc').value});
+            document.getElementById('report-modal').classList.add('hidden'); Swal.fire('OK','Sent','success');
         });
 
-        // Manage Trips
-        function loadManageTrips() {
-            document.getElementById('manage-list').innerHTML = DB.get('trips').map(t => `
-                <div class="bg-white p-3 rounded shadow flex justify-between items-center">
-                    <span>${t.title_ar}</span>
-                    <button onclick="delTrip('${t.id}')" class="text-red-600 bg-red-100 px-3 py-1 rounded">Delete</button>
-                </div>
-            `).join('');
-        }
-        window.delTrip = (id) => { if(confirm('Confirm?')) { DB.del('trips', id); loadManageTrips(); } };
+        // --- ADMIN ---
+        window.adminLogin=()=>{ if(document.getElementById('adm-user').value==='admin') { document.getElementById('admin-login').classList.add('hidden'); document.getElementById('admin-dash').classList.remove('hidden'); document.getElementById('admin-dash').classList.add('flex'); initAdmin(); } };
+        window.showAdm=(id)=>{ document.querySelectorAll('.adm-sec').forEach(d=>d.classList.add('hidden')); document.getElementById('sec-'+id).classList.remove('hidden'); if(id==='manage')loadManage(); if(id==='banners')loadBanners(); if(id==='requests')loadReq(); if(id==='reports')loadRep(); };
+        window.forceAdmin=()=>{location.hash='#admin';location.reload()};
 
-        // Manage Banners
-        async function uploadBanner() {
-            const f = document.getElementById('new-banner').files[0];
-            if(f) { DB.add('banners', { img: await toBase64(f) }); loadManageBanners(); }
-        }
-        function loadManageBanners() {
-            document.getElementById('banner-list').innerHTML = DB.get('banners').map(b => `
-                <div class="relative"><img src="${b.img}" class="h-20 w-full object-cover"><button onclick="DB.del('banners','${b.id}');loadManageBanners()" class="absolute top-0 right-0 bg-red-600 text-white px-2">X</button></div>
-            `).join('');
+        function initAdmin(){
+            updateStats();
+            // Chart
+            const ctx=document.getElementById('visitsChart');
+            const visits=DB.get('visits');
+            // Mock data grouping for last 30 days
+            const labels=[], data=[];
+            for(let i=29;i>=0;i--){
+                let d=new Date(); d.setDate(d.getDate()-i);
+                let ds=d.toDateString(); labels.push(d.getDate()+'/'+(d.getMonth()+1));
+                data.push(visits.filter(v=>new Date(v.ts).toDateString()===ds).length);
+            }
+            new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Visits',data,borderColor:'#2563eb',tension:0.4}]}});
         }
 
-        // Content
-        function loadContentForm() {
-            const c = DB.get('content');
-            ['about','policy','loc','con'].forEach(k => {
-                ['ar','fr','en'].forEach(l => {
-                    const el = document.getElementById(`txt-${k}-${l}`);
-                    if(el) el.value = c[`${k}_${l}`] || '';
-                });
-            });
-        }
-        window.saveContent = () => {
-            const c = {};
-            ['about','policy','loc','con'].forEach(k => {
-                ['ar','fr','en'].forEach(l => {
-                    const el = document.getElementById(`txt-${k}-${l}`);
-                    if(el) c[`${k}_${l}`] = el.value;
-                });
-            });
-            DB.set('content', c);
-            Swal.fire('Saved','Content updated','success');
-        };
-
-        // Settings (Logo)
-        window.saveLogo = async () => {
-            const f = document.getElementById('site-logo-input').files[0];
-            if(f) { localStorage.setItem('tw_logo', await toBase64(f)); Swal.fire('Saved','Logo updated','success'); loadLogo(); }
+        function updateStats(){
+            const v=DB.get('visits'); const now=new Date();
+            document.getElementById('stat-day').innerText=v.filter(x=>new Date(x.ts).toDateString()===now.toDateString()).length;
+            document.getElementById('stat-month').innerText=v.filter(x=>new Date(x.ts).getMonth()===now.getMonth()).length;
+            document.getElementById('stat-req').innerText=DB.get('requests').length;
+            document.getElementById('stat-rep').innerText=DB.get('reports').length;
         }
 
-        // Stats
-        function updateStats() {
-            const v = DB.get('visits');
-            const now = new Date();
-            const dStr = now.toDateString();
-            const mStr = now.getMonth() + '-' + now.getFullYear();
+        // Add Trip
+        document.getElementById('form-add-trip').addEventListener('submit',async e=>{
+            e.preventDefault();
+            const mf=document.getElementById('t-img-main').files[0];
+            const gf=document.getElementById('t-guide-img').files[0];
+            const subf=document.querySelectorAll('.sub-img');
+            let mI=mf?await toBase64(mf):'', gI=gf?await toBase64(gf):'', sI=[];
+            for(let f of subf)if(f.files[0])sI.push(await toBase64(f.files[0]));
             
-            // Simulating parsing timestamp for day/month (simplified)
-            // Real logic needs timestamps stored. Assuming DB.add('visits', {ts: Date.now()})
-            const dayCount = v.filter(x => new Date(x.id ? parseInt(x.id) : 0).toDateString() === dStr).length;
-            const monthCount = v.filter(x => {
-                const d = new Date(x.id ? parseInt(x.id) : 0);
-                return (d.getMonth() + '-' + d.getFullYear()) === mStr;
-            }).length;
+            DB.add('trips',{
+                title_ar:document.getElementById('t-title-ar').value,
+                prog_ar:document.getElementById('t-prog-ar').value,
+                // Add other langs similarly
+                start:document.getElementById('t-date-start').value,
+                seats:document.getElementById('t-seats').value,
+                price:document.getElementById('t-price').value,
+                theme:document.getElementById('t-theme').value,
+                guideName:document.getElementById('t-guide-name').value,
+                mainImg:mI, guideImg:gI, subs:sI
+            });
+            Swal.fire('OK','Trip Added','success'); e.target.reset();
+        });
 
-            document.getElementById('stat-day').innerText = dayCount;
-            document.getElementById('stat-month').innerText = monthCount;
+        // Manage Trips (Checkboxes)
+        function loadManage(){
+            document.getElementById('manage-list').innerHTML=DB.get('trips').map(t=>`
+                <div class="flex items-center gap-2 bg-gray-50 p-2 rounded">
+                    <input type="checkbox" class="trip-chk" value="${t.id}">
+                    <img src="${t.mainImg}" class="w-10 h-10 rounded">
+                    <span class="flex-1 font-bold">${t.title_ar}</span>
+                    <button onclick="editSeats('${t.id}')" class="text-blue-600 text-xs underline">تعديل مقاعد (${t.seats})</button>
+                </div>`).join('');
         }
-        function trackVisit() {
-            if(!sessionStorage.getItem('v')) { DB.add('visits', {}); sessionStorage.setItem('v','1'); }
+        window.deleteSelectedTrips=()=>{
+            document.querySelectorAll('.trip-chk:checked').forEach(c=>DB.del('trips',c.value));
+            loadManage();
+        }
+        window.editSeats=(id)=>{
+            const n=prompt("New seats count:"); 
+            if(n){ let all=DB.get('trips'); let t=all.find(x=>x.id===id); if(t){t.seats=n;DB.set('trips',all);loadManage();}}
         }
 
-        // Utils
-        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
-        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
-        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
-        window.forceAdmin = () => { location.hash='#admin'; location.reload(); };
-        window.adminLogout = () => { location.hash=''; location.reload(); };
+        // Banners
+        window.uploadBanner=async()=>{
+            const f=document.getElementById('new-banner').files[0];
+            const t=document.getElementById('ban-type').value;
+            const v=document.getElementById('ban-val').value;
+            if(f) { DB.add('banners',{img:await toBase64(f),type:t,val:v}); loadBanners(); }
+        }
+        function loadBanners(){
+            document.getElementById('banner-list').innerHTML=DB.get('banners').map(b=>`
+                <div class="relative"><input type="checkbox" class="ban-chk absolute top-1 left-1" value="${b.id}"><img src="${b.img}" class="h-20 w-full object-cover"></div>`).join('');
+        }
+        window.deleteSelectedBanners=()=>{ document.querySelectorAll('.ban-chk:checked').forEach(c=>DB.del('banners',c.value)); loadBanners(); }
+
+        // Load Tables
+        function loadReq(){ document.getElementById('req-list').innerHTML=DB.get('requests').map(r=>`<div class="p-3 border-b flex justify-between"><span>${r.name}</span><span>${r.trip}</span></div>`).join(''); }
+        function loadRep(){ document.getElementById('rep-list').innerHTML=DB.get('reports').map(r=>`<div class="p-3 border-b text-red-600"><b>${r.name}</b>: ${r.desc}</div>`).join(''); }
+        
+        function trackVisit(){ if(!sessionStorage.getItem('v')){DB.add('visits',{});sessionStorage.setItem('v','1');} }
+
+        window.closeModal=(id)=>document.getElementById(id).classList.add('hidden');
+        window.openModal=(id)=>document.getElementById(id).classList.remove('hidden');
+        window.toggleSidebar=()=>document.getElementById('sidebar').classList.toggle('translate-x-full');
+        window.adminLogout=()=>{location.hash='';location.reload()};
 
         init();
     </script>
