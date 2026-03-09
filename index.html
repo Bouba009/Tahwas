@@ -82,7 +82,7 @@
 
     <!-- Loading Screen (Emergency Script) -->
     <div id="loader-overlay"><div class="spinner"></div></div>
-    <script>setTimeout(() => { const l=document.getElementById('loader-overlay'); if(l)l.style.display='none'; }, 4000);</script>
+    <script>setTimeout(() => { const l=document.getElementById('loader-overlay'); if(l)l.style.display='none'; }, 2000);</script>
 
     <!-- Navbar -->
     <header class="bg-white shadow-md fixed w-full z-50">
@@ -183,7 +183,7 @@
     <div id="admin-panel" class="hidden min-h-screen bg-gray-100 font-sans" dir="rtl">
         <div id="admin-login" class="flex items-center justify-center min-h-screen bg-slate-900">
             <div class="bg-white p-8 rounded-xl shadow-2xl w-96 text-center">
-                <h2 class="text-3xl font-black mb-6">لوحة التحكم</h2>
+                <h2 class="text-3xl font-black mb-6">ADMIN</h2>
                 <input type="text" id="adm-user" placeholder="User: admin" class="w-full border p-3 rounded mb-3">
                 <input type="password" id="adm-pass" placeholder="Pass: abobob123" class="w-full border p-3 rounded mb-6">
                 <button onclick="window.adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded">دخول</button>
@@ -193,7 +193,7 @@
         <div id="admin-dash" class="hidden flex">
             <!-- Sidebar -->
             <aside class="w-64 bg-slate-900 text-white min-h-screen fixed right-0 h-full overflow-y-auto p-4 z-10">
-                <h2 class="text-xl font-bold mb-8 text-center border-b border-gray-700 pb-4">لوحة الإدارة</h2>
+                <h2 class="text-xl font-bold mb-8 text-center border-b border-gray-700 pb-4">لوحة التحكم</h2>
                 <nav class="space-y-2 text-sm">
                     <button onclick="window.showAdm('stats')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-chart-pie"></i> الإحصائيات</button>
                     <button onclick="window.showAdm('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الطلبات</button>
@@ -238,7 +238,13 @@
                         <table class="w-full text-right text-sm text-gray-600">
                             <thead class="bg-gray-100 text-gray-800">
                                 <tr>
-                                    <th class="p-3 w-10">#</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th>
+                                    <th class="p-3 w-10">#</th>
+                                    <th class="p-3">التاريخ</th>
+                                    <th class="p-3">الاسم</th>
+                                    <th class="p-3">الهاتف</th>
+                                    <th class="p-3">الولاية</th>
+                                    <th class="p-3">الرحلة</th>
+                                    <th class="p-3">الحالة</th>
                                 </tr>
                             </thead>
                             <tbody id="req-list"></tbody>
@@ -264,20 +270,20 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="border p-4 rounded bg-gray-50">
                                 <label class="font-bold mb-2 block">التواريخ والمقاعد</label>
-                                <div class="flex gap-2 mb-2"><input id="t-date-start" type="datetime-local" class="w-full border p-2"><input id="t-date-end" type="date" class="w-full border p-2"></div>
-                                <input id="t-seats" type="number" placeholder="عدد المقاعد" class="w-full border p-2">
+                                <div class="flex gap-2 mb-2"><input id="t-date-start" type="datetime-local" class="w-full border p-2" required><input id="t-date-end" type="date" class="w-full border p-2" required></div>
+                                <input id="t-seats" type="number" placeholder="عدد المقاعد" class="w-full border p-2" required>
                             </div>
                             <div class="border p-4 rounded bg-gray-50">
                                 <label class="font-bold mb-2 block">تفاصيل أخرى</label>
-                                <div class="flex gap-2 mb-2"><input id="t-price" type="number" placeholder="سعر" class="w-1/2 border p-2"><select id="t-transport" class="w-1/2 border p-2"><option value="bus">حافلة</option><option value="plane">طائرة</option></select></div>
+                                <div class="flex gap-2 mb-2"><input id="t-price" type="number" placeholder="سعر" class="w-1/2 border p-2" required><select id="t-transport" class="w-1/2 border p-2"><option value="bus">حافلة</option><option value="plane">طائرة</option></select></div>
                                 <select id="t-theme" class="w-full border p-2"><option value="sahara">صحراوية (Sahara)</option><option value="mountain">جبلية (Mountain)</option><option value="coastal">ساحلية (Coastal)</option></select>
                             </div>
                         </div>
                         <div class="border p-4 rounded bg-blue-50">
                             <label class="font-bold mb-2 block">المرشد والصور</label>
-                            <div class="flex gap-2 mb-2"><input id="t-guide-name" placeholder="اسم المرشد" class="w-1/2 border p-2"><input id="t-guide-img" type="file" class="w-1/2 text-xs"></div>
-                            <label class="text-xs block font-bold text-red-500 mb-1">صورة رئيسية واحدة + 5 صور ثانوية (السلايدر)</label>
-                            <input id="t-img-main" type="file" class="w-full mb-2 border bg-white p-1">
+                            <div class="flex gap-2 mb-2"><input id="t-guide-name" placeholder="اسم المرشد" class="w-1/2 border p-2"><input id="t-guide-img" type="file" class="w-1/2 text-xs border p-1 bg-white"></div>
+                            <label class="text-xs block font-bold text-red-500 mb-1">الصورة الرئيسية + 5 صور ثانوية (سيتم التمرير بينهم)</label>
+                            <input id="t-img-main" type="file" class="w-full mb-2 border bg-white p-1" required>
                             <div class="grid grid-cols-5 gap-2">
                                 <input type="file" class="sub-img w-full text-xs border bg-white p-1"><input type="file" class="sub-img w-full text-xs border bg-white p-1"><input type="file" class="sub-img w-full text-xs border bg-white p-1"><input type="file" class="sub-img w-full text-xs border bg-white p-1"><input type="file" class="sub-img w-full text-xs border bg-white p-1">
                             </div>
@@ -300,7 +306,7 @@
                     <h2 class="text-3xl font-bold mb-6">البانرات</h2>
                     <div class="bg-white p-4 rounded shadow mb-4 flex flex-col gap-4">
                         <div class="flex gap-4">
-                            <input id="new-banner" type="file" class="w-1/3 border p-2">
+                            <input id="new-banner" type="file" class="w-1/3 border p-2 bg-white">
                             <select id="ban-type" onchange="window.toggleBanInput()" class="border p-2"><option value="none">بدون رابط</option><option value="url">رابط خارجي</option><option value="trip">رابط لرحلة</option></select>
                             <div id="ban-input-container" class="flex-1">
                                 <input id="ban-val" type="text" placeholder="الرابط" class="border p-2 w-full hidden">
@@ -316,7 +322,7 @@
                 <!-- Content -->
                 <div id="sec-content" class="adm-sec hidden">
                      <h2 class="text-3xl font-bold mb-6">إدارة المحتوى</h2>
-                     <div class="bg-white p-6 rounded"><button onclick="window.loadContentForm(); Swal.fire('Info','ملاحظة: لغة البرمجة متوفرة في كود اخر','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
+                     <div class="bg-white p-6 rounded"><button onclick="window.loadContentForm(); Swal.fire('Info','تم تحميل النماذج','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
                 </div>
             </main>
         </div>
@@ -326,7 +332,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
         // FIREBASE CONFIG
         const firebaseConfig = {
@@ -340,43 +345,31 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
-        // GLOBAL STATE
-        window.CACHE = { trips:[], banners: [], requests: [], reports: [], visits:[], content: {} };
+        // HYBRID SYSTEM (LocalStorage + Firebase)
+        window.CACHE = { trips: [], banners: [], requests: [], reports: [], visits:[], content: {} };
         window.curLang = localStorage.getItem('lang') || 'ar';
         window.sliderInterval = null;
 
-        // DICTIONARY
         const LANG = {
-            ar:{
-                home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل",policy:"السياسة",location:"مقرنا",report:"مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة",confirm:"تأكيد التسجيل",
-                price_unit:"دج",start:"الانطلاق",end:"العودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل",
-                ph_name:"الاسم",ph_phone:"رقم الهاتف",ph_age:"السن",ph_state:"الولاية",
-                gender_m:"ذكر",gender_f:"أنثى",
-                req_pending:"قيد الانتظار", req_confirmed:"تم التأكيد", req_cancelled:"ملغى",
-                day:"يوم", hour:"سا", min:"د", sec:"ث", desc:"الوصف", email:"الايميل"
-            },
-            fr:{
-                home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Offres",book_now:"Réserver",confirm:"Confirmer",
-                price_unit:"DA",start:"Départ",end:"Retour",stop:"Arrêt",transport:"Transport",seats:"Places",guide:"Guide",insurance:"Assurance Santé",
-                ph_name:"Nom",ph_phone:"Téléphone",ph_age:"Âge",ph_state:"Wilaya",
-                gender_m:"Homme",gender_f:"Femme",
-                req_pending:"En attente", req_confirmed:"Confirmé", req_cancelled:"Annulé",
-                day:"J", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email"
-            },
-            en:{
-                home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Offers",book_now:"Book Now",confirm:"Confirm",
-                price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance",
-                ph_name:"Name",ph_phone:"Phone",ph_age:"Age",ph_state:"State",
-                gender_m:"Male",gender_f:"Female",
-                req_pending:"Pending", req_confirmed:"Confirmed", req_cancelled:"Cancelled",
-                day:"D", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email"
-            }
+            ar:{ home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل",policy:"السياسة",location:"مقرنا",report:"مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة",confirm:"تأكيد التسجيل", price_unit:"دج",start:"الانطلاق",end:"العودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل", ph_name:"الاسم",ph_phone:"رقم الهاتف",ph_age:"السن",ph_state:"الولاية", gender_m:"ذكر",gender_f:"أنثى", req_pending:"قيد الانتظار", req_confirmed:"تم التأكيد", req_cancelled:"ملغى", day:"يوم", hour:"سا", min:"د", sec:"ث", desc:"الوصف", email:"الايميل" },
+            fr:{ home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Offres",book_now:"Réserver",confirm:"Confirmer", price_unit:"DA",start:"Départ",end:"Retour",stop:"Arrêt",transport:"Transport",seats:"Places",guide:"Guide",insurance:"Assurance Santé", ph_name:"Nom",ph_phone:"Téléphone",ph_age:"Âge",ph_state:"Wilaya", gender_m:"Homme",gender_f:"Femme", req_pending:"En attente", req_confirmed:"Confirmé", req_cancelled:"Annulé", day:"J", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" },
+            en:{ home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Offers",book_now:"Book Now",confirm:"Confirm", price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance", ph_name:"Name",ph_phone:"Phone",ph_age:"Age",ph_state:"State", gender_m:"Male",gender_f:"Female", req_pending:"Pending", req_confirmed:"Confirmed", req_cancelled:"Cancelled", day:"D", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" }
         };
+
+        // --- CONVERT IMAGES TO BASE64 (Bypass Firebase Storage limitations) ---
+        const toBase64 = file => new Promise((res, rej) => {
+            const r = new FileReader(); r.readAsDataURL(file);
+            r.onload = () => res(r.result); r.onerror = rej;
+        });
 
         // --- FETCH DATA ---
         window.fetchData = async function() {
+            // First load from LocalStorage for instant UI
+            const localTrips = localStorage.getItem('th_trips');
+            if(localTrips) window.CACHE.trips = JSON.parse(localTrips);
+            window.loadPublic(); // Show immediately
+
             try {
                 const[t, b, req, rep, v, c] = await Promise.all([
                     getDocs(collection(db, 'trips')), getDocs(collection(db, 'banners')),
@@ -392,25 +385,14 @@
                 window.CACHE.visits = v.docs.map(d => ({id: d.id, ...d.data()}));
                 if(!c.empty) window.CACHE.content = c.docs[0].data();
 
+                // Save backup to LocalStorage
+                localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
+
             } catch (e) {
-                console.error("Firebase Error:", e);
-                // We do NOT show error here to keep user experience smooth, but developer sees console.
+                console.error("Firebase Sync Error:", e);
             } finally {
-                document.getElementById('loader-overlay').style.display = 'none';
                 window.loadPublic();
                 if(!document.getElementById('admin-dash').classList.contains('hidden')) window.initAdmin();
-            }
-        }
-
-        async function uploadFileToStorage(file) {
-            if(!file) return '';
-            try {
-                const storageRef = ref(storage, 'uploads/' + Date.now() + '-' + file.name);
-                await uploadBytes(storageRef, file);
-                return await getDownloadURL(storageRef);
-            } catch(e) {
-                console.error("Storage Error:", e);
-                throw new Error("تأكد من فتح قواعد الحماية للـ Storage في فايرباس");
             }
         }
 
@@ -450,7 +432,7 @@
             if(!grid) return;
             
             if(window.CACHE.trips.length === 0) {
-                grid.innerHTML = '<p class="text-center col-span-3 text-gray-400 py-10">No Trips / لا توجد رحلات</p>';
+                grid.innerHTML = '<p class="text-center col-span-3 text-gray-400 py-10">لا توجد رحلات / No Trips</p>';
             } else {
                 grid.innerHTML = window.CACHE.trips.map(x => {
                     let title = x[`title_${window.curLang}`] || x.title_ar;
@@ -460,7 +442,7 @@
                             <span class="absolute top-2 right-2 bg-white px-2 rounded font-bold text-blue-800">${x.price} ${LANG[window.curLang].price_unit}</span>
                             <div class="card-countdown" data-date="${x.start}"></div>
                         </div>
-                        <div class="p-4 text-center"><h3 class="font-bold text-lg">${title}</h3><div class="text-xs text-gray-500 mt-2 flex justify-between"><span>${x.start ? x.start.replace('T',' ') : ''}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
+                        <div class="p-4 text-center"><h3 class="font-bold text-lg">${title}</h3><div class="text-xs text-gray-500 mt-2 flex justify-between"><span style="direction:ltr">${x.start ? x.start.replace('T',' ') : ''}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
                     </div>`;
                 }).join('');
             }
@@ -488,8 +470,9 @@
 
             window.startCountdown(t.start, 'countdown-box');
 
-            let imgs = `<img src="${t.mainImg}" class="flex-shrink-0 min-w-full h-full object-cover">`;
-            if(t.subs) imgs += t.subs.map(s => `<img src="${s}" class="flex-shrink-0 min-w-full h-full object-cover">`).join('');
+            // SLIDER FIX: object-contain bg-black
+            let imgs = `<img src="${t.mainImg}" class="flex-shrink-0 min-w-full h-full object-contain bg-black/80">`;
+            if(t.subs) imgs += t.subs.map(s => `<img src="${s}" class="flex-shrink-0 min-w-full h-full object-contain bg-black/80">`).join('');
 
             cont.innerHTML = `<div class="flex flex-col md:flex-row h-[90vh]">
                 <div class="w-full md:w-1/3 bg-black relative h-64 md:h-full overflow-hidden">
@@ -506,7 +489,7 @@
                         <div class="text-center"><span class="block text-xs text-gray-500">${LANG[l].seats}</span><b class="text-red-500">${t.seats}</b></div>
                     </div>
                     <div class="flex items-center gap-3 mb-6 bg-blue-50 p-3 rounded border border-blue-200">
-                        <img src="${t.guideImg}" class="w-12 h-12 rounded-full object-cover">
+                        <img src="${t.guideImg || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-full object-cover">
                         <div><p class="text-xs font-bold text-gray-500">${LANG[l].guide}</p><p class="font-bold">${t.guideName}</p></div>
                         <div class="flex-1 text-right text-green-600 font-bold text-sm"><i class="fas fa-check-circle"></i> ${LANG[l].insurance}</div>
                     </div>
@@ -528,13 +511,82 @@
             }
         };
 
+        // --- ADD TRIP LOGIC (Hybrid Fallback) ---
+        document.getElementById('form-add-trip').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-trip'); 
+            const origText = btn.innerText;
+            btn.disabled=true; btn.innerText="جاري النشر...";
+            
+            try {
+                const mf = document.getElementById('t-img-main').files[0];
+                const gf = document.getElementById('t-guide-img').files[0];
+                const subf = document.querySelectorAll('.sub-img');
+                
+                // Use Base64 to bypass Storage rules issues completely
+                let mI = mf ? await toBase64(mf) : '';
+                let gI = gf ? await toBase64(gf) : '';
+                let sI =[];
+                for(let f of subf) if(f.files[0]) sI.push(await toBase64(f.files[0]));
+
+                const newTrip = {
+                    title_ar: document.getElementById('t-title-ar').value, title_fr: document.getElementById('t-title-fr').value, title_en: document.getElementById('t-title-en').value,
+                    prog_ar: document.getElementById('t-prog-ar').value, prog_fr: document.getElementById('t-prog-fr').value, prog_en: document.getElementById('t-prog-en').value,
+                    start: document.getElementById('t-date-start').value,
+                    seats: document.getElementById('t-seats').value,
+                    price: document.getElementById('t-price').value,
+                    theme: document.getElementById('t-theme').value,
+                    guideName: document.getElementById('t-guide-name').value,
+                    mainImg: mI, guideImg: gI, subs: sI, ts: Date.now()
+                };
+
+                // Add to Firebase Firestore
+                const docRef = await addDoc(collection(db, 'trips'), newTrip);
+                
+                // Add locally instantly
+                newTrip.id = docRef.id;
+                window.CACHE.trips.unshift(newTrip); // add to top
+                localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
+                
+                Swal.fire('تم', 'تم نشر الرحلة بنجاح', 'success');
+                e.target.reset();
+                window.loadManage();
+                window.loadPublic();
+
+            } catch (error) {
+                console.error(error);
+                Swal.fire('خطأ!', 'حدث خطأ: ' + error.message, 'error');
+            } finally {
+                btn.disabled=false; btn.innerText = origText;
+            }
+        });
+
+        // BANNERS
+        window.uploadBanner = async () => {
+            const f = document.getElementById('new-banner').files[0];
+            const t = document.getElementById('ban-type').value;
+            let v = document.getElementById('ban-val').value;
+            if(t === 'trip') v = document.getElementById('ban-trip-select').value;
+            
+            if(f) { 
+                Swal.fire({title: 'جاري الرفع...', didOpen: () => { Swal.showLoading() }});
+                try {
+                    const b64 = await toBase64(f);
+                    await addDoc(collection(db, 'banners'), {img:b64, type:t, val:v});
+                    await window.fetchData();
+                    window.loadBanners();
+                    Swal.close();
+                } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
+            }
+        };
+
+        // --- SHARED UTILS ---
         window.openBook = (id, tit) => {
             document.getElementById('b-trip-id').value = id;
             document.getElementById('b-trip-name').value = tit;
             document.getElementById('booking-modal').classList.remove('hidden');
         };
 
-        // UI Helpers
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
         window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
         window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
@@ -662,46 +714,6 @@
             }
         };
 
-        // ADD TRIP (The specific fix for publishing)
-        document.getElementById('form-add-trip').addEventListener('submit', async e => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-submit-trip'); 
-            const origText = btn.innerText;
-            btn.disabled=true; btn.innerText="جاري النشر...";
-            
-            try {
-                const mf = document.getElementById('t-img-main').files[0];
-                const gf = document.getElementById('t-guide-img').files[0];
-                const subf = document.querySelectorAll('.sub-img');
-                
-                let mI = await uploadFileToStorage(mf);
-                let gI = await uploadFileToStorage(gf);
-                let sI = [];
-                for(let f of subf) if(f.files[0]) sI.push(await uploadFileToStorage(f.files[0]));
-
-                await addDoc(collection(db, 'trips'), {
-                    title_ar: document.getElementById('t-title-ar').value, title_fr: document.getElementById('t-title-fr').value, title_en: document.getElementById('t-title-en').value,
-                    prog_ar: document.getElementById('t-prog-ar').value, prog_fr: document.getElementById('t-prog-fr').value, prog_en: document.getElementById('t-prog-en').value,
-                    start: document.getElementById('t-date-start').value,
-                    seats: document.getElementById('t-seats').value,
-                    price: document.getElementById('t-price').value,
-                    theme: document.getElementById('t-theme').value,
-                    guideName: document.getElementById('t-guide-name').value,
-                    mainImg: mI, guideImg: gI, subs: sI
-                });
-                
-                Swal.fire('تم', 'تم نشر الرحلة بنجاح', 'success');
-                e.target.reset();
-                window.fetchData();
-            } catch (error) {
-                console.error("Add Trip Error:", error);
-                Swal.fire('خطأ!', 'لم يتم النشر. راجع قواعد Firebase Rules:\n\n' + error.message, 'error');
-            } finally {
-                btn.disabled=false; btn.innerText = origText;
-            }
-        });
-
-        // MANAGE
         window.loadManage = function(){
             document.getElementById('manage-list').innerHTML = window.CACHE.trips.map(t => `
                 <div class="flex items-center gap-2 bg-gray-50 p-2 rounded">
@@ -727,7 +739,6 @@
             if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); window.fetchData().then(window.loadManage); }
         };
 
-        // BANNERS
         window.toggleBanInput = () => {
             const t = document.getElementById('ban-type').value;
             const txtIn = document.getElementById('ban-val');
@@ -739,22 +750,7 @@
                 selIn.classList.add('hidden'); txtIn.classList.remove('hidden');
             }
         };
-        window.uploadBanner = async () => {
-            const f = document.getElementById('new-banner').files[0];
-            const t = document.getElementById('ban-type').value;
-            let v = document.getElementById('ban-val').value;
-            if(t === 'trip') v = document.getElementById('ban-trip-select').value;
-            if(f) { 
-                Swal.fire({title: 'جاري الرفع...', didOpen: () => { Swal.showLoading() }});
-                try {
-                    const url = await uploadFileToStorage(f);
-                    await addDoc(collection(db, 'banners'), {img:url, type:t, val:v});
-                    await window.fetchData();
-                    window.loadBanners();
-                    Swal.close();
-                } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
-            }
-        };
+
         window.loadBanners = function(){
             document.getElementById('banner-list').innerHTML = window.CACHE.banners.map(b => `
                 <div class="relative"><input type="checkbox" class="ban-chk absolute top-1 left-1" value="${b.id}"><img src="${b.img}" class="h-20 w-full object-cover"></div>`).join('');
@@ -765,7 +761,6 @@
             window.fetchData().then(window.loadBanners);
         };
 
-        // REQUESTS
         window.loadReq = function(){
             const l = window.curLang;
             document.getElementById('req-list').innerHTML = window.CACHE.requests.map(r => `
@@ -793,7 +788,6 @@
             window.fetchData().then(window.loadReq);
         };
 
-        // REPORTS
         window.loadRep = function(){
             document.getElementById('rep-list').innerHTML = window.CACHE.reports.map(r => `
                 <div class="p-4 border-b">
@@ -802,6 +796,15 @@
                 </div>
             `).join('');
         };
+
+        async function trackVisit(){ 
+            if(!sessionStorage.getItem('v')){
+                try {
+                    await addDoc(collection(db, 'visits'), {ts: Date.now()});
+                    sessionStorage.setItem('v','1');
+                } catch(e){}
+            } 
+        }
 
         // RUN ON LOAD
         window.addEventListener('load', () => {
