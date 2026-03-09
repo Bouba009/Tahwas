@@ -21,18 +21,19 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--main-color); border-radius: 4px; }
 
+        /* LOADING SPINNER */
         #loader-overlay { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s; }
         .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* ================== MAP & THEMES ================== */
-        .snake-map-container { position: relative; padding: 80px 0; overflow: hidden; margin-top: 20px; border-radius: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.2); }
+        /* SNAKE MAP */
+        .snake-map-container { position: relative; padding: 40px 0; overflow: hidden; margin-top: 20px; }
         .snake-line {
-            position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; margin-left: -20px; z-index: 10;
+            position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; margin-left: -20px; z-index: 1;
             background-image: url("data:image/svg+xml,%3Csvg width='40' height='100' viewBox='0 0 40 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0 Q40 25 20 50 T20 100' fill='none' stroke='%23ffffff' stroke-width='4' stroke-dasharray='8 4'/%3E%3C/svg%3E");
             background-repeat: repeat-y; background-position: center top; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
-        .snake-item { position: relative; width: 50%; margin-bottom: 60px; clear: both; z-index: 20; }
+        .snake-item { position: relative; width: 50%; margin-bottom: 60px; clear: both; z-index: 2; }
         
         @media (min-width: 768px) {
             html[dir="rtl"] .snake-item:nth-child(odd) { float: right; padding-left: 60px; text-align: left; }
@@ -52,13 +53,10 @@
 
         .theme-sahara { background: linear-gradient(180deg, #fef08a 0%, #f59e0b 50%, #d97706 100%); border: 4px solid #b45309; }
         .theme-sahara .snake-card { border-bottom: 5px solid #d97706; } .theme-sahara .snake-dot { border-color: #d97706; color: #d97706; }
-
         .theme-mountain { background: linear-gradient(180deg, #bbf7d0 0%, #22c55e 50%, #15803d 100%); border: 4px solid #14532d; }
         .theme-mountain .snake-card { border-bottom: 5px solid #166534; } .theme-mountain .snake-dot { border-color: #166534; color: #166534; }
-
         .theme-coastal { background: linear-gradient(180deg, #fef3c7 0%, #38bdf8 30%, #0369a1 100%); border: 4px solid #0284c7; }
         .theme-coastal .snake-card { border-bottom: 5px solid #0284c7; } .theme-coastal .snake-dot { border-color: #0284c7; color: #0284c7; }
-
         .theme-historical { background: linear-gradient(180deg, #e5e5e5 0%, #a3a3a3 50%, #737373 100%); border: 4px solid #52525b; }
         .theme-historical .snake-card { border-bottom: 5px solid #57534e; } .theme-historical .snake-dot { border-color: #57534e; color: #57534e; }
 
@@ -66,33 +64,25 @@
         .env-anim { animation: float-env 4s ease-in-out infinite alternate; }
         @keyframes float-env { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
 
-        /* ================== COUNTDOWNS ================== */
-        /* Modal & Card Countdown */
+        /* Countdown Style for Cards */
+        .card-countdown {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: white; padding: 20px 10px 10px 10px; display: flex; justify-content: center; gap: 15px; direction: ltr;
+        }
+        .cc-item { text-align: center; line-height: 1.1; }
+        .cc-num { font-size: 1.5rem; font-weight: 900; color: #facc15; font-family: 'Poppins', sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .cc-lbl { font-size: 0.7rem; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+
         .countdown-box { background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 8px; text-align: center; min-width: 50px; }
         .countdown-label { font-size: 10px; opacity: 0.9; }
         .countdown-digit { font-size: 18px; font-weight: bold; font-family: 'Poppins', sans-serif; }
 
-        /* BANNER MAIN SLIDER COUNTDOWN (NEW & PRO) */
-        .banner-cd-wrap {
-            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 20px;
-            padding: 10px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            animation: borderPulse 2s infinite alternate;
-        }
-        .banner-cd-box { text-align: center; color: white; margin: 0 10px; }
-        .banner-cd-num { font-size: 2.5rem; font-weight: 900; font-family: 'Poppins', sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.8); line-height: 1; }
-        .banner-cd-txt { font-size: 0.85rem; font-weight: bold; text-transform: uppercase; color: #facc15; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
-        
-        @media (max-width: 768px) {
-            .banner-cd-wrap { padding: 8px 10px; }
-            .banner-cd-box { margin: 0 5px; }
-            .banner-cd-num { font-size: 1.5rem; }
-            .banner-cd-txt { font-size: 0.6rem; }
-        }
-        @keyframes borderPulse { 0% { border-color: rgba(255,255,255,0.3); } 100% { border-color: rgba(250, 204, 21, 0.8); box-shadow: 0 0 20px rgba(250,204,21,0.4); } }
-
         .btn-glow { animation: pulse-blue 2s infinite; }
         @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
+        
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        .modal-slider { scroll-behavior: smooth; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
@@ -257,6 +247,7 @@
 
                 <div id="sec-reports" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">الشكاوى</h2>
+                    <div class="mb-4"><button onclick="window.deleteSelectedReps()" class="bg-red-600 text-white px-4 py-2 rounded">حذف المحدد</button></div>
                     <div id="rep-list" class="bg-white rounded shadow overflow-hidden"></div>
                 </div>
 
@@ -283,7 +274,7 @@
                         <div class="border p-4 rounded bg-blue-50">
                             <label class="font-bold mb-2 block">المرشد والصور</label>
                             <div class="flex gap-2 mb-2"><input id="t-guide-name" placeholder="اسم المرشد" class="w-1/2 border p-2"><input id="t-guide-img" type="file" class="w-1/2 text-xs border p-1 bg-white"></div>
-                            <label class="text-xs block font-bold text-red-500 mb-1">تنبيه: الرجاء اختيار صور بحجم مضغوط لضمان سرعة الرفع</label>
+                            <label class="text-xs block font-bold text-red-500 mb-1">صورة رئيسية واحدة + 5 صور ثانوية (السلايدر)</label>
                             <input id="t-img-main" type="file" accept="image/*" class="w-full mb-2 border bg-white p-1" required>
                             <div class="grid grid-cols-5 gap-2">
                                 <input type="file" accept="image/*" class="sub-img w-full text-xs border bg-white p-1"><input type="file" accept="image/*" class="sub-img w-full text-xs border bg-white p-1"><input type="file" accept="image/*" class="sub-img w-full text-xs border bg-white p-1"><input type="file" accept="image/*" class="sub-img w-full text-xs border bg-white p-1"><input type="file" accept="image/*" class="sub-img w-full text-xs border bg-white p-1">
@@ -344,7 +335,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.CACHE = { trips:[], banners: [], requests: [], reports: [], visits:[], content: {} };
+        window.CACHE = { trips: [], banners: [], requests: [], reports: [], visits:[], content: {} };
         window.curLang = localStorage.getItem('lang') || 'ar';
         window.sliderInterval = null;
 
@@ -354,13 +345,12 @@
             en:{ home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Latest Offers",book_now:"Book Now",confirm:"Confirm", price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance", ph_name:"Full Name",ph_phone:"Phone",ph_age:"Age",ph_state:"State", gender_m:"Male",gender_f:"Female", req_pending:"Pending", req_confirmed:"Confirmed", req_cancelled:"Cancelled", day:"D", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" }
         };
 
-        // --- CONVERTER ---
         const toBase64 = file => new Promise((res, rej) => {
             const r = new FileReader(); r.readAsDataURL(file);
             r.onload = () => res(r.result); r.onerror = rej;
         });
 
-        // --- FETCH ---
+        // --- FETCH DATA ---
         window.fetchData = async function() {
             const localTrips = localStorage.getItem('th_trips');
             if(localTrips) window.CACHE.trips = JSON.parse(localTrips);
@@ -382,14 +372,15 @@
                 if(!c.empty) window.CACHE.content = c.docs[0].data();
 
                 localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
-            } catch (e) { console.error("Sync Error:", e); } 
+
+            } catch (e) { console.error("Firebase Sync Error:", e); } 
             finally {
                 window.loadPublic();
                 if(!document.getElementById('admin-dash').classList.contains('hidden')) window.initAdmin();
             }
         }
 
-        // --- PUBLIC ---
+        // --- PUBLIC FUNCTIONS ---
         window.changeLang = function(l) {
             window.curLang = l; localStorage.setItem('lang', l);
             document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
@@ -415,40 +406,31 @@
 
         window.loadPublic = function() {
             const grid = document.getElementById('trips-grid');
-            if(grid) {
-                if(window.CACHE.trips.length === 0) {
-                    grid.innerHTML = '<p class="text-center col-span-3 text-gray-400 py-10">لا توجد رحلات حاليا / No Trips available</p>';
-                } else {
-                    grid.innerHTML = window.CACHE.trips.map(x => {
-                        let title = x[`title_${window.curLang}`] || x.title_ar;
-                        return `<div class="bg-white rounded-xl shadow overflow-hidden cursor-pointer group" onclick="window.openTrip('${x.id}')">
-                            <div class="h-60 relative overflow-hidden">
-                                <img src="${x.mainImg}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                                <span class="absolute top-2 right-2 bg-white px-3 py-1 rounded-full font-bold text-blue-800 shadow">${x.price} ${LANG[window.curLang].price_unit}</span>
-                                <div class="card-countdown" data-date="${x.start}"></div>
-                            </div>
-                            <div class="p-4 text-center"><h3 class="font-bold text-xl">${title}</h3><div class="text-xs text-gray-500 mt-4 pt-3 border-t flex justify-between"><span style="direction:ltr"><i class="fas fa-calendar-alt"></i> ${x.start ? x.start.replace('T',' ') : ''}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
-                        </div>`;
-                    }).join('');
-                }
+            if(!grid) return;
+            
+            if(window.CACHE.trips.length === 0) {
+                grid.innerHTML = '<p class="text-center col-span-3 text-gray-400 py-10">لا توجد رحلات حاليا / No Trips available</p>';
+            } else {
+                grid.innerHTML = window.CACHE.trips.map(x => {
+                    let title = x[`title_${window.curLang}`] || x.title_ar;
+                    return `<div class="bg-white rounded-xl shadow overflow-hidden cursor-pointer group" onclick="window.openTrip('${x.id}')">
+                        <div class="h-60 relative overflow-hidden">
+                            <img src="${x.mainImg}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <span class="absolute top-2 right-2 bg-white px-3 py-1 rounded-full font-bold text-blue-800 shadow z-10">${x.price} ${LANG[window.curLang].price_unit}</span>
+                            
+                            <!-- Countdown centered at the bottom of the image overlay -->
+                            <div class="card-countdown" data-date="${x.start}"></div>
+                        </div>
+                        <div class="p-4 text-center"><h3 class="font-bold text-xl">${title}</h3><div class="text-xs text-gray-500 mt-4 pt-3 border-t flex justify-between"><span style="direction:ltr"><i class="fas fa-calendar-alt"></i> ${x.start ? x.start.replace('T',' ') : ''}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
+                    </div>`;
+                }).join('');
             }
 
             const sl = document.getElementById('hero-slider');
-            if(sl) {
-                if(window.CACHE.banners.length > 0){
-                    sl.innerHTML = window.CACHE.banners.map((b,i) => {
-                        let cdHtml = '';
-                        if(b.type === 'trip') {
-                            const tr = window.CACHE.trips.find(t => t.id === b.val);
-                            if(tr && tr.start) cdHtml = `<div class="banner-countdown absolute bottom-12 left-1/2 transform -translate-x-1/2 flex flex-row flex-nowrap" data-date="${tr.start}"></div>`;
-                        }
-                        return `<div onclick="window.clickBanner('${b.type}','${b.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${b.img}')"><div class="absolute inset-0 bg-black/30"></div>${cdHtml}</div>`;
-                    }).join('');
-                    let idx=0; const it=document.querySelectorAll('.slide-item');
-                    if(it.length>1) setInterval(()=>{ it[idx].classList.replace('opacity-100','opacity-0'); idx=(idx+1)%it.length; it[idx].classList.replace('opacity-0','opacity-100') },5000);
-                } else {
-                    sl.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-white"><h2 class="text-4xl font-bold">Tahwas - تحواس</h2></div>';
-                }
+            if(window.CACHE.banners.length > 0){
+                sl.innerHTML = window.CACHE.banners.map((x,i) => `<div onclick="window.clickBanner('${x.type}','${x.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${x.img}')"></div>`).join('');
+                let idx=0; const it=document.querySelectorAll('.slide-item');
+                if(it.length>1) setInterval(()=>{ it[idx].classList.replace('opacity-100','opacity-0'); idx=(idx+1)%it.length; it[idx].classList.replace('opacity-0','opacity-100') },4000);
             }
         };
 
@@ -481,7 +463,7 @@
                 <div class="w-full md:w-1/3 bg-slate-900 relative h-[45vh] min-h-[45vh] md:min-h-full md:h-full flex-shrink-0 overflow-hidden">
                     <div id="modal-slider" class="flex h-full w-full transition-transform duration-500 ease-in-out">${imgs}</div>
                     <div class="absolute bottom-0 w-full pt-20 pb-4 px-4 bg-gradient-to-t from-black via-black/80 to-transparent text-white z-10">
-                        <h2 class="text-2xl font-bold text-center">${title}</h2>
+                        <h2 class="text-2xl font-bold text-center drop-shadow-md">${title}</h2>
                         <div class="flex gap-2 mt-2 justify-center" id="countdown-box" style="direction:ltr"></div>
                     </div>
                 </div>
@@ -550,37 +532,21 @@
         window.startGridCountdowns = function() {
             setInterval(() => {
                 const now = new Date().getTime();
-                
-                // Cards Countdown
                 document.querySelectorAll('.card-countdown').forEach(el => {
                     if(!el.dataset.date) return;
                     const dist = new Date(el.dataset.date).getTime() - now;
                     if(dist < 0) { el.innerHTML = ""; return; }
-                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
-                    el.style.cssText = "position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; display:flex; justify-content:center; gap:10px; padding:8px; direction:ltr; backdrop-filter: blur(2px);";
-                    el.innerHTML = `<div style="text-align:center; line-height:1"><b class='text-yellow-400 font-sans text-xl'>${d}</b> <span class='text-xs block mt-1'>${LANG[window.curLang].day}</span></div>
-                                    <div style="text-align:center; line-height:1"><b class='text-yellow-400 font-sans text-xl'>${h}</b> <span class='text-xs block mt-1'>${LANG[window.curLang].hour}</span></div>`;
-                });
-
-                // Banner Countdown (New!)
-                document.querySelectorAll('.banner-countdown').forEach(el => {
-                    if(!el.dataset.date) return;
-                    const dist = new Date(el.dataset.date).getTime() - now;
-                    if(dist < 0) { el.innerHTML = ""; return; }
                     const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
+                    
                     el.innerHTML = `
-                        <div class="banner-cd-wrap flex gap-3 md:gap-6" style="direction:ltr">
-                            <div class="banner-cd-box"><div class="banner-cd-num">${d}</div><div class="banner-cd-txt">${LANG[window.curLang].day}</div></div>
-                            <div class="banner-cd-box"><div class="banner-cd-num">${h}</div><div class="banner-cd-txt">${LANG[window.curLang].hour}</div></div>
-                            <div class="banner-cd-box"><div class="banner-cd-num">${m}</div><div class="banner-cd-txt">${LANG[window.curLang].min}</div></div>
-                            <div class="banner-cd-box"><div class="banner-cd-num">${s}</div><div class="banner-cd-txt">${LANG[window.curLang].sec}</div></div>
-                        </div>
+                        <div class="cc-item"><div class="cc-num">${d}</div><div class="cc-lbl">${LANG[window.curLang].day}</div></div>
+                        <div class="cc-item"><div class="cc-num">${h}</div><div class="cc-lbl">${LANG[window.curLang].hour}</div></div>
+                        <div class="cc-item"><div class="cc-num">${m}</div><div class="cc-lbl">${LANG[window.curLang].min}</div></div>
+                        <div class="cc-item"><div class="cc-num">${s}</div><div class="cc-lbl">${LANG[window.curLang].sec}</div></div>
                     `;
                 });
-
             }, 1000);
         };
-
         window.startCountdown = function(dateStr, elemId){
             const el = document.getElementById(elemId); if(!el || !dateStr) return;
             const target = new Date(dateStr).getTime();
@@ -595,7 +561,7 @@
             }, 1000);
         };
 
-        // --- ADMIN ---
+        // ================= ADMIN FUNCTIONS =================
         window.forceAdmin = () => { location.hash='#admin'; location.reload(); };
         window.adminLogout = () => { location.hash=''; location.reload(); };
 
@@ -653,16 +619,14 @@
             e.preventDefault();
             const btn = document.getElementById('btn-submit-trip'); 
             const origText = btn.innerText;
-            btn.disabled=true; btn.innerText="جاري النشر... (قد يستغرق بضع ثوان)";
+            btn.disabled=true; btn.innerText="جاري النشر...";
             
             try {
                 const mf = document.getElementById('t-img-main').files[0];
                 const gf = document.getElementById('t-guide-img').files[0];
                 const subf = document.querySelectorAll('.sub-img');
                 
-                if(!mf) throw new Error("يجب وضع الصورة الرئيسية");
-
-                let mI = await toBase64(mf);
+                let mI = mf ? await toBase64(mf) : '';
                 let gI = gf ? await toBase64(gf) : '';
                 let sI =[];
                 for(let f of subf) if(f.files[0]) sI.push(await toBase64(f.files[0]));
@@ -690,13 +654,49 @@
 
             } catch (error) {
                 console.error(error);
-                Swal.fire('خطأ!', error.message || 'حجم الصورة كبير جداً، الرجاء ضغطها.', 'error');
+                Swal.fire('خطأ!', error.message, 'error');
             } finally {
                 btn.disabled=false; btn.innerText = origText;
             }
         });
 
-        // ADD BANNER (Fixed Upload Issue)
+        // MANAGE ROBUST DELETE
+        window.loadManage = function(){
+            document.getElementById('manage-list').innerHTML = window.CACHE.trips.map(t => `
+                <div class="flex items-center gap-2 bg-gray-50 p-2 rounded">
+                    <input type="checkbox" class="trip-chk" value="${t.id}">
+                    <img src="${t.mainImg}" class="w-10 h-10 rounded object-cover">
+                    <span class="flex-1 font-bold">${t.title_ar}</span>
+                    <button onclick="window.editSeats('${t.id}')" class="text-blue-600 text-xs underline bg-blue-100 px-2 py-1 rounded">المقاعد (${t.seats})</button>
+                </div>`).join('');
+        };
+        
+        window.deleteSelectedTrips = async () => {
+            const sels = Array.from(document.querySelectorAll('.trip-chk:checked')).map(c => c.value);
+            if(sels.length === 0) return Swal.fire('تنبيه', 'يرجى تحديد رحلة واحدة على الأقل', 'warning');
+            
+            if(await Swal.fire({title: 'تأكيد الحذف؟', showCancelButton: true, confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء'}).then(r => r.isConfirmed)) {
+                Swal.fire({title: 'جاري الحذف...', didOpen: () => { Swal.showLoading() }});
+                try {
+                    for(let id of sels) await deleteDoc(doc(db, 'trips', id));
+                    
+                    // Update Cache & UI instantly
+                    window.CACHE.trips = window.CACHE.trips.filter(t => !sels.includes(t.id));
+                    localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
+                    
+                    window.loadManage();
+                    window.loadPublic();
+                    Swal.fire('تم', 'تم الحذف بنجاح', 'success');
+                } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
+            }
+        };
+        
+        window.editSeats = async (id) => {
+            const n = prompt("تعديل المقاعد إلى:"); 
+            if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); window.fetchData().then(window.loadManage); }
+        };
+
+        // BANNERS
         window.toggleBanInput = () => {
             const t = document.getElementById('ban-type').value;
             const txtIn = document.getElementById('ban-val');
@@ -708,7 +708,6 @@
                 selIn.classList.add('hidden'); txtIn.classList.remove('hidden');
             }
         };
-
         window.uploadBanner = async () => {
             const btn = document.getElementById('btn-submit-banner');
             const orig = btn.innerText;
@@ -731,27 +730,88 @@
                 document.getElementById('new-banner').value = '';
                 window.loadBanners();
                 window.loadPublic();
-            } catch(e) { 
-                console.error(e);
-                Swal.fire('خطأ', 'فشل الرفع. حجم الصورة قد يكون كبير جداً (يجب أن تكون أقل من 1MB).', 'error'); 
-            } finally {
-                btn.disabled = false; btn.innerText = orig;
+            } catch(e) { Swal.fire('خطأ', e.message, 'error'); } 
+            finally { btn.disabled = false; btn.innerText = orig; }
+        };
+        
+        window.loadBanners = function(){
+            document.getElementById('banner-list').innerHTML = window.CACHE.banners.map(b => `
+                <div class="relative"><input type="checkbox" class="ban-chk absolute top-1 left-1 z-10" value="${b.id}"><img src="${b.img}" class="h-20 w-full object-cover rounded"></div>`).join('');
+        };
+        window.deleteSelectedBanners = async () => {
+            const sels = Array.from(document.querySelectorAll('.ban-chk:checked')).map(c => c.value);
+            if(sels.length === 0) return;
+            if(confirm('تأكيد الحذف؟')) {
+                for(let id of sels) await deleteDoc(doc(db, 'banners', id));
+                window.CACHE.banners = window.CACHE.banners.filter(b => !sels.includes(b.id));
+                window.loadBanners();
+                window.loadPublic();
             }
         };
 
-        window.loadManage = function(){ document.getElementById('manage-list').innerHTML = window.CACHE.trips.map(t => `<div class="flex items-center gap-2 bg-gray-50 p-2 rounded"><input type="checkbox" class="trip-chk" value="${t.id}"><img src="${t.mainImg}" class="w-10 h-10 rounded object-cover"><span class="flex-1 font-bold">${t.title_ar}</span><button onclick="window.editSeats('${t.id}')" class="text-blue-600 text-xs underline bg-blue-100 px-2 py-1 rounded">المقاعد (${t.seats})</button></div>`).join(''); };
-        window.deleteSelectedTrips = async () => { const sels = document.querySelectorAll('.trip-chk:checked'); if(sels.length === 0) return; Swal.fire({title: 'جاري الحذف...', didOpen: () => { Swal.showLoading() }}); try { for(let c of sels) await deleteDoc(doc(db, 'trips', c.value)); await window.fetchData(); window.loadManage(); Swal.close(); } catch(e) { Swal.fire('خطأ', e.message, 'error'); } };
-        window.editSeats = async (id) => { const n = prompt("تعديل المقاعد إلى:"); if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); window.fetchData().then(window.loadManage); } };
-        window.loadBanners = function(){ document.getElementById('banner-list').innerHTML = window.CACHE.banners.map(b => `<div class="relative"><input type="checkbox" class="ban-chk absolute top-1 left-1" value="${b.id}"><img src="${b.img}" class="h-20 w-full object-cover"></div>`).join(''); };
-        window.deleteSelectedBanners = async () => { const sels = document.querySelectorAll('.ban-chk:checked'); for(let c of sels) await deleteDoc(doc(db, 'banners', c.value)); window.fetchData().then(window.loadBanners); };
-        window.loadReq = function(){ const l = window.curLang; document.getElementById('req-list').innerHTML = window.CACHE.requests.map(r => `<tr class="border-b hover:bg-gray-50"><td class="p-3"><input type="checkbox" class="req-chk" value="${r.id}"></td><td class="p-3 text-xs text-gray-500 font-sans" style="direction:ltr">${new Date(r.ts).toLocaleString()}</td><td class="p-3 font-bold">${r.name}</td><td class="p-3 text-blue-600 font-sans" style="direction:ltr">${r.phone}</td><td class="p-3">${r.state}</td><td class="p-3 text-sm text-gray-600">${r.trip}</td><td class="p-3"><select onchange="window.updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs ${r.status==='confirmed'?'bg-green-100':(r.status==='cancelled'?'bg-red-100':'bg-yellow-100')}"><option value="pending" ${r.status==='pending'?'selected':''}>${LANG[l].req_pending}</option><option value="confirmed" ${r.status==='confirmed'?'selected':''}>${LANG[l].req_confirmed}</option><option value="cancelled" ${r.status==='cancelled'?'selected':''}>${LANG[l].req_cancelled}</option></select></td></tr>`).join(''); };
+        // REQUESTS
+        window.loadReq = function(){
+            const l = window.curLang;
+            document.getElementById('req-list').innerHTML = window.CACHE.requests.map(r => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3"><input type="checkbox" class="req-chk" value="${r.id}"></td>
+                    <td class="p-3 text-xs text-gray-500 font-sans" style="direction:ltr">${new Date(r.ts).toLocaleString()}</td>
+                    <td class="p-3 font-bold">${r.name}</td>
+                    <td class="p-3 text-blue-600 font-sans" style="direction:ltr">${r.phone}</td>
+                    <td class="p-3">${r.state}</td>
+                    <td class="p-3 text-sm text-gray-600">${r.trip}</td>
+                    <td class="p-3">
+                        <select onchange="window.updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs ${r.status==='confirmed'?'bg-green-100':(r.status==='cancelled'?'bg-red-100':'bg-yellow-100')}">
+                            <option value="pending" ${r.status==='pending'?'selected':''}>${LANG[l].req_pending}</option>
+                            <option value="confirmed" ${r.status==='confirmed'?'selected':''}>${LANG[l].req_confirmed}</option>
+                            <option value="cancelled" ${r.status==='cancelled'?'selected':''}>${LANG[l].req_cancelled}</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+        };
         window.updateReqStatus = async (id, st) => { await updateDoc(doc(db, 'requests', id), {status: st}); window.fetchData(); };
-        window.deleteSelectedReqs = async () => { const sels = document.querySelectorAll('.req-chk:checked'); for(let c of sels) await deleteDoc(doc(db, 'requests', c.value)); window.fetchData().then(window.loadReq); };
-        window.loadRep = function(){ document.getElementById('rep-list').innerHTML = window.CACHE.reports.map(r => `<div class="p-4 border-b"><div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500 font-sans">(${r.email})</span></div><p class="text-sm mt-1">${r.desc}</p></div>`).join(''); };
+        
+        window.deleteSelectedReqs = async () => {
+            const sels = Array.from(document.querySelectorAll('.req-chk:checked')).map(c => c.value);
+            if(sels.length === 0) return;
+            if(confirm('تأكيد الحذف؟')) {
+                for(let id of sels) await deleteDoc(doc(db, 'requests', id));
+                window.CACHE.requests = window.CACHE.requests.filter(r => !sels.includes(r.id));
+                window.loadReq();
+            }
+        };
 
-        async function trackVisit(){ if(!sessionStorage.getItem('v')){ try { await addDoc(collection(db, 'visits'), {ts: Date.now()}); sessionStorage.setItem('v','1'); } catch(e){} } }
+        // REPORTS
+        window.loadRep = function(){
+            document.getElementById('rep-list').innerHTML = window.CACHE.reports.map(r => `
+                <div class="p-4 border-b flex items-center justify-between">
+                    <div>
+                        <div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500 font-sans">(${r.email})</span></div>
+                        <p class="text-sm mt-1">${r.desc}</p>
+                    </div>
+                    <button onclick="window.deleteReport('${r.id}')" class="text-red-500 bg-red-100 px-3 py-1 rounded">حذف</button>
+                </div>
+            `).join('');
+        };
+        window.deleteReport = async (id) => {
+            if(confirm('حذف التبليغ؟')) {
+                await deleteDoc(doc(db, 'reports', id));
+                window.CACHE.reports = window.CACHE.reports.filter(r => r.id !== id);
+                window.loadRep();
+            }
+        };
 
-        // Start
+        async function trackVisit(){ 
+            if(!sessionStorage.getItem('v')){
+                try {
+                    await addDoc(collection(db, 'visits'), {ts: Date.now()});
+                    sessionStorage.setItem('v','1');
+                } catch(e){}
+            } 
+        }
+
+        // INIT
         window.addEventListener('load', () => {
             window.changeLang(window.curLang);
             window.checkRoute();
