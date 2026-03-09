@@ -82,13 +82,13 @@
 
     <!-- Loading Screen (Emergency Script) -->
     <div id="loader-overlay"><div class="spinner"></div></div>
-    <script>setTimeout(() => { document.getElementById('loader-overlay').style.display='none'; }, 5000);</script>
+    <script>setTimeout(() => { const l=document.getElementById('loader-overlay'); if(l)l.style.display='none'; }, 4000);</script>
 
     <!-- Navbar -->
     <header class="bg-white shadow-md fixed w-full z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <i class="fas fa-bars text-2xl cursor-pointer md:hidden" onclick="toggleSidebar()"></i>
+                <i class="fas fa-bars text-2xl cursor-pointer md:hidden" onclick="window.toggleSidebar()"></i>
                 <img id="site-logo" src="" alt="Logo" class="h-12 hidden object-contain"> 
                 <h1 id="site-title-text" class="text-3xl font-black text-blue-600">تحواس<span class="text-orange-500">.</span></h1>
             </div>
@@ -183,7 +183,7 @@
     <div id="admin-panel" class="hidden min-h-screen bg-gray-100 font-sans" dir="rtl">
         <div id="admin-login" class="flex items-center justify-center min-h-screen bg-slate-900">
             <div class="bg-white p-8 rounded-xl shadow-2xl w-96 text-center">
-                <h2 class="text-3xl font-black mb-6">ADMIN</h2>
+                <h2 class="text-3xl font-black mb-6">لوحة التحكم</h2>
                 <input type="text" id="adm-user" placeholder="User: admin" class="w-full border p-3 rounded mb-3">
                 <input type="password" id="adm-pass" placeholder="Pass: abobob123" class="w-full border p-3 rounded mb-6">
                 <button onclick="window.adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded">دخول</button>
@@ -193,7 +193,7 @@
         <div id="admin-dash" class="hidden flex">
             <!-- Sidebar -->
             <aside class="w-64 bg-slate-900 text-white min-h-screen fixed right-0 h-full overflow-y-auto p-4 z-10">
-                <h2 class="text-xl font-bold mb-8 text-center border-b border-gray-700 pb-4">لوحة التحكم</h2>
+                <h2 class="text-xl font-bold mb-8 text-center border-b border-gray-700 pb-4">لوحة الإدارة</h2>
                 <nav class="space-y-2 text-sm">
                     <button onclick="window.showAdm('stats')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-chart-pie"></i> الإحصائيات</button>
                     <button onclick="window.showAdm('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الطلبات</button>
@@ -238,13 +238,7 @@
                         <table class="w-full text-right text-sm text-gray-600">
                             <thead class="bg-gray-100 text-gray-800">
                                 <tr>
-                                    <th class="p-3 w-10">#</th>
-                                    <th class="p-3">التاريخ</th>
-                                    <th class="p-3">الاسم</th>
-                                    <th class="p-3">الهاتف</th>
-                                    <th class="p-3">الولاية</th>
-                                    <th class="p-3">الرحلة</th>
-                                    <th class="p-3">الحالة</th>
+                                    <th class="p-3 w-10">#</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th>
                                 </tr>
                             </thead>
                             <tbody id="req-list"></tbody>
@@ -275,18 +269,20 @@
                             </div>
                             <div class="border p-4 rounded bg-gray-50">
                                 <label class="font-bold mb-2 block">تفاصيل أخرى</label>
-                                <div class="flex gap-2 mb-2"><input id="t-price" type="number" placeholder="سعر" class="w-1/2 border p-2"><select id="t-transport" class="w-1/2 border p-2"><option value="bus">Bus</option><option value="plane">Plane</option></select></div>
-                                <select id="t-theme" class="w-full border p-2"><option value="sahara">Sahara</option><option value="mountain">Mountain</option><option value="coastal">Coastal</option></select>
+                                <div class="flex gap-2 mb-2"><input id="t-price" type="number" placeholder="سعر" class="w-1/2 border p-2"><select id="t-transport" class="w-1/2 border p-2"><option value="bus">حافلة</option><option value="plane">طائرة</option></select></div>
+                                <select id="t-theme" class="w-full border p-2"><option value="sahara">صحراوية (Sahara)</option><option value="mountain">جبلية (Mountain)</option><option value="coastal">ساحلية (Coastal)</option></select>
                             </div>
                         </div>
                         <div class="border p-4 rounded bg-blue-50">
                             <label class="font-bold mb-2 block">المرشد والصور</label>
                             <div class="flex gap-2 mb-2"><input id="t-guide-name" placeholder="اسم المرشد" class="w-1/2 border p-2"><input id="t-guide-img" type="file" class="w-1/2 text-xs"></div>
-                            <label class="text-xs block">الصورة الرئيسية + 5 صور</label>
-                            <input id="t-img-main" type="file" class="w-full mb-2">
-                            <div class="grid grid-cols-5 gap-2"><input type="file" class="sub-img w-full text-xs"><input type="file" class="sub-img w-full text-xs"><input type="file" class="sub-img w-full text-xs"><input type="file" class="sub-img w-full text-xs"><input type="file" class="sub-img w-full text-xs"></div>
+                            <label class="text-xs block font-bold text-red-500 mb-1">صورة رئيسية واحدة + 5 صور ثانوية (السلايدر)</label>
+                            <input id="t-img-main" type="file" class="w-full mb-2 border bg-white p-1">
+                            <div class="grid grid-cols-5 gap-2">
+                                <input type="file" class="sub-img w-full text-xs border bg-white p-1"><input type="file" class="sub-img w-full text-xs border bg-white p-1"><input type="file" class="sub-img w-full text-xs border bg-white p-1"><input type="file" class="sub-img w-full text-xs border bg-white p-1"><input type="file" class="sub-img w-full text-xs border bg-white p-1">
+                            </div>
                         </div>
-                        <button type="submit" class="w-full bg-green-600 text-white font-bold py-3 rounded">نشر الرحلة</button>
+                        <button type="submit" id="btn-submit-trip" class="w-full bg-green-600 text-white font-bold py-3 rounded hover:bg-green-700 transition">نشر الرحلة</button>
                     </form>
                 </div>
 
@@ -320,39 +316,38 @@
                 <!-- Content -->
                 <div id="sec-content" class="adm-sec hidden">
                      <h2 class="text-3xl font-bold mb-6">إدارة المحتوى</h2>
-                     <div class="bg-white p-6 rounded"><button onclick="window.loadContentForm(); Swal.fire('Info','Content forms loaded','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
+                     <div class="bg-white p-6 rounded"><button onclick="window.loadContentForm(); Swal.fire('Info','ملاحظة: لغة البرمجة متوفرة في كود اخر','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- SCRIPTS - FIREBASE & LOGIC -->
+    <!-- FIREBASE AND JS LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-        // CONFIGURATION
+        // FIREBASE CONFIG
         const firebaseConfig = {
           apiKey: "AIzaSyCePMwR1Ov1Xknj-1m0FJG-IE3pmSItzzU",
           authDomain: "thwas-b496b.firebaseapp.com",
           projectId: "thwas-b496b",
           storageBucket: "thwas-b496b.firebasestorage.app",
           messagingSenderId: "435409022648",
-          appId: "1:435409022648:web:85ad4d14546f5d2ccb0e4d",
-          measurementId: "G-C54SBF5ZN6"
+          appId: "1:435409022648:web:85ad4d14546f5d2ccb0e4d"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // STATE
-        let CACHE = { trips: [], banners: [], requests: [], reports: [], visits: [], content: {} };
-        let curLang = localStorage.getItem('lang') || 'ar';
-        let sliderInterval = null;
+        // GLOBAL STATE
+        window.CACHE = { trips:[], banners: [], requests: [], reports: [], visits:[], content: {} };
+        window.curLang = localStorage.getItem('lang') || 'ar';
+        window.sliderInterval = null;
 
+        // DICTIONARY
         const LANG = {
             ar:{
                 home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل",policy:"السياسة",location:"مقرنا",report:"مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة",confirm:"تأكيد التسجيل",
@@ -360,8 +355,7 @@
                 ph_name:"الاسم",ph_phone:"رقم الهاتف",ph_age:"السن",ph_state:"الولاية",
                 gender_m:"ذكر",gender_f:"أنثى",
                 req_pending:"قيد الانتظار", req_confirmed:"تم التأكيد", req_cancelled:"ملغى",
-                day:"يوم", hour:"سا", min:"د", sec:"ث",
-                desc:"الوصف", email:"الايميل"
+                day:"يوم", hour:"سا", min:"د", sec:"ث", desc:"الوصف", email:"الايميل"
             },
             fr:{
                 home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Offres",book_now:"Réserver",confirm:"Confirmer",
@@ -369,8 +363,7 @@
                 ph_name:"Nom",ph_phone:"Téléphone",ph_age:"Âge",ph_state:"Wilaya",
                 gender_m:"Homme",gender_f:"Femme",
                 req_pending:"En attente", req_confirmed:"Confirmé", req_cancelled:"Annulé",
-                day:"J", hour:"H", min:"M", sec:"S",
-                desc:"Description", email:"Email"
+                day:"J", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email"
             },
             en:{
                 home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Offers",book_now:"Book Now",confirm:"Confirm",
@@ -378,36 +371,34 @@
                 ph_name:"Name",ph_phone:"Phone",ph_age:"Age",ph_state:"State",
                 gender_m:"Male",gender_f:"Female",
                 req_pending:"Pending", req_confirmed:"Confirmed", req_cancelled:"Cancelled",
-                day:"D", hour:"H", min:"M", sec:"S",
-                desc:"Description", email:"Email"
+                day:"D", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email"
             }
         };
 
-        // --- GLOBAL FUNCTIONS FOR HTML ACCESS ---
-        
-        async function fetchData() {
+        // --- FETCH DATA ---
+        window.fetchData = async function() {
             try {
-                const [t, b, req, rep, v, c] = await Promise.all([
-                    getDocs(collection(db, 'trips')),
-                    getDocs(collection(db, 'banners')),
+                const[t, b, req, rep, v, c] = await Promise.all([
+                    getDocs(collection(db, 'trips')), getDocs(collection(db, 'banners')),
                     getDocs(query(collection(db, 'requests'), orderBy('ts', 'desc'))),
-                    getDocs(collection(db, 'reports')),
-                    getDocs(collection(db, 'visits')),
+                    getDocs(collection(db, 'reports')), getDocs(collection(db, 'visits')),
                     getDocs(collection(db, 'content'))
                 ]);
 
-                CACHE.trips = t.docs.map(d => ({id: d.id, ...d.data()}));
-                CACHE.banners = b.docs.map(d => ({id: d.id, ...d.data()}));
-                CACHE.requests = req.docs.map(d => ({id: d.id, ...d.data()}));
-                CACHE.reports = rep.docs.map(d => ({id: d.id, ...d.data()}));
-                CACHE.visits = v.docs.map(d => ({id: d.id, ...d.data()}));
-                if(!c.empty) CACHE.content = c.docs[0].data();
+                window.CACHE.trips = t.docs.map(d => ({id: d.id, ...d.data()}));
+                window.CACHE.banners = b.docs.map(d => ({id: d.id, ...d.data()}));
+                window.CACHE.requests = req.docs.map(d => ({id: d.id, ...d.data()}));
+                window.CACHE.reports = rep.docs.map(d => ({id: d.id, ...d.data()}));
+                window.CACHE.visits = v.docs.map(d => ({id: d.id, ...d.data()}));
+                if(!c.empty) window.CACHE.content = c.docs[0].data();
 
-            } catch (e) { console.error("Firebase:", e); } 
-            finally {
-                document.getElementById('loader-overlay').style.display='none';
-                loadPublic();
-                if(!document.getElementById('admin-dash').classList.contains('hidden')) initAdmin();
+            } catch (e) {
+                console.error("Firebase Error:", e);
+                // We do NOT show error here to keep user experience smooth, but developer sees console.
+            } finally {
+                document.getElementById('loader-overlay').style.display = 'none';
+                window.loadPublic();
+                if(!document.getElementById('admin-dash').classList.contains('hidden')) window.initAdmin();
             }
         }
 
@@ -417,21 +408,23 @@
                 const storageRef = ref(storage, 'uploads/' + Date.now() + '-' + file.name);
                 await uploadBytes(storageRef, file);
                 return await getDownloadURL(storageRef);
-            } catch(e) { console.error(e); return ''; }
+            } catch(e) {
+                console.error("Storage Error:", e);
+                throw new Error("تأكد من فتح قواعد الحماية للـ Storage في فايرباس");
+            }
         }
 
-        // Expose functions to window
-        window.changeLang = function(l){
-            curLang=l; localStorage.setItem('lang',l);
-            document.documentElement.dir = l==='ar'?'rtl':'ltr';
-            document.body.className = `bg-gray-50 text-gray-800 font-${l==='ar'?'ar':'en'}`;
+        // --- PUBLIC FUNCTIONS ---
+        window.changeLang = function(l) {
+            window.curLang = l; localStorage.setItem('lang', l);
+            document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
+            document.body.className = `bg-gray-50 text-gray-800 font-${l === 'ar' ? 'ar' : 'en'}`;
             
             document.querySelectorAll('[data-key]').forEach(el => {
                 const k = el.getAttribute('data-key');
                 if(LANG[l][k]) el.innerText = LANG[l][k];
             });
 
-            // Inputs Update
             if(document.getElementById('b-name')) {
                 document.getElementById('b-name').placeholder = LANG[l].ph_name;
                 document.getElementById('b-phone').placeholder = LANG[l].ph_phone;
@@ -442,29 +435,29 @@
                 document.getElementById('r-desc').placeholder = LANG[l].desc;
                 document.getElementById('b-gender').innerHTML = `<option value="male">${LANG[l].gender_m}</option><option value="female">${LANG[l].gender_f}</option>`;
             }
-            loadPublic();
+
+            if(window.CACHE.content) {
+                document.getElementById('about-text').innerText = window.CACHE.content[`about_${l}`] || '...';
+                document.getElementById('policy-text').innerText = window.CACHE.content[`policy_${l}`] || '...';
+                document.getElementById('location-text').innerText = window.CACHE.content[`loc_${l}`] || '...';
+                document.getElementById('contact-text').innerText = window.CACHE.content[`con_${l}`] || '...';
+            }
+            window.loadPublic();
         };
 
-        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
-        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
-        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
-        window.forceAdmin = () => { location.hash='#admin'; location.reload(); };
-        window.adminLogout = () => { location.hash=''; location.reload(); };
-        window.closeTripModal = () => { document.getElementById('trip-modal').classList.add('hidden'); if(sliderInterval) clearInterval(sliderInterval); };
-
-        function loadPublic(){
+        window.loadPublic = function() {
             const grid = document.getElementById('trips-grid');
             if(!grid) return;
             
-            if(CACHE.trips.length === 0) {
+            if(window.CACHE.trips.length === 0) {
                 grid.innerHTML = '<p class="text-center col-span-3 text-gray-400 py-10">No Trips / لا توجد رحلات</p>';
             } else {
-                grid.innerHTML = CACHE.trips.map(x => {
-                    let title = x[`title_${curLang}`] || x.title_ar;
+                grid.innerHTML = window.CACHE.trips.map(x => {
+                    let title = x[`title_${window.curLang}`] || x.title_ar;
                     return `<div class="bg-white rounded-xl shadow overflow-hidden cursor-pointer" onclick="window.openTrip('${x.id}')">
                         <div class="h-60 relative">
                             <img src="${x.mainImg}" class="w-full h-full object-cover">
-                            <span class="absolute top-2 right-2 bg-white px-2 rounded font-bold text-blue-800">${x.price} ${LANG[curLang].price_unit}</span>
+                            <span class="absolute top-2 right-2 bg-white px-2 rounded font-bold text-blue-800">${x.price} ${LANG[window.curLang].price_unit}</span>
                             <div class="card-countdown" data-date="${x.start}"></div>
                         </div>
                         <div class="p-4 text-center"><h3 class="font-bold text-lg">${title}</h3><div class="text-xs text-gray-500 mt-2 flex justify-between"><span>${x.start ? x.start.replace('T',' ') : ''}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
@@ -473,28 +466,27 @@
             }
 
             const sl = document.getElementById('hero-slider');
-            if(CACHE.banners.length > 0){
-                sl.innerHTML = CACHE.banners.map((x,i) => `<div onclick="window.clickBanner('${x.type}','${x.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${x.img}')"></div>`).join('');
+            if(window.CACHE.banners.length > 0){
+                sl.innerHTML = window.CACHE.banners.map((x,i) => `<div onclick="window.clickBanner('${x.type}','${x.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${x.img}')"></div>`).join('');
                 let idx=0; const it=document.querySelectorAll('.slide-item');
                 if(it.length>1) setInterval(()=>{ it[idx].classList.replace('opacity-100','opacity-0'); idx=(idx+1)%it.length; it[idx].classList.replace('opacity-0','opacity-100') },4000);
             }
-        }
+        };
 
-        window.clickBanner = (t,v) => { if(t==='url') window.open(v,'_blank'); else if(t==='trip') window.openTrip(v); };
-
-        window.openTrip = (id) => {
-            const t = CACHE.trips.find(x => x.id === id); if(!t) return;
+        window.openTrip = function(id) {
+            const t = window.CACHE.trips.find(x => x.id === id); if(!t) return;
             document.getElementById('trip-modal').classList.remove('hidden');
             const cont = document.getElementById('trip-content');
-            let title = t[`title_${curLang}`] || t.title_ar;
-            let prog = t[`prog_${curLang}`] || t.prog_ar || "";
+            const l = window.curLang;
+            let title = t[`title_${l}`] || t.title_ar;
+            let prog = t[`prog_${l}`] || t.prog_ar || "";
             
             let points = prog.split(/,|،/).map(s => { let p = s.split('|'); return {txt:p[0].trim(), ico:p[1]||'📍'}; });
             let mapHTML = `<div class="snake-map-container theme-${t.theme}"><div class="snake-line"></div>`;
             mapHTML += points.map((p,i) => `<div class="snake-item"><div class="snake-dot"><i class="fas fa-map-marker-alt"></i></div><div class="snake-card"><div class="absolute -top-3 left-1/2 transform -translate-x-1/2 text-2xl bg-white rounded-full p-1">${p.ico}</div><h4 class="font-bold mt-4 text-center">${p.txt}</h4></div></div>`).join('');
             mapHTML += `<div style="clear:both"></div></div>`;
 
-            startCountdown(t.start, 'countdown-box');
+            window.startCountdown(t.start, 'countdown-box');
 
             let imgs = `<img src="${t.mainImg}" class="flex-shrink-0 min-w-full h-full object-cover">`;
             if(t.subs) imgs += t.subs.map(s => `<img src="${s}" class="flex-shrink-0 min-w-full h-full object-cover">`).join('');
@@ -509,30 +501,29 @@
                 </div>
                 <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto p-6">
                     <div class="flex justify-between items-center mb-6 bg-white p-3 rounded shadow">
-                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[curLang].start}</span><b class="text-blue-600">${t.start ? t.start.replace('T',' ') : ''}</b></div>
-                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[curLang].price_unit}</span><b class="text-yellow-500 text-xl">${t.price}</b></div>
-                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[curLang].seats}</span><b class="text-red-500">${t.seats}</b></div>
+                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[l].start}</span><b class="text-blue-600" style="direction:ltr; display:inline-block">${t.start ? t.start.replace('T',' ') : ''}</b></div>
+                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[l].price_unit}</span><b class="text-yellow-500 text-xl">${t.price}</b></div>
+                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[l].seats}</span><b class="text-red-500">${t.seats}</b></div>
                     </div>
                     <div class="flex items-center gap-3 mb-6 bg-blue-50 p-3 rounded border border-blue-200">
                         <img src="${t.guideImg}" class="w-12 h-12 rounded-full object-cover">
-                        <div><p class="text-xs font-bold text-gray-500">${LANG[curLang].guide}</p><p class="font-bold">${t.guideName}</p></div>
-                        <div class="flex-1 text-right text-green-600 font-bold text-sm"><i class="fas fa-check-circle"></i> ${LANG[curLang].insurance}</div>
+                        <div><p class="text-xs font-bold text-gray-500">${LANG[l].guide}</p><p class="font-bold">${t.guideName}</p></div>
+                        <div class="flex-1 text-right text-green-600 font-bold text-sm"><i class="fas fa-check-circle"></i> ${LANG[l].insurance}</div>
                     </div>
                     ${mapHTML}
                     <div class="h-20"></div>
-                    <div class="text-center pb-8"><button onclick="window.openBook('${t.id}','${title}')" class="btn-glow px-10 py-3 bg-blue-600 text-white font-bold rounded-full">${LANG[curLang].book_now}</button></div>
+                    <div class="text-center pb-8"><button onclick="window.openBook('${t.id}','${title}')" class="btn-glow px-10 py-3 bg-blue-600 text-white font-bold rounded-full">${LANG[l].book_now}</button></div>
                 </div>
             </div>`;
 
-            // Auto Slider
             const sContainer = document.getElementById('modal-slider');
             const slidesCount = 1 + (t.subs ? t.subs.length : 0);
             let sIdx = 0;
-            if(sliderInterval) clearInterval(sliderInterval);
+            if(window.sliderInterval) clearInterval(window.sliderInterval);
             if(slidesCount > 1) {
-                sliderInterval = setInterval(() => {
+                window.sliderInterval = setInterval(() => {
                     sIdx = (sIdx + 1) % slidesCount;
-                    sContainer.style.transform = `translateX(${curLang==='ar' ? sIdx * 100 : -sIdx * 100}%)`;
+                    sContainer.style.transform = `translateX(${window.curLang==='ar' ? sIdx * 100 : -sIdx * 100}%)`;
                 }, 2000);
             }
         };
@@ -543,110 +534,85 @@
             document.getElementById('booking-modal').classList.remove('hidden');
         };
 
-        window.adminLogin = () => {
-            if(document.getElementById('adm-user').value==='admin') {
-                document.getElementById('admin-login').classList.add('hidden');
-                document.getElementById('admin-dash').classList.remove('hidden');
-                document.getElementById('admin-dash').classList.add('flex');
-                initAdmin();
-            }
-        };
+        // UI Helpers
+        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
+        window.closeTripModal = () => { document.getElementById('trip-modal').classList.add('hidden'); if(window.sliderInterval) clearInterval(window.sliderInterval); };
+        window.clickBanner = (t,v) => { if(t==='url') window.open(v,'_blank'); else if(t==='trip') window.openTrip(v); };
 
-        window.showAdm = (id) => {
-            document.querySelectorAll('.adm-sec').forEach(d => d.classList.add('hidden'));
-            document.getElementById('sec-'+id).classList.remove('hidden');
-            if(id === 'manage') loadManage();
-            if(id === 'banners') loadBanners();
-            if(id === 'requests') loadReq();
-            if(id === 'reports') loadRep();
-        };
-
-        function initAdmin(){
-            updateStats();
-            const ctx = document.getElementById('visitsChart');
-            if(ctx) {
-                const labels=[], data=[];
-                for(let i=29; i>=0; i--){
-                    let d = new Date(); d.setDate(d.getDate()-i);
-                    let ds = d.toDateString();
-                    labels.push(d.getDate());
-                    data.push(CACHE.visits.filter(v => new Date(v.ts).toDateString() === ds).length);
-                }
-                new Chart(ctx, {type:'line', data:{labels, datasets:[{label:'Visits', data, borderColor:'#2563eb', tension:0.4}]}});
-            }
-        }
-
-        function updateStats(){
-            const now = new Date();
-            const today = now.toDateString();
-            const month = now.getMonth();
-            document.getElementById('stat-day').innerText = CACHE.visits.filter(v => new Date(v.ts).toDateString() === today).length;
-            document.getElementById('stat-month').innerText = CACHE.visits.filter(v => new Date(v.ts).getMonth() === month).length;
-            document.getElementById('stat-req').innerText = CACHE.requests.length;
-            document.getElementById('stat-rep').innerText = CACHE.reports.length;
-        }
-
-        // Add Trip Handler
-        document.getElementById('form-add-trip').addEventListener('submit', async e => {
+        // Book Submit
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.disabled=true; btn.innerText="Uploading...";
-            
-            const mf = document.getElementById('t-img-main').files[0];
-            const gf = document.getElementById('t-guide-img').files[0];
-            const subf = document.querySelectorAll('.sub-img');
-            
-            let mI = await uploadFileToStorage(mf);
-            let gI = await uploadFileToStorage(gf);
-            let sI = [];
-            for(let f of subf) if(f.files[0]) sI.push(await uploadFileToStorage(f.files[0]));
-
-            await addDoc(collection(db, 'trips'), {
-                title_ar: document.getElementById('t-title-ar').value, title_fr: document.getElementById('t-title-fr').value, title_en: document.getElementById('t-title-en').value,
-                prog_ar: document.getElementById('t-prog-ar').value, prog_fr: document.getElementById('t-prog-fr').value, prog_en: document.getElementById('t-prog-en').value,
-                start: document.getElementById('t-date-start').value,
-                seats: document.getElementById('t-seats').value,
-                price: document.getElementById('t-price').value,
-                theme: document.getElementById('t-theme').value,
-                guideName: document.getElementById('t-guide-name').value,
-                mainImg: mI, guideImg: gI, subs: sI
-            });
-            
-            Swal.fire('Success', 'Trip Added', 'success');
-            e.target.reset();
-            btn.disabled=false; btn.innerText="نشر الرحلة";
-            fetchData();
+            const btn = e.target.querySelector('button'); btn.disabled=true; btn.innerText="...";
+            try {
+                await addDoc(collection(db, 'requests'), {
+                    ts: Date.now(),
+                    name: document.getElementById('b-name').value,
+                    phone: document.getElementById('b-phone').value,
+                    age: document.getElementById('b-age').value,
+                    state: document.getElementById('b-state').value,
+                    gender: document.getElementById('b-gender').value,
+                    trip: document.getElementById('b-trip-name').value,
+                    status: 'pending'
+                });
+                document.getElementById('booking-modal').classList.add('hidden');
+                Swal.fire('OK', 'تم التسجيل بنجاح', 'success');
+                window.fetchData();
+            } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
+            finally { btn.disabled=false; btn.innerText=LANG[window.curLang].confirm; }
         });
 
-        // Banner Handler
-        window.uploadBanner = async () => {
-            const f = document.getElementById('new-banner').files[0];
-            const t = document.getElementById('ban-type').value;
-            let v = document.getElementById('ban-val').value;
-            if(t === 'trip') v = document.getElementById('ban-trip-select').value;
-            if(f) { 
-                const url = await uploadFileToStorage(f);
-                await addDoc(collection(db, 'banners'), {img:url, type:t, val:v});
-                fetchData().then(loadBanners);
-            }
-        }
+        // Report Submit
+        document.getElementById('report-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await addDoc(collection(db, 'reports'), {
+                    name: document.getElementById('r-name').value,
+                    email: document.getElementById('r-email').value,
+                    desc: document.getElementById('r-desc').value,
+                    ts: Date.now()
+                });
+                document.getElementById('report-modal').classList.add('hidden');
+                Swal.fire('OK', 'تم الإرسال', 'success');
+                window.fetchData();
+            } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
+        });
 
-        // Helper Functions for Admin (Made Global)
-        function loadManage(){ document.getElementById('manage-list').innerHTML = CACHE.trips.map(t => `<div class="flex items-center gap-2 bg-gray-50 p-2 rounded"><input type="checkbox" class="trip-chk" value="${t.id}"><img src="${t.mainImg}" class="w-10 h-10 rounded"><span class="flex-1 font-bold">${t.title_ar}</span><button onclick="window.editSeats('${t.id}')" class="text-blue-600 text-xs underline">تعديل مقاعد (${t.seats})</button></div>`).join(''); }
-        window.deleteSelectedTrips = async () => { const sels = document.querySelectorAll('.trip-chk:checked'); for(let c of sels) await deleteDoc(doc(db, 'trips', c.value)); fetchData().then(loadManage); }
-        window.editSeats = async (id) => { const n = prompt("New seats count:"); if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); fetchData().then(loadManage); } }
-        window.toggleBanInput = () => { const t = document.getElementById('ban-type').value; const txtIn = document.getElementById('ban-val'); const selIn = document.getElementById('ban-trip-select'); if(t === 'trip') { txtIn.classList.add('hidden'); selIn.classList.remove('hidden'); selIn.innerHTML = CACHE.trips.map(tr => `<option value="${tr.id}">${tr.title_ar}</option>`).join(''); } else { selIn.classList.add('hidden'); txtIn.classList.remove('hidden'); } }
-        function loadBanners(){ document.getElementById('banner-list').innerHTML = CACHE.banners.map(b => `<div class="relative"><input type="checkbox" class="ban-chk absolute top-1 left-1" value="${b.id}"><img src="${b.img}" class="h-20 w-full object-cover"></div>`).join(''); }
-        window.deleteSelectedBanners = async () => { const sels = document.querySelectorAll('.ban-chk:checked'); for(let c of sels) await deleteDoc(doc(db, 'banners', c.value)); fetchData().then(loadBanners); }
-        function loadReq(){ document.getElementById('req-list').innerHTML = CACHE.requests.map(r => `<tr class="border-b hover:bg-gray-50"><td class="p-3"><input type="checkbox" class="req-chk" value="${r.id}"></td><td class="p-3 text-xs text-gray-500">${new Date(r.ts).toLocaleString()}</td><td class="p-3 font-bold">${r.name}</td><td class="p-3 text-blue-600">${r.phone}</td><td class="p-3">${r.state}</td><td class="p-3 text-sm text-gray-600">${r.trip}</td><td class="p-3"><select onchange="window.updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs ${r.status==='confirmed'?'bg-green-100':(r.status==='cancelled'?'bg-red-100':'bg-yellow-100')}"><option value="pending" ${r.status==='pending'?'selected':''}>${LANG[curLang].req_pending}</option><option value="confirmed" ${r.status==='confirmed'?'selected':''}>${LANG[curLang].req_confirmed}</option><option value="cancelled" ${r.status==='cancelled'?'selected':''}>${LANG[curLang].req_cancelled}</option></select></td></tr>`).join(''); }
-        window.updateReqStatus = async (id, st) => { await updateDoc(doc(db, 'requests', id), {status: st}); fetchData(); }
-        window.deleteSelectedReqs = async () => { const sels = document.querySelectorAll('.req-chk:checked'); for(let c of sels) await deleteDoc(doc(db, 'requests', c.value)); fetchData().then(loadReq); }
-        function loadRep(){ document.getElementById('rep-list').innerHTML = CACHE.reports.map(r => `<div class="p-4 border-b"><div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500">(${r.email})</span></div><p class="text-sm mt-1">${r.desc}</p></div>`).join(''); }
+        // Countdowns
+        window.startGridCountdowns = function() {
+            setInterval(() => {
+                document.querySelectorAll('.card-countdown').forEach(el => {
+                    if(!el.dataset.date) return;
+                    const dist = new Date(el.dataset.date).getTime() - new Date().getTime();
+                    if(dist < 0) { el.innerHTML = ""; return; }
+                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
+                    el.style.cssText = "position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; display:flex; justify-content:center; gap:8px; padding:5px; direction:ltr;";
+                    el.innerHTML = `<div><b class='text-yellow-400 font-sans'>${d}</b> <span class='text-xs'>${LANG[window.curLang].day}</span></div>
+                                    <div><b class='text-yellow-400 font-sans'>${h}</b> <span class='text-xs'>${LANG[window.curLang].hour}</span></div>`;
+                });
+            }, 1000);
+        };
+        window.startCountdown = function(dateStr, elemId){
+            const el = document.getElementById(elemId); if(!el || !dateStr) return;
+            const target = new Date(dateStr).getTime();
+            window.cdTimer = setInterval(()=>{
+                const dist = target - new Date().getTime();
+                if(dist < 0) { clearInterval(window.cdTimer); el.innerHTML = ""; return; }
+                const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
+                el.innerHTML = `<div class="countdown-box"><div class="countdown-digit">${d}</div><div class="countdown-label">${LANG[window.curLang].day}</div></div>
+                                <div class="countdown-box"><div class="countdown-digit">${h}</div><div class="countdown-label">${LANG[window.curLang].hour}</div></div>
+                                <div class="countdown-box"><div class="countdown-digit">${m}</div><div class="countdown-label">${LANG[window.curLang].min}</div></div>
+                                <div class="countdown-box"><div class="countdown-digit">${s}</div><div class="countdown-label">${LANG[window.curLang].sec}</div></div>`;
+            }, 1000);
+        };
 
-        // Start
-        window.changeLang(curLang);
-        fetchData();
-        
-        function checkRoute() {
+
+        // ================= ADMIN FUNCTIONS =================
+        window.forceAdmin = () => { location.hash='#admin'; };
+        window.adminLogout = () => { location.hash=''; location.reload(); };
+
+        window.checkRoute = function() {
             if(location.hash==='#admin' || location.hash==='#admin1'){
                 document.getElementById('user-app').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
@@ -656,51 +622,194 @@
                 document.getElementById('user-app').classList.remove('hidden');
                 document.getElementById('admin-panel').classList.add('hidden');
             }
-        }
-        window.addEventListener('hashchange', checkRoute);
-        checkRoute();
+        };
 
-        // Forms Event Listeners
-        document.getElementById('booking-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, 'requests'), { ts: Date.now(), name: document.getElementById('b-name').value, phone: document.getElementById('b-phone').value, age: document.getElementById('b-age').value, state: document.getElementById('b-state').value, gender: document.getElementById('b-gender').value, trip: document.getElementById('b-trip-name').value, status: 'pending' });
-            document.getElementById('booking-modal').classList.add('hidden');
-            Swal.fire('OK', 'Success', 'success'); fetchData();
-        });
-        document.getElementById('report-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, 'reports'), { name: document.getElementById('r-name').value, email: document.getElementById('r-email').value, desc: document.getElementById('r-desc').value, ts: Date.now() });
-            document.getElementById('report-modal').classList.add('hidden');
-            Swal.fire('OK', 'Sent', 'success'); fetchData();
-        });
+        window.adminLogin = () => {
+            if(document.getElementById('adm-user').value==='admin') {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-dash').classList.remove('hidden');
+                document.getElementById('admin-dash').classList.add('flex');
+                window.initAdmin();
+            }
+        };
 
-        // Countdowns
-        function startGridCountdowns() {
-            setInterval(() => {
-                document.querySelectorAll('.card-countdown').forEach(el => {
-                    if(!el.dataset.date) return;
-                    const date = new Date(el.dataset.date).getTime();
-                    const now = new Date().getTime();
-                    const dist = date - now;
-                    if(dist < 0) { el.innerHTML = ""; return; }
-                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
-                    el.style.cssText = "position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); color:white; display:flex; justify-content:center; gap:8px; padding:5px; direction:ltr;";
-                    el.innerHTML = `<div><b class='text-yellow-400'>${d}</b> <span class='text-xs'>${LANG[curLang].day}</span></div><div><b class='text-yellow-400'>${h}</b> <span class='text-xs'>${LANG[curLang].hour}</span></div>`;
+        window.showAdm = (id) => {
+            document.querySelectorAll('.adm-sec').forEach(d => d.classList.add('hidden'));
+            document.getElementById('sec-'+id).classList.remove('hidden');
+            if(id === 'manage') window.loadManage();
+            if(id === 'banners') window.loadBanners();
+            if(id === 'requests') window.loadReq();
+            if(id === 'reports') window.loadRep();
+        };
+
+        window.initAdmin = function(){
+            const v=window.CACHE.visits; const now=new Date();
+            document.getElementById('stat-day').innerText = v.filter(x=>new Date(x.ts).toDateString()===now.toDateString()).length;
+            document.getElementById('stat-month').innerText = v.filter(x=>new Date(x.ts).getMonth()===now.getMonth()).length;
+            document.getElementById('stat-req').innerText = window.CACHE.requests.length;
+            document.getElementById('stat-rep').innerText = window.CACHE.reports.length;
+            
+            // Chart
+            const ctx = document.getElementById('visitsChart');
+            if(ctx) {
+                const labels=[], data=[];
+                for(let i=29; i>=0; i--){
+                    let d = new Date(); d.setDate(d.getDate()-i);
+                    labels.push(d.getDate());
+                    data.push(v.filter(x => new Date(x.ts).toDateString() === d.toDateString()).length);
+                }
+                new Chart(ctx, {type:'line', data:{labels, datasets:[{label:'Visits', data, borderColor:'#2563eb', tension:0.4}]}});
+            }
+        };
+
+        // ADD TRIP (The specific fix for publishing)
+        document.getElementById('form-add-trip').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-trip'); 
+            const origText = btn.innerText;
+            btn.disabled=true; btn.innerText="جاري النشر...";
+            
+            try {
+                const mf = document.getElementById('t-img-main').files[0];
+                const gf = document.getElementById('t-guide-img').files[0];
+                const subf = document.querySelectorAll('.sub-img');
+                
+                let mI = await uploadFileToStorage(mf);
+                let gI = await uploadFileToStorage(gf);
+                let sI = [];
+                for(let f of subf) if(f.files[0]) sI.push(await uploadFileToStorage(f.files[0]));
+
+                await addDoc(collection(db, 'trips'), {
+                    title_ar: document.getElementById('t-title-ar').value, title_fr: document.getElementById('t-title-fr').value, title_en: document.getElementById('t-title-en').value,
+                    prog_ar: document.getElementById('t-prog-ar').value, prog_fr: document.getElementById('t-prog-fr').value, prog_en: document.getElementById('t-prog-en').value,
+                    start: document.getElementById('t-date-start').value,
+                    seats: document.getElementById('t-seats').value,
+                    price: document.getElementById('t-price').value,
+                    theme: document.getElementById('t-theme').value,
+                    guideName: document.getElementById('t-guide-name').value,
+                    mainImg: mI, guideImg: gI, subs: sI
                 });
-            }, 1000);
-        }
-        function startCountdown(dateStr, elemId){
-            const el = document.getElementById(elemId); if(!el || !dateStr) return;
-            const target = new Date(dateStr).getTime();
-            const timer = setInterval(()=>{
-                const now = new Date().getTime(); const dist = target - now;
-                if(dist < 0) { clearInterval(timer); el.innerHTML = ""; return; }
-                const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
-                el.innerHTML = `<div class="countdown-box"><div class="countdown-digit">${d}</div><div class="countdown-label">${LANG[curLang].day}</div></div><div class="countdown-box"><div class="countdown-digit">${h}</div><div class="countdown-label">${LANG[curLang].hour}</div></div><div class="countdown-box"><div class="countdown-digit">${m}</div><div class="countdown-label">${LANG[curLang].min}</div></div><div class="countdown-box"><div class="countdown-digit">${s}</div><div class="countdown-label">${LANG[curLang].sec}</div></div>`;
-            }, 1000);
-        }
-        startGridCountdowns();
-        async function trackVisit(){ if(!sessionStorage.getItem('v')){ await addDoc(collection(db, 'visits'), {ts: Date.now()}); sessionStorage.setItem('v','1'); } }
+                
+                Swal.fire('تم', 'تم نشر الرحلة بنجاح', 'success');
+                e.target.reset();
+                window.fetchData();
+            } catch (error) {
+                console.error("Add Trip Error:", error);
+                Swal.fire('خطأ!', 'لم يتم النشر. راجع قواعد Firebase Rules:\n\n' + error.message, 'error');
+            } finally {
+                btn.disabled=false; btn.innerText = origText;
+            }
+        });
+
+        // MANAGE
+        window.loadManage = function(){
+            document.getElementById('manage-list').innerHTML = window.CACHE.trips.map(t => `
+                <div class="flex items-center gap-2 bg-gray-50 p-2 rounded">
+                    <input type="checkbox" class="trip-chk" value="${t.id}">
+                    <img src="${t.mainImg}" class="w-10 h-10 rounded">
+                    <span class="flex-1 font-bold">${t.title_ar}</span>
+                    <button onclick="window.editSeats('${t.id}')" class="text-blue-600 text-xs underline">تعديل مقاعد (${t.seats})</button>
+                </div>`).join('');
+        };
+        window.deleteSelectedTrips = async () => {
+            const sels = document.querySelectorAll('.trip-chk:checked');
+            if(sels.length === 0) return;
+            Swal.fire({title: 'جاري الحذف...', didOpen: () => { Swal.showLoading() }});
+            try {
+                for(let c of sels) await deleteDoc(doc(db, 'trips', c.value));
+                await window.fetchData();
+                window.loadManage();
+                Swal.close();
+            } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
+        };
+        window.editSeats = async (id) => {
+            const n = prompt("تعديل المقاعد إلى:"); 
+            if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); window.fetchData().then(window.loadManage); }
+        };
+
+        // BANNERS
+        window.toggleBanInput = () => {
+            const t = document.getElementById('ban-type').value;
+            const txtIn = document.getElementById('ban-val');
+            const selIn = document.getElementById('ban-trip-select');
+            if(t === 'trip') {
+                txtIn.classList.add('hidden'); selIn.classList.remove('hidden');
+                selIn.innerHTML = window.CACHE.trips.map(tr => `<option value="${tr.id}">${tr.title_ar}</option>`).join('');
+            } else {
+                selIn.classList.add('hidden'); txtIn.classList.remove('hidden');
+            }
+        };
+        window.uploadBanner = async () => {
+            const f = document.getElementById('new-banner').files[0];
+            const t = document.getElementById('ban-type').value;
+            let v = document.getElementById('ban-val').value;
+            if(t === 'trip') v = document.getElementById('ban-trip-select').value;
+            if(f) { 
+                Swal.fire({title: 'جاري الرفع...', didOpen: () => { Swal.showLoading() }});
+                try {
+                    const url = await uploadFileToStorage(f);
+                    await addDoc(collection(db, 'banners'), {img:url, type:t, val:v});
+                    await window.fetchData();
+                    window.loadBanners();
+                    Swal.close();
+                } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
+            }
+        };
+        window.loadBanners = function(){
+            document.getElementById('banner-list').innerHTML = window.CACHE.banners.map(b => `
+                <div class="relative"><input type="checkbox" class="ban-chk absolute top-1 left-1" value="${b.id}"><img src="${b.img}" class="h-20 w-full object-cover"></div>`).join('');
+        };
+        window.deleteSelectedBanners = async () => {
+            const sels = document.querySelectorAll('.ban-chk:checked');
+            for(let c of sels) await deleteDoc(doc(db, 'banners', c.value));
+            window.fetchData().then(window.loadBanners);
+        };
+
+        // REQUESTS
+        window.loadReq = function(){
+            const l = window.curLang;
+            document.getElementById('req-list').innerHTML = window.CACHE.requests.map(r => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3"><input type="checkbox" class="req-chk" value="${r.id}"></td>
+                    <td class="p-3 text-xs text-gray-500 font-sans" style="direction:ltr">${new Date(r.ts).toLocaleString()}</td>
+                    <td class="p-3 font-bold">${r.name}</td>
+                    <td class="p-3 text-blue-600 font-sans" style="direction:ltr">${r.phone}</td>
+                    <td class="p-3">${r.state}</td>
+                    <td class="p-3 text-sm text-gray-600">${r.trip}</td>
+                    <td class="p-3">
+                        <select onchange="window.updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs ${r.status==='confirmed'?'bg-green-100':(r.status==='cancelled'?'bg-red-100':'bg-yellow-100')}">
+                            <option value="pending" ${r.status==='pending'?'selected':''}>${LANG[l].req_pending}</option>
+                            <option value="confirmed" ${r.status==='confirmed'?'selected':''}>${LANG[l].req_confirmed}</option>
+                            <option value="cancelled" ${r.status==='cancelled'?'selected':''}>${LANG[l].req_cancelled}</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+        };
+        window.updateReqStatus = async (id, st) => { await updateDoc(doc(db, 'requests', id), {status: st}); window.fetchData(); };
+        window.deleteSelectedReqs = async () => {
+            const sels = document.querySelectorAll('.req-chk:checked');
+            for(let c of sels) await deleteDoc(doc(db, 'requests', c.value));
+            window.fetchData().then(window.loadReq);
+        };
+
+        // REPORTS
+        window.loadRep = function(){
+            document.getElementById('rep-list').innerHTML = window.CACHE.reports.map(r => `
+                <div class="p-4 border-b">
+                    <div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500 font-sans">(${r.email})</span></div>
+                    <p class="text-sm mt-1">${r.desc}</p>
+                </div>
+            `).join('');
+        };
+
+        // RUN ON LOAD
+        window.addEventListener('load', () => {
+            window.changeLang(window.curLang);
+            window.checkRoute();
+            window.fetchData();
+        });
+
     </script>
 </body>
 </html>
