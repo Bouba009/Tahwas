@@ -28,6 +28,7 @@
 
         /* ================== SNAKE MAP & ENVIRONMENTS ================== */
         .snake-map-container { position: relative; padding: 80px 0; overflow: hidden; margin-top: 20px; border-radius: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.2); }
+        
         .snake-line {
             position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; margin-left: -20px; z-index: 10;
             background-image: url("data:image/svg+xml,%3Csvg width='40' height='100' viewBox='0 0 40 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0 Q40 25 20 50 T20 100' fill='none' stroke='%23ffffff' stroke-width='4' stroke-dasharray='8 4'/%3E%3C/svg%3E");
@@ -64,7 +65,7 @@
         .env-anim { animation: float-env 4s ease-in-out infinite alternate; }
         @keyframes float-env { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
 
-        /* ================== ANIMATED COUNTDOWN ================== */
+        /* ================== ANIMATED COUNTDOWN FOR CARDS ================== */
         .card-countdown {
             position: absolute; bottom: 15px; left: 5%; right: 5%;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
@@ -88,7 +89,14 @@
         
         .chart-container { position: relative; height: 300px; width: 100%; }
         .modal-slider { scroll-behavior: smooth; }
-        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        /* 3-Lines Clamp */
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
@@ -210,9 +218,9 @@
         <div id="admin-login" class="flex items-center justify-center min-h-screen bg-slate-900">
             <div class="bg-white p-8 rounded-xl shadow-2xl w-96 text-center">
                 <h2 class="text-3xl font-black mb-6">لوحة الإدارة</h2>
-                <input type="text" id="adm-user" placeholder="" class="w-full border p-3 rounded mb-3 outline-none">
-                <input type="password" id="adm-pass" placeholder="" class="w-full border p-3 rounded mb-6 outline-none">
-                <button onclick="window.adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded">دخول</button>
+                <input type="text" id="adm-user" placeholder="اسم المستخدم" class="w-full border p-3 rounded mb-3 outline-none">
+                <input type="password" id="adm-pass" placeholder="كلمة المرور" class="w-full border p-3 rounded mb-6 outline-none">
+                <button onclick="window.adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded w-full">دخول</button>
             </div>
         </div>
 
@@ -407,7 +415,7 @@
         const db = getFirestore(app);
 
         // HYBRID SYSTEM STATE
-        window.CACHE = { trips: [], banners: [], requests: [], reports: [], visits:[], content: {} };
+        window.CACHE = { trips: [], banners: [], requests:[], reports: [], visits:[], content: {} };
         window.curLang = localStorage.getItem('lang') || 'ar';
         window.gridCdInterval = null;
         window.sliderInterval = null;
@@ -510,7 +518,7 @@
             } else {
                 grid.innerHTML = window.CACHE.trips.map(x => {
                     let title = x[`title_${window.curLang}`] || x.title_ar;
-                    return `<div class="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer group hover:shadow-2xl transition duration-300" onclick="window.openTrip('${x.id}')">
+                    return `<div class="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer group hover:shadow-2xl transition duration-300 relative" onclick="window.openTrip('${x.id}')">
                         <div class="h-64 relative overflow-hidden">
                             <img src="${x.mainImg}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <span class="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-1 rounded-full font-black text-blue-800 shadow-md z-10">${x.price} ${LANG[window.curLang].price_unit}</span>
@@ -518,7 +526,7 @@
                             <!-- The Animated Countdown inside Image -->
                             <div class="card-countdown" data-date="${x.start}"></div>
                         </div>
-                        <div class="p-5 text-center bg-white">
+                        <div class="p-5 text-center bg-white relative z-10">
                             <h3 class="font-black text-xl mb-3 text-gray-800">${title}</h3>
                             <div class="text-sm font-bold text-gray-500 pt-3 border-t flex justify-between items-center">
                                 <span style="direction:ltr"><i class="fas fa-calendar-alt text-blue-500"></i> ${x.start ? x.start.replace('T',' ') : ''}</span>
@@ -528,7 +536,7 @@
                     </div>`;
                 }).join('');
             }
-            window.startGridCountdowns(); // Restart timers for new items
+            window.startGridCountdowns();
 
             const sl = document.getElementById('hero-slider');
             if(window.CACHE.banners.length > 0){
@@ -538,6 +546,7 @@
             }
         };
 
+        // ...[openTrip function remains exactly same as your previous good layout]
         window.openTrip = function(id) {
             const t = window.CACHE.trips.find(x => x.id === id); if(!t) return;
             document.getElementById('trip-modal').classList.remove('hidden');
@@ -585,7 +594,6 @@
                 </div>
             `;
 
-            // Auto Slider Logic
             const sContainer = document.getElementById('modal-slider');
             const slidesCount = 1 + (t.subs ? t.subs.length : 0);
             let sIdx = 0;
@@ -785,12 +793,11 @@
         };
         
         window.deleteTrip = async (id) => {
-            if(await Swal.fire({title: 'تأكيد الحذف؟', text: 'سيتم مسح الرحلة نهائياً', icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء'}).then(r => r.isConfirmed)) {
-                Swal.fire({title: 'جاري الحذف...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
+            if(confirm('تأكيد حذف هذه الرحلة نهائياً؟')) {
                 try {
                     await deleteDoc(doc(db, 'trips', id));
-                    Swal.fire('تم', 'تم حذف الرحلة بنجاح', 'success');
-                } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
+                    // The onSnapshot listener will auto-update UI immediately
+                } catch(e) { alert("خطأ في الحذف: " + e.message); }
             }
         };
         
@@ -835,7 +842,7 @@
             document.getElementById('banner-list').innerHTML = window.CACHE.banners.map(b => `
                 <div class="relative rounded-xl overflow-hidden shadow-md group">
                     <img src="${b.img}" class="h-24 w-full object-cover">
-                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                    <div class="absolute inset-0 bg-black/50 flex items-center justify-center transition">
                         <button onclick="window.deleteBanner('${b.id}')" class="bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 transition"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>`).join('');
@@ -880,7 +887,7 @@
                 </div>
             `).join('');
         };
-        window.deleteReport = async (id) => { if(confirm('حذف هذا التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
+        window.deleteReport = async (id) => { if(confirm('حذف التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
 
         // CONTENT MANAGEMENT
         window.loadContentForm = function() {
