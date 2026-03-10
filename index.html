@@ -80,8 +80,8 @@
             100% { transform: translateY(0); box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
         }
         .cc-item { display: flex; flex-direction: column; align-items: center; line-height: 1; }
-        .cc-num { font-size: 1.4rem; font-weight: 900; color: #facc15; font-family: 'Poppins', sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .cc-lbl { font-size: 0.7rem; font-weight: bold; opacity: 0.9; margin-top: 4px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+        .cc-num { font-size: 1.3rem; font-weight: 900; color: #facc15; font-family: 'Poppins', sans-serif; }
+        .cc-lbl { font-size: 0.7rem; font-weight: bold; opacity: 0.9; margin-top: 4px; text-transform: uppercase; }
 
         .btn-glow { animation: pulse-blue 2s infinite; }
         @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
@@ -100,7 +100,7 @@
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-4">
                 <i class="fas fa-bars text-2xl cursor-pointer md:hidden" onclick="window.toggleSidebar()"></i>
-                <img id="site-logo" src="" alt="Logo" class="h-12 hidden object-contain"> 
+                <img id="site-logo" src="" alt="Logo" class="h-10 hidden object-contain"> 
                 <h1 id="site-title-text" class="text-3xl font-black text-blue-600">تحواس<span class="text-orange-500">.</span></h1>
             </div>
             <div class="flex items-center gap-4">
@@ -142,13 +142,13 @@
         </section>
 
         <!-- Static Sections -->
-        <section id="about-sec" class="bg-white py-12 border-t text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="about">من نحن</h3><p id="about-text" class="text-gray-600 max-w-2xl mx-auto px-4">...</p></section>
-        <section id="policy-sec" class="bg-gray-100 py-12 text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="policy">السياسة</h3><p id="policy-text" class="text-gray-600 max-w-2xl mx-auto px-4">...</p></section>
+        <section id="about-sec" class="bg-white py-12 border-t text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="about">من نحن</h3><p id="about-text" class="text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed whitespace-pre-line">...</p></section>
+        <section id="policy-sec" class="bg-gray-100 py-12 text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="policy">سياسة الخصوصية</h3><p id="policy-text" class="text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed whitespace-pre-line">...</p></section>
         <section id="location-sec" class="bg-white py-12 text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="location">مقرنا</h3><p id="location-text" class="text-gray-800 font-bold text-xl px-4">...</p></section>
 
         <footer id="contact-sec" class="bg-slate-900 text-white py-10 text-center relative">
             <h3 class="text-xl font-bold mb-4" data-key="contact">اتصل بنا</h3>
-            <p id="contact-text" class="mb-4 text-lg">...</p>
+            <p id="contact-text" class="mb-4 text-lg whitespace-pre-line">...</p>
             <button onclick="window.forceAdmin()" class="absolute bottom-2 right-2 text-xs opacity-20 hover:opacity-100 text-white">Admin</button>
         </footer>
     </div>
@@ -212,7 +212,7 @@
                     <button onclick="window.showAdm('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الطلبات</button>
                     <button onclick="window.showAdm('reports')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-exclamation-triangle"></i> الشكاوى</button>
                     <button onclick="window.showAdm('add')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-plus"></i> إضافة رحلة</button>
-                    <button onclick="window.showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة الرحلات (حذف)</button>
+                    <button onclick="window.showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة الرحلات</button>
                     <button onclick="window.showAdm('banners')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-images"></i> البانرات</button>
                     <button onclick="window.showAdm('content')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-edit"></i> المحتوى</button>
                     <button onclick="window.adminLogout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
@@ -242,11 +242,10 @@
                 <!-- Requests Table -->
                 <div id="sec-requests" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">سجل الطلبات</h2>
-                    <div class="mb-4"><button onclick="window.deleteSelectedReqs()" class="bg-red-600 text-white px-4 py-2 rounded">حذف المحدد</button></div>
                     <div class="overflow-x-auto bg-white rounded shadow">
                         <table class="w-full text-right text-sm text-gray-600">
                             <thead class="bg-gray-100 text-gray-800">
-                                <tr><th class="p-3 w-10">#</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th></tr>
+                                <tr><th class="p-3 w-10">حذف</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th></tr>
                             </thead>
                             <tbody id="req-list"></tbody>
                         </table>
@@ -295,9 +294,9 @@
 
                 <!-- Manage Trips -->
                 <div id="sec-manage" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات (تعديل وحذف مباشر)</h2>
-                    <div class="bg-white p-4 rounded shadow">
-                        <div id="manage-list" class="space-y-3"></div>
+                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات</h2>
+                    <div class="bg-white p-6 rounded-xl shadow">
+                        <div id="manage-list" class="space-y-4"></div>
                     </div>
                 </div>
 
@@ -318,10 +317,59 @@
                     <div id="banner-list" class="grid grid-cols-2 gap-4 mt-6"></div>
                 </div>
                 
-                <!-- Content -->
+                <!-- Content Management (About, Policy, Logo, etc) -->
                 <div id="sec-content" class="adm-sec hidden">
-                     <h2 class="text-3xl font-bold mb-6">إدارة المحتوى</h2>
-                     <div class="bg-white p-6 rounded"><button onclick="window.loadContentForm(); Swal.fire('Info','تم تحميل النماذج','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
+                     <h2 class="text-3xl font-bold mb-6">إدارة المحتوى واللوجو</h2>
+                     <form id="form-content" class="bg-white p-6 rounded-xl shadow space-y-6">
+                        <!-- Logo -->
+                        <div class="border p-4 rounded bg-gray-50">
+                            <label class="font-bold block mb-2">شعار الموقع (Logo)</label>
+                            <input type="file" id="c-logo" accept="image/*" class="w-full border bg-white p-2 rounded">
+                            <p class="text-xs text-gray-500 mt-1">اتركه فارغاً إذا لم ترد تغييره.</p>
+                        </div>
+                        
+                        <!-- About -->
+                        <div class="border p-4 rounded">
+                            <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">من نحن (About)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div><label class="text-xs font-bold text-green-700">AR</label><textarea id="c-about-ar" class="w-full border p-2 rounded h-24"></textarea></div>
+                                <div><label class="text-xs font-bold text-blue-700">FR</label><textarea id="c-about-fr" class="w-full border p-2 rounded h-24"></textarea></div>
+                                <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-about-en" class="w-full border p-2 rounded h-24"></textarea></div>
+                            </div>
+                        </div>
+
+                        <!-- Policy -->
+                        <div class="border p-4 rounded bg-gray-50">
+                            <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">سياسة الخصوصية (Privacy)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div><label class="text-xs font-bold text-green-700">AR</label><textarea id="c-policy-ar" class="w-full border p-2 rounded h-24"></textarea></div>
+                                <div><label class="text-xs font-bold text-blue-700">FR</label><textarea id="c-policy-fr" class="w-full border p-2 rounded h-24"></textarea></div>
+                                <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-policy-en" class="w-full border p-2 rounded h-24"></textarea></div>
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="border p-4 rounded">
+                            <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">مقرنا (Location)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div><label class="text-xs font-bold text-green-700">AR</label><input type="text" id="c-loc-ar" class="w-full border p-2 rounded"></div>
+                                <div><label class="text-xs font-bold text-blue-700">FR</label><input type="text" id="c-loc-fr" class="w-full border p-2 rounded"></div>
+                                <div><label class="text-xs font-bold text-purple-700">EN</label><input type="text" id="c-loc-en" class="w-full border p-2 rounded"></div>
+                            </div>
+                        </div>
+
+                        <!-- Contact -->
+                        <div class="border p-4 rounded bg-gray-50">
+                            <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">اتصل بنا (Contact)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div><label class="text-xs font-bold text-green-700">AR</label><textarea id="c-con-ar" class="w-full border p-2 rounded h-16"></textarea></div>
+                                <div><label class="text-xs font-bold text-blue-700">FR</label><textarea id="c-con-fr" class="w-full border p-2 rounded h-16"></textarea></div>
+                                <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-con-en" class="w-full border p-2 rounded h-16"></textarea></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-submit-content" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700 transition">حفظ التعديلات ونشرها</button>
+                     </form>
                 </div>
             </main>
         </div>
@@ -364,7 +412,6 @@
 
         // --- REAL-TIME LISTENERS ---
         window.initRealtime = function() {
-            // Trips Listener (Updates automatically on Add/Edit/Delete)
             onSnapshot(collection(db, 'trips'), (snapshot) => {
                 window.CACHE.trips = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
                 localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
@@ -372,34 +419,34 @@
                 if(sessionStorage.getItem('isAdmin') === 'true') window.loadManage();
             });
 
-            // Banners
             onSnapshot(collection(db, 'banners'), (snapshot) => {
                 window.CACHE.banners = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
                 window.loadPublic();
                 if(sessionStorage.getItem('isAdmin') === 'true') window.loadBanners();
             });
 
-            // Requests
             onSnapshot(query(collection(db, 'requests'), orderBy('ts', 'desc')), (snapshot) => {
                 window.CACHE.requests = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
                 if(sessionStorage.getItem('isAdmin') === 'true') { window.loadReq(); window.updateStatsDisplay(); }
             });
 
-            // Reports
             onSnapshot(collection(db, 'reports'), (snapshot) => {
                 window.CACHE.reports = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
                 if(sessionStorage.getItem('isAdmin') === 'true') { window.loadRep(); window.updateStatsDisplay(); }
             });
 
-            // Visits
             onSnapshot(collection(db, 'visits'), (snapshot) => {
                 window.CACHE.visits = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                if(sessionStorage.getItem('isAdmin') === 'true') { window.updateStatsDisplay(); }
+                if(sessionStorage.getItem('isAdmin') === 'true') { window.updateStatsDisplay(); window.renderChart(); }
             });
 
-            // Content
             onSnapshot(collection(db, 'content'), (snapshot) => {
-                if(!snapshot.empty) { window.CACHE.content = snapshot.docs[0].data(); window.changeLang(window.curLang); }
+                if(!snapshot.empty) { 
+                    window.CACHE.content = snapshot.docs[0].data(); 
+                    window.CACHE.content.docId = snapshot.docs[0].id;
+                    window.changeLang(window.curLang); 
+                    if(sessionStorage.getItem('isAdmin') === 'true') window.loadContentForm();
+                }
             });
         };
 
@@ -423,6 +470,20 @@
                 document.getElementById('r-email').placeholder = LANG[l].email;
                 document.getElementById('r-desc').placeholder = LANG[l].desc;
                 document.getElementById('b-gender').innerHTML = `<option value="male">${LANG[l].gender_m}</option><option value="female">${LANG[l].gender_f}</option>`;
+            }
+
+            if(window.CACHE.content) {
+                document.getElementById('about-text').innerText = window.CACHE.content[`about_${l}`] || '...';
+                document.getElementById('policy-text').innerText = window.CACHE.content[`policy_${l}`] || '...';
+                document.getElementById('location-text').innerText = window.CACHE.content[`loc_${l}`] || '...';
+                document.getElementById('contact-text').innerText = window.CACHE.content[`con_${l}`] || '...';
+            }
+            
+            const savedLogo = window.CACHE.content?.logo;
+            if(savedLogo) {
+                document.getElementById('site-logo').src = savedLogo;
+                document.getElementById('site-logo').classList.remove('hidden');
+                document.getElementById('site-title-text').classList.add('hidden');
             }
             window.loadPublic();
         };
@@ -454,7 +515,7 @@
                     </div>`;
                 }).join('');
             }
-            window.startGridCountdowns(); // Restart timers for new items
+            window.startGridCountdowns();
 
             const sl = document.getElementById('hero-slider');
             if(window.CACHE.banners.length > 0){
@@ -511,7 +572,6 @@
                 </div>
             `;
 
-            // Auto Slider Logic
             const sContainer = document.getElementById('modal-slider');
             const slidesCount = 1 + (t.subs ? t.subs.length : 0);
             let sIdx = 0;
@@ -545,7 +605,7 @@
                 document.getElementById('booking-modal').classList.add('hidden');
                 Swal.fire('تم', 'تم التسجيل بنجاح', 'success'); 
             } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
-            finally { btn.disabled=false; btn.innerText=LANG[window.curLang].confirm; }
+            finally { btn.disabled=false; btn.innerText=LANG[window.curLang].confirm; e.target.reset(); }
         });
 
         document.getElementById('report-form').addEventListener('submit', async (e) => {
@@ -553,11 +613,11 @@
             try {
                 await addDoc(collection(db, 'reports'), { name: document.getElementById('r-name').value, email: document.getElementById('r-email').value, desc: document.getElementById('r-desc').value, ts: Date.now() });
                 document.getElementById('report-modal').classList.add('hidden');
-                Swal.fire('تم', 'تم الإرسال بنجاح', 'success'); 
+                Swal.fire('تم', 'تم الإرسال بنجاح', 'success'); e.target.reset();
             } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
         });
 
-        // Countdowns Logic (For Home Page Cards)
+        // Countdowns Logic
         window.startGridCountdowns = function() {
             if(window.gridCdInterval) clearInterval(window.gridCdInterval);
             window.gridCdInterval = setInterval(() => {
@@ -567,12 +627,8 @@
                     const dist = new Date(el.dataset.date).getTime() - now;
                     if(dist < 0) { el.innerHTML = `<div class="text-green-400 font-bold text-sm text-center w-full">انطلقت / Started</div>`; el.style.animation='none'; return; }
                     
-                    const d = Math.floor(dist/(1000*60*60*24));
-                    const h = Math.floor((dist%(1000*60*60*24))/(1000*60*60));
-                    const m = Math.floor((dist%(1000*60*60))/(1000*60));
-                    const s = Math.floor((dist%(1000*60))/1000);
+                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
                     
-                    // The CSS handles layout & animation. Just update HTML.
                     el.innerHTML = `
                         <div class="cc-item"><div class="cc-num">${d}</div><div class="cc-lbl">${LANG[window.curLang].day}</div></div>
                         <div class="cc-item"><div class="cc-num">${h}</div><div class="cc-lbl">${LANG[window.curLang].hour}</div></div>
@@ -615,9 +671,7 @@
                 document.getElementById('admin-dash').classList.remove('hidden');
                 document.getElementById('admin-dash').classList.add('flex');
                 window.updateStatsDisplay();
-            } else {
-                Swal.fire('خطأ', 'بيانات الدخول غير صحيحة', 'error');
-            }
+            } else { Swal.fire('خطأ', 'بيانات الدخول غير صحيحة', 'error'); }
         };
 
         window.showAdm = (id) => {
@@ -627,9 +681,9 @@
             if(id === 'banners') window.loadBanners();
             if(id === 'requests') window.loadReq();
             if(id === 'reports') window.loadRep();
+            if(id === 'content') window.loadContentForm();
         };
 
-        // Accurate Stats & Chart Update
         window.updateStatsDisplay = function(){
             const v = window.CACHE.visits; 
             const now = new Date();
@@ -640,15 +694,13 @@
             document.getElementById('stat-month').innerText = v.filter(x => x.ts >= startOfMonth).length;
             document.getElementById('stat-req').innerText = window.CACHE.requests.length;
             document.getElementById('stat-rep').innerText = window.CACHE.reports.length;
-            
             window.renderChart();
         };
 
-        let myChart = null;
         window.renderChart = function() {
             const ctx = document.getElementById('visitsChart');
             if(ctx) {
-                if(myChart) myChart.destroy();
+                if(window.myChart) window.myChart.destroy();
                 const labels=[], data=[];
                 const v = window.CACHE.visits;
                 for(let i=29; i>=0; i--){
@@ -656,7 +708,7 @@
                     labels.push(d.getDate());
                     data.push(v.filter(x => new Date(x.ts).toDateString() === d.toDateString()).length);
                 }
-                myChart = new Chart(ctx, {type:'line', data:{labels, datasets:[{label:'Visits', data, borderColor:'#2563eb', tension:0.4}]}});
+                window.myChart = new Chart(ctx, {type:'line', data:{labels, datasets:[{label:'Visits', data, borderColor:'#2563eb', tension:0.4}]}});
             }
         }
 
@@ -665,7 +717,7 @@
             e.preventDefault();
             const btn = document.getElementById('btn-submit-trip'); 
             const origText = btn.innerText;
-            btn.disabled=true; btn.innerText="جاري النشر... (يرجى الانتظار)";
+            btn.disabled=true; btn.innerText="جاري النشر...";
             
             try {
                 const mf = document.getElementById('t-img-main').files[0];
@@ -690,15 +742,11 @@
                 
                 Swal.fire('تم', 'تم نشر الرحلة بنجاح!', 'success');
                 e.target.reset();
-            } catch (error) {
-                console.error(error);
-                Swal.fire('خطأ!', 'حدث خطأ. تأكد من حجم الصور أو اتصال الإنترنت.', 'error');
-            } finally {
-                btn.disabled=false; btn.innerText = origText;
-            }
+            } catch (error) { Swal.fire('خطأ!', 'حجم الصورة كبير جداً.', 'error'); } 
+            finally { btn.disabled=false; btn.innerText = origText; }
         });
 
-        // MANAGE ROBUST DELETE (DIRECT ICON BUTTON)
+        // MANAGE TRIPS (DIRECT DELETE BUTTON)
         window.loadManage = function(){
             document.getElementById('manage-list').innerHTML = window.CACHE.trips.map(t => `
                 <div class="flex items-center gap-4 bg-gray-50 p-3 rounded-xl shadow-sm border border-gray-200">
@@ -708,7 +756,7 @@
                         <span class="text-sm text-gray-500" style="direction:ltr; display:inline-block">${t.start ? t.start.replace('T', ' ') : ''}</span>
                     </div>
                     <button onclick="window.editSeats('${t.id}')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 px-3 py-2 rounded-lg font-bold transition">المقاعد (${t.seats})</button>
-                    <!-- Direct Delete Button -->
+                    <!-- DIRECT DELETE ICON -->
                     <button onclick="window.deleteTrip('${t.id}')" class="text-red-600 bg-red-100 hover:bg-red-200 px-4 py-2 rounded-lg transition" title="حذف الرحلة">
                         <i class="fas fa-trash-alt text-xl"></i>
                     </button>
@@ -716,11 +764,12 @@
         };
         
         window.deleteTrip = async (id) => {
-            if(confirm('تأكيد حذف هذه الرحلة نهائياً؟')) {
+            if(await Swal.fire({title: 'تأكيد الحذف؟', text: 'سيتم مسح الرحلة نهائياً', icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء'}).then(r => r.isConfirmed)) {
+                Swal.fire({title: 'جاري الحذف...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
                 try {
                     await deleteDoc(doc(db, 'trips', id));
-                    // The onSnapshot listener will auto-update UI immediately
-                } catch(e) { alert("خطأ في الحذف: " + e.message); }
+                    Swal.fire('تم', 'تم حذف الرحلة بنجاح', 'success');
+                } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
             }
         };
         
@@ -765,14 +814,12 @@
             document.getElementById('banner-list').innerHTML = window.CACHE.banners.map(b => `
                 <div class="relative rounded-xl overflow-hidden shadow-md group">
                     <img src="${b.img}" class="h-24 w-full object-cover">
-                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                    <div class="absolute inset-0 bg-black/50 flex items-center justify-center transition">
                         <button onclick="window.deleteBanner('${b.id}')" class="bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 transition"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>`).join('');
         };
-        window.deleteBanner = async (id) => {
-            if(confirm('تأكيد حذف البانر؟')) { await deleteDoc(doc(db, 'banners', id)); }
-        };
+        window.deleteBanner = async (id) => { if(confirm('تأكيد حذف البانر؟')) await deleteDoc(doc(db, 'banners', id)); };
 
         // REQUESTS
         window.loadReq = function(){
@@ -812,14 +859,63 @@
         };
         window.deleteReport = async (id) => { if(confirm('حذف هذا التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
 
-        // START & INITIALIZE
+        // CONTENT MANAGEMENT (ABOUT, POLICY, LOGO)
+        window.loadContentForm = function() {
+            const c = window.CACHE.content || {};
+            const fields =['about', 'policy', 'loc', 'con'];
+            const langs = ['ar', 'fr', 'en'];
+            fields.forEach(f => {
+                langs.forEach(l => {
+                    const el = document.getElementById(`c-${f}-${l}`);
+                    if(el) el.value = c[`${f}_${l}`] || '';
+                });
+            });
+        };
+
+        document.getElementById('form-content').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-content'); 
+            const origText = btn.innerText;
+            btn.disabled=true; btn.innerText="جاري الحفظ...";
+            
+            try {
+                let docId = window.CACHE.content?.docId;
+                
+                const lf = document.getElementById('c-logo').files[0];
+                let logoData = window.CACHE.content?.logo || "";
+                if(lf) logoData = await toBase64(lf);
+
+                const newData = { logo: logoData, ts: Date.now() };
+                const fields = ['about', 'policy', 'loc', 'con'];
+                const langs = ['ar', 'fr', 'en'];
+                fields.forEach(f => {
+                    langs.forEach(l => {
+                        newData[`${f}_${l}`] = document.getElementById(`c-${f}-${l}`).value;
+                    });
+                });
+
+                if(docId) {
+                    await updateDoc(doc(db, 'content', docId), newData);
+                } else {
+                    const ref = await addDoc(collection(db, 'content'), newData);
+                    newData.docId = ref.id;
+                    window.CACHE.content = newData;
+                }
+
+                Swal.fire('تم', 'تم حفظ المحتوى واللوجو بنجاح', 'success');
+                document.getElementById('c-logo').value = '';
+            } catch(error) { Swal.fire('خطأ', error.message, 'error'); } 
+            finally { btn.disabled=false; btn.innerText=origText; }
+        });
+
+        // INIT Real-Time Listeners On Load
         window.addEventListener('load', () => {
             const localTrips = localStorage.getItem('th_trips');
             if(localTrips) { window.CACHE.trips = JSON.parse(localTrips); window.loadPublic(); }
             
             window.changeLang(window.curLang);
             window.checkRoute();
-            window.initRealtime(); // Start Listening to Firebase instantly
+            window.initRealtime(); 
             
             if(!sessionStorage.getItem('v')){
                 try { addDoc(collection(db, 'visits'), {ts: Date.now()}); sessionStorage.setItem('v','1'); } catch(e){}
