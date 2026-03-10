@@ -31,8 +31,7 @@
         .snake-line {
             position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; margin-left: -20px; z-index: 10;
             background-image: url("data:image/svg+xml,%3Csvg width='40' height='100' viewBox='0 0 40 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0 Q40 25 20 50 T20 100' fill='none' stroke='%23ffffff' stroke-width='4' stroke-dasharray='8 4'/%3E%3C/svg%3E");
-            background-repeat: repeat-y; background-position: center top;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            background-repeat: repeat-y; background-position: center top; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
         .snake-item { position: relative; width: 50%; margin-bottom: 60px; clear: both; z-index: 20; }
         
@@ -93,7 +92,7 @@
 <body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
 
     <div id="loader-overlay"><div class="spinner"></div></div>
-    <script>setTimeout(() => { const l=document.getElementById('loader-overlay'); if(l)l.style.display='none'; }, 4000);</script>
+    <script>setTimeout(() => { const l=document.getElementById('loader-overlay'); if(l)l.style.display='none'; }, 2000);</script>
 
     <!-- Navbar -->
     <header class="bg-white shadow-md fixed w-full z-50">
@@ -212,7 +211,7 @@
                     <button onclick="window.showAdm('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الطلبات</button>
                     <button onclick="window.showAdm('reports')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-exclamation-triangle"></i> الشكاوى</button>
                     <button onclick="window.showAdm('add')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-plus"></i> إضافة رحلة</button>
-                    <button onclick="window.showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة (حذف)</button>
+                    <button onclick="window.showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة الرحلات</button>
                     <button onclick="window.showAdm('banners')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-images"></i> البانرات</button>
                     <button onclick="window.showAdm('content')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-edit"></i> المحتوى</button>
                     <button onclick="window.adminLogout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> خروج</button>
@@ -242,11 +241,10 @@
                 <!-- Requests Table -->
                 <div id="sec-requests" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">سجل الطلبات</h2>
-                    <div class="mb-4"><button onclick="window.deleteSelectedReqs()" class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700">حذف المحدد</button></div>
                     <div class="overflow-x-auto bg-white rounded shadow">
                         <table class="w-full text-right text-sm text-gray-600">
                             <thead class="bg-gray-100 text-gray-800">
-                                <tr><th class="p-3 w-10">#</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th></tr>
+                                <tr><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th><th class="p-3">حذف</th></tr>
                             </thead>
                             <tbody id="req-list"></tbody>
                         </table>
@@ -295,9 +293,9 @@
 
                 <!-- Manage Trips -->
                 <div id="sec-manage" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات (تعديل المقاعد والحذف)</h2>
-                    <div class="bg-white p-6 rounded-xl shadow">
-                        <div id="manage-list" class="space-y-4"></div>
+                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات</h2>
+                    <div class="bg-white p-4 rounded shadow">
+                        <div id="manage-list" class="space-y-3"></div>
                     </div>
                 </div>
 
@@ -330,7 +328,7 @@
     <!-- FIREBASE AND JS LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // FIREBASE CONFIG
         const firebaseConfig = {
@@ -345,14 +343,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // HYBRID SYSTEM STATE
-        window.CACHE = { trips: [], banners:[], requests: [], reports: [], visits:[], content: {} };
+        window.CACHE = { trips: [], banners: [], requests: [], reports:[], visits:[], content: {} };
         window.curLang = localStorage.getItem('lang') || 'ar';
-        window.gridCdInterval = null;
+        window.sliderInterval = null;
+        let myChart = null;
 
         const LANG = {
             ar:{ home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل بنا",policy:"سياسة الخصوصية",location:"مقرنا",report:"الإبلاغ عن مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة الآن",confirm:"تأكيد التسجيل", price_unit:"دج",start:"الانطلاق",end:"العودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل", ph_name:"الاسم الكامل",ph_phone:"رقم الهاتف",ph_age:"السن",ph_state:"الولاية", gender_m:"ذكر",gender_f:"أنثى", req_pending:"قيد الانتظار", req_confirmed:"تم التأكيد", req_cancelled:"ملغى", day:"يوم", hour:"سا", min:"د", sec:"ث", desc:"وصف المشكلة", email:"البريد الإلكتروني" },
-            fr:{ home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Nos Offres",book_now:"Réserver Maintenant",confirm:"Confirmer", price_unit:"DA",start:"Départ",end:"Retour",stop:"Arrêt",transport:"Transport",seats:"Places",guide:"Guide",insurance:"Assurance Santé", ph_name:"Nom Complet",ph_phone:"Téléphone",ph_age:"Âge",ph_state:"Wilaya", gender_m:"Homme",gender_f:"Femme", req_pending:"En attente", req_confirmed:"Confirmé", req_cancelled:"Annulé", day:"J", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" },
+            fr:{ home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Nos Offres",book_now:"Réserver",confirm:"Confirmer", price_unit:"DA",start:"Départ",end:"Retour",stop:"Arrêt",transport:"Transport",seats:"Places",guide:"Guide",insurance:"Assurance Santé", ph_name:"Nom Complet",ph_phone:"Téléphone",ph_age:"Âge",ph_state:"Wilaya", gender_m:"Homme",gender_f:"Femme", req_pending:"En attente", req_confirmed:"Confirmé", req_cancelled:"Annulé", day:"J", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" },
             en:{ home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Latest Offers",book_now:"Book Now",confirm:"Confirm", price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance", ph_name:"Full Name",ph_phone:"Phone",ph_age:"Age",ph_state:"State", gender_m:"Male",gender_f:"Female", req_pending:"Pending", req_confirmed:"Confirmed", req_cancelled:"Cancelled", day:"D", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" }
         };
 
@@ -362,36 +360,58 @@
             r.onload = () => res(r.result); r.onerror = rej;
         });
 
-        // --- FETCH DATA ---
-        window.fetchData = async function() {
-            const localTrips = localStorage.getItem('th_trips');
-            if(localTrips) window.CACHE.trips = JSON.parse(localTrips);
-            window.loadPublic();
-
-            try {
-                const[t, b, req, rep, v, c] = await Promise.all([
-                    getDocs(collection(db, 'trips')), getDocs(collection(db, 'banners')),
-                    getDocs(query(collection(db, 'requests'), orderBy('ts', 'desc'))),
-                    getDocs(collection(db, 'reports')), getDocs(collection(db, 'visits')),
-                    getDocs(collection(db, 'content'))
-                ]);
-
-                window.CACHE.trips = t.docs.map(d => ({id: d.id, ...d.data()}));
-                window.CACHE.banners = b.docs.map(d => ({id: d.id, ...d.data()}));
-                window.CACHE.requests = req.docs.map(d => ({id: d.id, ...d.data()}));
-                window.CACHE.reports = rep.docs.map(d => ({id: d.id, ...d.data()}));
-                window.CACHE.visits = v.docs.map(d => ({id: d.id, ...d.data()}));
-                if(!c.empty) window.CACHE.content = c.docs[0].data();
-
+        // --- REAL-TIME LISTENERS (The Magic Fix) ---
+        window.initRealtime = function() {
+            // Trips Listener
+            onSnapshot(collection(db, 'trips'), (snapshot) => {
+                window.CACHE.trips = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
                 localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
-
-            } catch (e) {
-                console.error("Firebase Sync Error:", e);
-            } finally {
                 window.loadPublic();
-                if(!document.getElementById('admin-dash').classList.contains('hidden')) window.initAdmin();
-            }
-        }
+                if(sessionStorage.getItem('isAdmin') === 'true') window.loadManage();
+            });
+
+            // Banners Listener
+            onSnapshot(collection(db, 'banners'), (snapshot) => {
+                window.CACHE.banners = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+                window.loadPublic();
+                if(sessionStorage.getItem('isAdmin') === 'true') window.loadBanners();
+            });
+
+            // Requests Listener
+            onSnapshot(query(collection(db, 'requests'), orderBy('ts', 'desc')), (snapshot) => {
+                window.CACHE.requests = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+                if(sessionStorage.getItem('isAdmin') === 'true') {
+                    window.loadReq();
+                    window.updateStatsDisplay();
+                }
+            });
+
+            // Reports Listener
+            onSnapshot(collection(db, 'reports'), (snapshot) => {
+                window.CACHE.reports = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+                if(sessionStorage.getItem('isAdmin') === 'true') {
+                    window.loadRep();
+                    window.updateStatsDisplay();
+                }
+            });
+
+            // Visits Listener
+            onSnapshot(collection(db, 'visits'), (snapshot) => {
+                window.CACHE.visits = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+                if(sessionStorage.getItem('isAdmin') === 'true') {
+                    window.updateStatsDisplay();
+                    window.renderChart();
+                }
+            });
+
+            // Content Listener
+            onSnapshot(collection(db, 'content'), (snapshot) => {
+                if(!snapshot.empty) {
+                    window.CACHE.content = snapshot.docs[0].data();
+                    window.changeLang(window.curLang); // Refresh UI texts
+                }
+            });
+        };
 
         // --- PUBLIC FUNCTIONS ---
         window.changeLang = function(l) {
@@ -414,6 +434,13 @@
                 document.getElementById('r-desc').placeholder = LANG[l].desc;
                 document.getElementById('b-gender').innerHTML = `<option value="male">${LANG[l].gender_m}</option><option value="female">${LANG[l].gender_f}</option>`;
             }
+
+            if(window.CACHE.content) {
+                document.getElementById('about-text').innerText = window.CACHE.content[`about_${l}`] || '...';
+                document.getElementById('policy-text').innerText = window.CACHE.content[`policy_${l}`] || '...';
+                document.getElementById('location-text').innerText = window.CACHE.content[`loc_${l}`] || '...';
+                document.getElementById('contact-text').innerText = window.CACHE.content[`con_${l}`] || '...';
+            }
             window.loadPublic();
         };
 
@@ -431,7 +458,7 @@
                             <img src="${x.mainImg}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <span class="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-1 rounded-full font-black text-blue-800 shadow-md z-10">${x.price} ${LANG[window.curLang].price_unit}</span>
                             
-                            <!-- The Beautiful Animated Countdown inside Image -->
+                            <!-- The Animated Countdown inside Image -->
                             <div class="card-countdown" data-date="${x.start}"></div>
                         </div>
                         <div class="p-5 text-center bg-white">
@@ -444,7 +471,7 @@
                     </div>`;
                 }).join('');
             }
-            window.startGridCountdowns(); // Trigger Countdowns logic
+            window.startGridCountdowns(); // Restart timers for new items
 
             const sl = document.getElementById('hero-slider');
             if(window.CACHE.banners.length > 0){
@@ -478,11 +505,10 @@
             if(t.subs) imgs += t.subs.map(s => `<img src="${s}" class="flex-shrink-0 min-w-full h-full object-cover">`).join('');
 
             cont.innerHTML = `
-                <!-- Height 45vh on mobile prevents squeezing -->
                 <div class="w-full md:w-1/3 bg-slate-900 relative h-[45vh] min-h-[45vh] md:min-h-full md:h-full flex-shrink-0 overflow-hidden">
                     <div id="modal-slider" class="flex h-full w-full transition-transform duration-500 ease-in-out">${imgs}</div>
-                    <div class="absolute bottom-0 w-full pt-20 pb-4 px-4 bg-gradient-to-t from-black via-black/80 to-transparent text-white z-10 text-center">
-                        <h2 class="text-2xl font-bold mb-2">${title}</h2>
+                    <div class="absolute bottom-0 w-full pt-20 pb-4 px-4 bg-gradient-to-t from-black via-black/80 to-transparent text-white z-10">
+                        <h2 class="text-2xl font-bold text-center">${title}</h2>
                     </div>
                 </div>
                 <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto p-4 md:p-8 flex-1">
@@ -502,7 +528,6 @@
                 </div>
             `;
 
-            // Auto Slider Logic
             const sContainer = document.getElementById('modal-slider');
             const slidesCount = 1 + (t.subs ? t.subs.length : 0);
             let sIdx = 0;
@@ -534,7 +559,7 @@
             try {
                 await addDoc(collection(db, 'requests'), { ts: Date.now(), name: document.getElementById('b-name').value, phone: document.getElementById('b-phone').value, age: document.getElementById('b-age').value, state: document.getElementById('b-state').value, gender: document.getElementById('b-gender').value, trip: document.getElementById('b-trip-name').value, status: 'pending' });
                 document.getElementById('booking-modal').classList.add('hidden');
-                Swal.fire('تم', 'تم التسجيل بنجاح', 'success'); window.fetchData();
+                Swal.fire('تم', 'تم التسجيل بنجاح', 'success'); 
             } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
             finally { btn.disabled=false; btn.innerText=LANG[window.curLang].confirm; }
         });
@@ -544,7 +569,7 @@
             try {
                 await addDoc(collection(db, 'reports'), { name: document.getElementById('r-name').value, email: document.getElementById('r-email').value, desc: document.getElementById('r-desc').value, ts: Date.now() });
                 document.getElementById('report-modal').classList.add('hidden');
-                Swal.fire('تم', 'تم الإرسال بنجاح', 'success'); window.fetchData();
+                Swal.fire('تم', 'تم الإرسال بنجاح', 'success'); 
             } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
         });
 
@@ -557,7 +582,11 @@
                     if(!el.dataset.date) return;
                     const dist = new Date(el.dataset.date).getTime() - now;
                     if(dist < 0) { el.innerHTML = `<div class="text-green-400 font-bold text-sm text-center w-full">انطلقت / Started</div>`; el.style.animation='none'; return; }
-                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
+                    
+                    const d = Math.floor(dist/(1000*60*60*24));
+                    const h = Math.floor((dist%(1000*60*60*24))/(1000*60*60));
+                    const m = Math.floor((dist%(1000*60*60))/(1000*60));
+                    const s = Math.floor((dist%(1000*60))/1000);
                     
                     el.innerHTML = `
                         <div class="cc-item"><div class="cc-num">${d}</div><div class="cc-lbl">${LANG[window.curLang].day}</div></div>
@@ -569,16 +598,30 @@
             }, 1000);
         };
 
+
         // ================= ADMIN FUNCTIONS =================
         window.forceAdmin = () => { location.hash='#admin'; location.reload(); };
-        window.adminLogout = () => { location.hash=''; location.reload(); };
+        
+        window.adminLogout = () => { 
+            sessionStorage.removeItem('isAdmin'); 
+            location.hash=''; location.reload(); 
+        };
 
         window.checkRoute = function() {
             if(location.hash==='#admin' || location.hash==='#admin1'){
                 document.getElementById('user-app').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
-                document.getElementById('admin-login').classList.remove('hidden');
-                document.getElementById('admin-dash').classList.add('hidden');
+                
+                // Stay logged in check
+                if(sessionStorage.getItem('isAdmin') === 'true') {
+                    document.getElementById('admin-login').classList.add('hidden');
+                    document.getElementById('admin-dash').classList.remove('hidden');
+                    document.getElementById('admin-dash').classList.add('flex');
+                    window.initAdmin();
+                } else {
+                    document.getElementById('admin-login').classList.remove('hidden');
+                    document.getElementById('admin-dash').classList.add('hidden');
+                }
             } else {
                 document.getElementById('user-app').classList.remove('hidden');
                 document.getElementById('admin-panel').classList.add('hidden');
@@ -586,11 +629,14 @@
         };
 
         window.adminLogin = () => {
-            if(document.getElementById('adm-user').value==='admin') {
+            if(document.getElementById('adm-user').value==='admin' && document.getElementById('adm-pass').value==='abobob123') {
+                sessionStorage.setItem('isAdmin', 'true');
                 document.getElementById('admin-login').classList.add('hidden');
                 document.getElementById('admin-dash').classList.remove('hidden');
                 document.getElementById('admin-dash').classList.add('flex');
                 window.initAdmin();
+            } else {
+                Swal.fire('خطأ', 'بيانات الدخول غير صحيحة', 'error');
             }
         };
 
@@ -604,23 +650,39 @@
         };
 
         window.initAdmin = function(){
-            const v=window.CACHE.visits; const now=new Date();
-            document.getElementById('stat-day').innerText = v.filter(x=>new Date(x.ts).toDateString()===now.toDateString()).length;
-            document.getElementById('stat-month').innerText = v.filter(x=>new Date(x.ts).getMonth()===now.getMonth()).length;
+            window.updateStatsDisplay();
+        };
+
+        window.updateStatsDisplay = function(){
+            const v = window.CACHE.visits; 
+            const now = new Date();
+            
+            // Accurate Date Math
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+            document.getElementById('stat-day').innerText = v.filter(x => x.ts >= startOfToday).length;
+            document.getElementById('stat-month').innerText = v.filter(x => x.ts >= startOfMonth).length;
             document.getElementById('stat-req').innerText = window.CACHE.requests.length;
             document.getElementById('stat-rep').innerText = window.CACHE.reports.length;
             
+            window.renderChart();
+        };
+
+        window.renderChart = function() {
             const ctx = document.getElementById('visitsChart');
             if(ctx) {
+                if(myChart) myChart.destroy(); // Prevent overlap
                 const labels=[], data=[];
+                const v = window.CACHE.visits;
                 for(let i=29; i>=0; i--){
                     let d = new Date(); d.setDate(d.getDate()-i);
                     labels.push(d.getDate());
                     data.push(v.filter(x => new Date(x.ts).toDateString() === d.toDateString()).length);
                 }
-                new Chart(ctx, {type:'line', data:{labels, datasets:[{label:'Visits', data, borderColor:'#2563eb', tension:0.4}]}});
+                myChart = new Chart(ctx, {type:'line', data:{labels, datasets:[{label:'Visits', data, borderColor:'#2563eb', tension:0.4}]}});
             }
-        };
+        }
 
         // ADD TRIP
         document.getElementById('form-add-trip').addEventListener('submit', async e => {
@@ -639,7 +701,7 @@
                 let sI =[];
                 for(let f of subf) if(f.files[0]) sI.push(await toBase64(f.files[0]));
 
-                const newTrip = {
+                await addDoc(collection(db, 'trips'), {
                     title_ar: document.getElementById('t-title-ar').value, title_fr: document.getElementById('t-title-fr').value, title_en: document.getElementById('t-title-en').value,
                     prog_ar: document.getElementById('t-prog-ar').value, prog_fr: document.getElementById('t-prog-fr').value, prog_en: document.getElementById('t-prog-en').value,
                     start: document.getElementById('t-date-start').value,
@@ -648,17 +710,10 @@
                     theme: document.getElementById('t-theme').value,
                     guideName: document.getElementById('t-guide-name').value,
                     mainImg: mI, guideImg: gI, subs: sI, ts: Date.now()
-                };
-
-                const docRef = await addDoc(collection(db, 'trips'), newTrip);
-                newTrip.id = docRef.id;
-                window.CACHE.trips.unshift(newTrip); 
-                localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
+                });
                 
                 Swal.fire('تم', 'تم نشر الرحلة بنجاح!', 'success');
                 e.target.reset();
-                window.loadManage();
-                window.loadPublic();
 
             } catch (error) {
                 console.error(error);
@@ -678,23 +733,19 @@
                         <span class="text-sm text-gray-500" style="direction:ltr; display:inline-block">${t.start ? t.start.replace('T', ' ') : ''}</span>
                     </div>
                     <button onclick="window.editSeats('${t.id}')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 px-3 py-2 rounded-lg font-bold transition">المقاعد (${t.seats})</button>
-                    <button onclick="window.deleteTrip('${t.id}')" class="text-red-600 bg-red-100 hover:bg-red-200 px-3 py-2 rounded-lg transition" title="حذف الرحلة">
+                    
+                    <!-- Direct Delete Button -->
+                    <button onclick="window.deleteTrip('${t.id}')" class="text-red-600 bg-red-100 hover:bg-red-200 px-4 py-2 rounded-lg transition" title="حذف الرحلة">
                         <i class="fas fa-trash-alt text-xl"></i>
                     </button>
                 </div>`).join('');
         };
         
         window.deleteTrip = async (id) => {
-            if(await Swal.fire({title: 'تأكيد الحذف؟', text: 'لن تتمكن من التراجع!', icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء'}).then(r => r.isConfirmed)) {
+            if(await Swal.fire({title: 'تأكيد الحذف؟', text: 'سيتم مسح الرحلة نهائياً', icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء'}).then(r => r.isConfirmed)) {
                 Swal.fire({title: 'جاري الحذف...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
                 try {
                     await deleteDoc(doc(db, 'trips', id));
-                    
-                    window.CACHE.trips = window.CACHE.trips.filter(t => t.id !== id);
-                    localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
-                    
-                    window.loadManage();
-                    window.loadPublic();
                     Swal.fire('تم', 'تم حذف الرحلة بنجاح', 'success');
                 } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
             }
@@ -702,7 +753,7 @@
         
         window.editSeats = async (id) => {
             const n = prompt("تعديل المقاعد إلى:"); 
-            if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); window.fetchData().then(window.loadManage); }
+            if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); }
         };
 
         // BANNERS
@@ -717,6 +768,7 @@
                 selIn.classList.add('hidden'); txtIn.classList.remove('hidden');
             }
         };
+        
         window.uploadBanner = async () => {
             const btn = document.getElementById('btn-submit-banner');
             const orig = btn.innerText;
@@ -730,15 +782,9 @@
             btn.disabled = true; btn.innerText = "جاري...";
             try {
                 const b64 = await toBase64(f);
-                const newBan = {img:b64, type:t, val:v, ts: Date.now()};
-                const docRef = await addDoc(collection(db, 'banners'), newBan);
-                newBan.id = docRef.id;
-                window.CACHE.banners.push(newBan);
-
+                await addDoc(collection(db, 'banners'), {img:b64, type:t, val:v, ts: Date.now()});
                 Swal.fire('تم', 'تم رفع البانر بنجاح', 'success');
                 document.getElementById('new-banner').value = '';
-                window.loadBanners();
-                window.loadPublic();
             } catch(e) { Swal.fire('خطأ', 'فشل الرفع. ربما حجم الصورة كبير جداً.', 'error'); } 
             finally { btn.disabled = false; btn.innerText = orig; }
         };
@@ -752,12 +798,10 @@
                     </div>
                 </div>`).join('');
         };
+        
         window.deleteBanner = async (id) => {
             if(confirm('تأكيد حذف البانر؟')) {
                 await deleteDoc(doc(db, 'banners', id));
-                window.CACHE.banners = window.CACHE.banners.filter(b => b.id !== id);
-                window.loadBanners();
-                window.loadPublic();
             }
         };
 
@@ -766,7 +810,7 @@
             const l = window.curLang;
             document.getElementById('req-list').innerHTML = window.CACHE.requests.map(r => `
                 <tr class="border-b hover:bg-gray-50">
-                    <td class="p-3"><input type="checkbox" class="req-chk" value="${r.id}"></td>
+                    <td class="p-3"><button onclick="window.deleteReq('${r.id}')" class="text-red-500 hover:bg-red-100 p-2 rounded"><i class="fas fa-trash"></i></button></td>
                     <td class="p-3 text-xs text-gray-500 font-sans" style="direction:ltr">${new Date(r.ts).toLocaleString()}</td>
                     <td class="p-3 font-bold">${r.name}</td>
                     <td class="p-3 text-blue-600 font-sans" style="direction:ltr">${r.phone}</td>
@@ -782,15 +826,8 @@
                 </tr>
             `).join('');
         };
-        window.updateReqStatus = async (id, st) => { await updateDoc(doc(db, 'requests', id), {status: st}); window.fetchData(); };
-        window.deleteSelectedReqs = async () => {
-            const sels = Array.from(document.querySelectorAll('.req-chk:checked')).map(c => c.value);
-            if(sels.length === 0) return;
-            if(confirm('تأكيد الحذف؟')) {
-                for(let id of sels) await deleteDoc(doc(db, 'requests', id));
-                window.fetchData().then(window.loadReq);
-            }
-        };
+        window.updateReqStatus = async (id, st) => { await updateDoc(doc(db, 'requests', id), {status: st}); };
+        window.deleteReq = async (id) => { if(confirm('حذف هذا الطلب؟')) await deleteDoc(doc(db, 'requests', id)); };
 
         // REPORTS
         window.loadRep = function(){
@@ -800,17 +837,11 @@
                         <div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500 font-sans">(${r.email})</span></div>
                         <p class="text-sm mt-1">${r.desc}</p>
                     </div>
-                    <button onclick="window.deleteReport('${r.id}')" class="text-red-500 bg-red-100 px-3 py-1 rounded">حذف</button>
+                    <button onclick="window.deleteReport('${r.id}')" class="text-red-500 bg-red-100 px-3 py-2 rounded-lg hover:bg-red-200"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
         };
-        window.deleteReport = async (id) => {
-            if(confirm('حذف التبليغ؟')) {
-                await deleteDoc(doc(db, 'reports', id));
-                window.CACHE.reports = window.CACHE.reports.filter(r => r.id !== id);
-                window.loadRep();
-            }
-        };
+        window.deleteReport = async (id) => { if(confirm('حذف التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
 
         async function trackVisit(){ 
             if(!sessionStorage.getItem('v')){
@@ -821,11 +852,15 @@
             } 
         }
 
-        // INIT
+        // INIT Real-Time Listeners On Load
         window.addEventListener('load', () => {
+            const localTrips = localStorage.getItem('th_trips');
+            if(localTrips) { window.CACHE.trips = JSON.parse(localTrips); window.loadPublic(); }
+            
             window.changeLang(window.curLang);
             window.checkRoute();
-            window.fetchData();
+            window.initRealtime(); // Firebase onSnapshot
+            window.trackVisit();
         });
 
     </script>
