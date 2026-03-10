@@ -72,15 +72,16 @@
             color: white; padding: 10px; display: flex; justify-content: space-around; align-items: center;
             direction: ltr; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             animation: float-pulse 2s infinite ease-in-out;
+            z-index: 20;
         }
         @keyframes float-pulse {
             0% { transform: translateY(0); box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
-            50% { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.6); border-color: rgba(59, 130, 246, 0.8); }
+            50% { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.7); border-color: rgba(59, 130, 246, 0.8); }
             100% { transform: translateY(0); box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
         }
         .cc-item { display: flex; flex-direction: column; align-items: center; line-height: 1; }
-        .cc-num { font-size: 1.3rem; font-weight: 900; color: #facc15; font-family: 'Poppins', sans-serif; }
-        .cc-lbl { font-size: 0.7rem; font-weight: bold; opacity: 0.9; margin-top: 4px; text-transform: uppercase; }
+        .cc-num { font-size: 1.4rem; font-weight: 900; color: #facc15; font-family: 'Poppins', sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .cc-lbl { font-size: 0.7rem; font-weight: bold; opacity: 0.9; margin-top: 4px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 
         .btn-glow { animation: pulse-blue 2s infinite; }
         @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
@@ -92,7 +93,7 @@
 <body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
 
     <div id="loader-overlay"><div class="spinner"></div></div>
-    <script>setTimeout(() => { const l=document.getElementById('loader-overlay'); if(l)l.style.display='none'; }, 2000);</script>
+    <script>setTimeout(() => { const l=document.getElementById('loader-overlay'); if(l)l.style.display='none'; }, 4000);</script>
 
     <!-- Navbar -->
     <header class="bg-white shadow-md fixed w-full z-50">
@@ -211,10 +212,10 @@
                     <button onclick="window.showAdm('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الطلبات</button>
                     <button onclick="window.showAdm('reports')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-exclamation-triangle"></i> الشكاوى</button>
                     <button onclick="window.showAdm('add')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-plus"></i> إضافة رحلة</button>
-                    <button onclick="window.showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة الرحلات</button>
+                    <button onclick="window.showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة الرحلات (حذف)</button>
                     <button onclick="window.showAdm('banners')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-images"></i> البانرات</button>
                     <button onclick="window.showAdm('content')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-edit"></i> المحتوى</button>
-                    <button onclick="window.adminLogout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> خروج</button>
+                    <button onclick="window.adminLogout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
                 </nav>
             </aside>
 
@@ -241,10 +242,11 @@
                 <!-- Requests Table -->
                 <div id="sec-requests" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">سجل الطلبات</h2>
+                    <div class="mb-4"><button onclick="window.deleteSelectedReqs()" class="bg-red-600 text-white px-4 py-2 rounded">حذف المحدد</button></div>
                     <div class="overflow-x-auto bg-white rounded shadow">
                         <table class="w-full text-right text-sm text-gray-600">
                             <thead class="bg-gray-100 text-gray-800">
-                                <tr><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th><th class="p-3">حذف</th></tr>
+                                <tr><th class="p-3 w-10">#</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th></tr>
                             </thead>
                             <tbody id="req-list"></tbody>
                         </table>
@@ -293,7 +295,7 @@
 
                 <!-- Manage Trips -->
                 <div id="sec-manage" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات</h2>
+                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات (تعديل وحذف مباشر)</h2>
                     <div class="bg-white p-4 rounded shadow">
                         <div id="manage-list" class="space-y-3"></div>
                     </div>
@@ -319,7 +321,7 @@
                 <!-- Content -->
                 <div id="sec-content" class="adm-sec hidden">
                      <h2 class="text-3xl font-bold mb-6">إدارة المحتوى</h2>
-                     <div class="bg-white p-6 rounded"><button onclick="window.loadContentForm(); Swal.fire('Info','ميزة المحتوى متوفرة','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
+                     <div class="bg-white p-6 rounded"><button onclick="window.loadContentForm(); Swal.fire('Info','تم تحميل النماذج','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
                 </div>
             </main>
         </div>
@@ -343,14 +345,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.CACHE = { trips: [], banners: [], requests: [], reports:[], visits:[], content: {} };
+        // HYBRID SYSTEM STATE
+        window.CACHE = { trips: [], banners: [], requests: [], reports: [], visits:[], content: {} };
         window.curLang = localStorage.getItem('lang') || 'ar';
-        window.sliderInterval = null;
-        let myChart = null;
+        window.gridCdInterval = null;
 
         const LANG = {
             ar:{ home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل بنا",policy:"سياسة الخصوصية",location:"مقرنا",report:"الإبلاغ عن مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة الآن",confirm:"تأكيد التسجيل", price_unit:"دج",start:"الانطلاق",end:"العودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل", ph_name:"الاسم الكامل",ph_phone:"رقم الهاتف",ph_age:"السن",ph_state:"الولاية", gender_m:"ذكر",gender_f:"أنثى", req_pending:"قيد الانتظار", req_confirmed:"تم التأكيد", req_cancelled:"ملغى", day:"يوم", hour:"سا", min:"د", sec:"ث", desc:"وصف المشكلة", email:"البريد الإلكتروني" },
-            fr:{ home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Nos Offres",book_now:"Réserver",confirm:"Confirmer", price_unit:"DA",start:"Départ",end:"Retour",stop:"Arrêt",transport:"Transport",seats:"Places",guide:"Guide",insurance:"Assurance Santé", ph_name:"Nom Complet",ph_phone:"Téléphone",ph_age:"Âge",ph_state:"Wilaya", gender_m:"Homme",gender_f:"Femme", req_pending:"En attente", req_confirmed:"Confirmé", req_cancelled:"Annulé", day:"J", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" },
+            fr:{ home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Nos Offres",book_now:"Réserver Maintenant",confirm:"Confirmer", price_unit:"DA",start:"Départ",end:"Retour",stop:"Arrêt",transport:"Transport",seats:"Places",guide:"Guide",insurance:"Assurance Santé", ph_name:"Nom Complet",ph_phone:"Téléphone",ph_age:"Âge",ph_state:"Wilaya", gender_m:"Homme",gender_f:"Femme", req_pending:"En attente", req_confirmed:"Confirmé", req_cancelled:"Annulé", day:"J", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" },
             en:{ home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Latest Offers",book_now:"Book Now",confirm:"Confirm", price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance", ph_name:"Full Name",ph_phone:"Phone",ph_age:"Age",ph_state:"State", gender_m:"Male",gender_f:"Female", req_pending:"Pending", req_confirmed:"Confirmed", req_cancelled:"Cancelled", day:"D", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" }
         };
 
@@ -360,9 +362,9 @@
             r.onload = () => res(r.result); r.onerror = rej;
         });
 
-        // --- REAL-TIME LISTENERS (The Magic Fix) ---
+        // --- REAL-TIME LISTENERS ---
         window.initRealtime = function() {
-            // Trips Listener
+            // Trips Listener (Updates automatically on Add/Edit/Delete)
             onSnapshot(collection(db, 'trips'), (snapshot) => {
                 window.CACHE.trips = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
                 localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
@@ -370,46 +372,34 @@
                 if(sessionStorage.getItem('isAdmin') === 'true') window.loadManage();
             });
 
-            // Banners Listener
+            // Banners
             onSnapshot(collection(db, 'banners'), (snapshot) => {
                 window.CACHE.banners = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
                 window.loadPublic();
                 if(sessionStorage.getItem('isAdmin') === 'true') window.loadBanners();
             });
 
-            // Requests Listener
+            // Requests
             onSnapshot(query(collection(db, 'requests'), orderBy('ts', 'desc')), (snapshot) => {
                 window.CACHE.requests = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                if(sessionStorage.getItem('isAdmin') === 'true') {
-                    window.loadReq();
-                    window.updateStatsDisplay();
-                }
+                if(sessionStorage.getItem('isAdmin') === 'true') { window.loadReq(); window.updateStatsDisplay(); }
             });
 
-            // Reports Listener
+            // Reports
             onSnapshot(collection(db, 'reports'), (snapshot) => {
                 window.CACHE.reports = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                if(sessionStorage.getItem('isAdmin') === 'true') {
-                    window.loadRep();
-                    window.updateStatsDisplay();
-                }
+                if(sessionStorage.getItem('isAdmin') === 'true') { window.loadRep(); window.updateStatsDisplay(); }
             });
 
-            // Visits Listener
+            // Visits
             onSnapshot(collection(db, 'visits'), (snapshot) => {
                 window.CACHE.visits = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                if(sessionStorage.getItem('isAdmin') === 'true') {
-                    window.updateStatsDisplay();
-                    window.renderChart();
-                }
+                if(sessionStorage.getItem('isAdmin') === 'true') { window.updateStatsDisplay(); }
             });
 
-            // Content Listener
+            // Content
             onSnapshot(collection(db, 'content'), (snapshot) => {
-                if(!snapshot.empty) {
-                    window.CACHE.content = snapshot.docs[0].data();
-                    window.changeLang(window.curLang); // Refresh UI texts
-                }
+                if(!snapshot.empty) { window.CACHE.content = snapshot.docs[0].data(); window.changeLang(window.curLang); }
             });
         };
 
@@ -433,13 +423,6 @@
                 document.getElementById('r-email').placeholder = LANG[l].email;
                 document.getElementById('r-desc').placeholder = LANG[l].desc;
                 document.getElementById('b-gender').innerHTML = `<option value="male">${LANG[l].gender_m}</option><option value="female">${LANG[l].gender_f}</option>`;
-            }
-
-            if(window.CACHE.content) {
-                document.getElementById('about-text').innerText = window.CACHE.content[`about_${l}`] || '...';
-                document.getElementById('policy-text').innerText = window.CACHE.content[`policy_${l}`] || '...';
-                document.getElementById('location-text').innerText = window.CACHE.content[`loc_${l}`] || '...';
-                document.getElementById('contact-text').innerText = window.CACHE.content[`con_${l}`] || '...';
             }
             window.loadPublic();
         };
@@ -507,8 +490,8 @@
             cont.innerHTML = `
                 <div class="w-full md:w-1/3 bg-slate-900 relative h-[45vh] min-h-[45vh] md:min-h-full md:h-full flex-shrink-0 overflow-hidden">
                     <div id="modal-slider" class="flex h-full w-full transition-transform duration-500 ease-in-out">${imgs}</div>
-                    <div class="absolute bottom-0 w-full pt-20 pb-4 px-4 bg-gradient-to-t from-black via-black/80 to-transparent text-white z-10">
-                        <h2 class="text-2xl font-bold text-center">${title}</h2>
+                    <div class="absolute bottom-0 w-full pt-20 pb-4 px-4 bg-gradient-to-t from-black via-black/80 to-transparent text-white z-10 text-center">
+                        <h2 class="text-2xl font-bold mb-2">${title}</h2>
                     </div>
                 </div>
                 <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto p-4 md:p-8 flex-1">
@@ -528,6 +511,7 @@
                 </div>
             `;
 
+            // Auto Slider Logic
             const sContainer = document.getElementById('modal-slider');
             const slidesCount = 1 + (t.subs ? t.subs.length : 0);
             let sIdx = 0;
@@ -573,7 +557,7 @@
             } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
         });
 
-        // Countdowns Logic for Home Grid
+        // Countdowns Logic (For Home Page Cards)
         window.startGridCountdowns = function() {
             if(window.gridCdInterval) clearInterval(window.gridCdInterval);
             window.gridCdInterval = setInterval(() => {
@@ -588,6 +572,7 @@
                     const m = Math.floor((dist%(1000*60*60))/(1000*60));
                     const s = Math.floor((dist%(1000*60))/1000);
                     
+                    // The CSS handles layout & animation. Just update HTML.
                     el.innerHTML = `
                         <div class="cc-item"><div class="cc-num">${d}</div><div class="cc-lbl">${LANG[window.curLang].day}</div></div>
                         <div class="cc-item"><div class="cc-num">${h}</div><div class="cc-lbl">${LANG[window.curLang].hour}</div></div>
@@ -598,26 +583,21 @@
             }, 1000);
         };
 
-
         // ================= ADMIN FUNCTIONS =================
         window.forceAdmin = () => { location.hash='#admin'; location.reload(); };
-        
-        window.adminLogout = () => { 
-            sessionStorage.removeItem('isAdmin'); 
-            location.hash=''; location.reload(); 
-        };
+        window.adminLogout = () => { sessionStorage.removeItem('isAdmin'); location.hash=''; location.reload(); };
 
         window.checkRoute = function() {
             if(location.hash==='#admin' || location.hash==='#admin1'){
                 document.getElementById('user-app').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
                 
-                // Stay logged in check
+                // Session Check
                 if(sessionStorage.getItem('isAdmin') === 'true') {
                     document.getElementById('admin-login').classList.add('hidden');
                     document.getElementById('admin-dash').classList.remove('hidden');
                     document.getElementById('admin-dash').classList.add('flex');
-                    window.initAdmin();
+                    window.updateStatsDisplay();
                 } else {
                     document.getElementById('admin-login').classList.remove('hidden');
                     document.getElementById('admin-dash').classList.add('hidden');
@@ -634,7 +614,7 @@
                 document.getElementById('admin-login').classList.add('hidden');
                 document.getElementById('admin-dash').classList.remove('hidden');
                 document.getElementById('admin-dash').classList.add('flex');
-                window.initAdmin();
+                window.updateStatsDisplay();
             } else {
                 Swal.fire('خطأ', 'بيانات الدخول غير صحيحة', 'error');
             }
@@ -649,15 +629,10 @@
             if(id === 'reports') window.loadRep();
         };
 
-        window.initAdmin = function(){
-            window.updateStatsDisplay();
-        };
-
+        // Accurate Stats & Chart Update
         window.updateStatsDisplay = function(){
             const v = window.CACHE.visits; 
             const now = new Date();
-            
-            // Accurate Date Math
             const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
 
@@ -669,10 +644,11 @@
             window.renderChart();
         };
 
+        let myChart = null;
         window.renderChart = function() {
             const ctx = document.getElementById('visitsChart');
             if(ctx) {
-                if(myChart) myChart.destroy(); // Prevent overlap
+                if(myChart) myChart.destroy();
                 const labels=[], data=[];
                 const v = window.CACHE.visits;
                 for(let i=29; i>=0; i--){
@@ -714,10 +690,9 @@
                 
                 Swal.fire('تم', 'تم نشر الرحلة بنجاح!', 'success');
                 e.target.reset();
-
             } catch (error) {
                 console.error(error);
-                Swal.fire('خطأ!', 'حجم الصورة كبير جداً، يرجى اختيار صورة أصغر.', 'error');
+                Swal.fire('خطأ!', 'حدث خطأ. تأكد من حجم الصور أو اتصال الإنترنت.', 'error');
             } finally {
                 btn.disabled=false; btn.innerText = origText;
             }
@@ -733,7 +708,6 @@
                         <span class="text-sm text-gray-500" style="direction:ltr; display:inline-block">${t.start ? t.start.replace('T', ' ') : ''}</span>
                     </div>
                     <button onclick="window.editSeats('${t.id}')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 px-3 py-2 rounded-lg font-bold transition">المقاعد (${t.seats})</button>
-                    
                     <!-- Direct Delete Button -->
                     <button onclick="window.deleteTrip('${t.id}')" class="text-red-600 bg-red-100 hover:bg-red-200 px-4 py-2 rounded-lg transition" title="حذف الرحلة">
                         <i class="fas fa-trash-alt text-xl"></i>
@@ -742,12 +716,11 @@
         };
         
         window.deleteTrip = async (id) => {
-            if(await Swal.fire({title: 'تأكيد الحذف؟', text: 'سيتم مسح الرحلة نهائياً', icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء'}).then(r => r.isConfirmed)) {
-                Swal.fire({title: 'جاري الحذف...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
+            if(confirm('تأكيد حذف هذه الرحلة نهائياً؟')) {
                 try {
                     await deleteDoc(doc(db, 'trips', id));
-                    Swal.fire('تم', 'تم حذف الرحلة بنجاح', 'success');
-                } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
+                    // The onSnapshot listener will auto-update UI immediately
+                } catch(e) { alert("خطأ في الحذف: " + e.message); }
             }
         };
         
@@ -768,7 +741,6 @@
                 selIn.classList.add('hidden'); txtIn.classList.remove('hidden');
             }
         };
-        
         window.uploadBanner = async () => {
             const btn = document.getElementById('btn-submit-banner');
             const orig = btn.innerText;
@@ -798,11 +770,8 @@
                     </div>
                 </div>`).join('');
         };
-        
         window.deleteBanner = async (id) => {
-            if(confirm('تأكيد حذف البانر؟')) {
-                await deleteDoc(doc(db, 'banners', id));
-            }
+            if(confirm('تأكيد حذف البانر؟')) { await deleteDoc(doc(db, 'banners', id)); }
         };
 
         // REQUESTS
@@ -810,14 +779,14 @@
             const l = window.curLang;
             document.getElementById('req-list').innerHTML = window.CACHE.requests.map(r => `
                 <tr class="border-b hover:bg-gray-50">
-                    <td class="p-3"><button onclick="window.deleteReq('${r.id}')" class="text-red-500 hover:bg-red-100 p-2 rounded"><i class="fas fa-trash"></i></button></td>
+                    <td class="p-3"><button onclick="window.deleteReq('${r.id}')" class="text-red-500 bg-red-50 p-2 rounded hover:bg-red-200 transition"><i class="fas fa-trash"></i></button></td>
                     <td class="p-3 text-xs text-gray-500 font-sans" style="direction:ltr">${new Date(r.ts).toLocaleString()}</td>
                     <td class="p-3 font-bold">${r.name}</td>
                     <td class="p-3 text-blue-600 font-sans" style="direction:ltr">${r.phone}</td>
                     <td class="p-3">${r.state}</td>
                     <td class="p-3 text-sm text-gray-600">${r.trip}</td>
                     <td class="p-3">
-                        <select onchange="window.updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs ${r.status==='confirmed'?'bg-green-100':(r.status==='cancelled'?'bg-red-100':'bg-yellow-100')}">
+                        <select onchange="window.updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs font-bold ${r.status==='confirmed'?'bg-green-100 text-green-700':(r.status==='cancelled'?'bg-red-100 text-red-700':'bg-yellow-100 text-yellow-700')}">
                             <option value="pending" ${r.status==='pending'?'selected':''}>${LANG[l].req_pending}</option>
                             <option value="confirmed" ${r.status==='confirmed'?'selected':''}>${LANG[l].req_confirmed}</option>
                             <option value="cancelled" ${r.status==='cancelled'?'selected':''}>${LANG[l].req_cancelled}</option>
@@ -837,30 +806,24 @@
                         <div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500 font-sans">(${r.email})</span></div>
                         <p class="text-sm mt-1">${r.desc}</p>
                     </div>
-                    <button onclick="window.deleteReport('${r.id}')" class="text-red-500 bg-red-100 px-3 py-2 rounded-lg hover:bg-red-200"><i class="fas fa-trash"></i></button>
+                    <button onclick="window.deleteReport('${r.id}')" class="text-red-500 bg-red-100 px-4 py-2 rounded-lg hover:bg-red-200 transition"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
         };
-        window.deleteReport = async (id) => { if(confirm('حذف التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
+        window.deleteReport = async (id) => { if(confirm('حذف هذا التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
 
-        async function trackVisit(){ 
-            if(!sessionStorage.getItem('v')){
-                try {
-                    await addDoc(collection(db, 'visits'), {ts: Date.now()});
-                    sessionStorage.setItem('v','1');
-                } catch(e){}
-            } 
-        }
-
-        // INIT Real-Time Listeners On Load
+        // START & INITIALIZE
         window.addEventListener('load', () => {
             const localTrips = localStorage.getItem('th_trips');
             if(localTrips) { window.CACHE.trips = JSON.parse(localTrips); window.loadPublic(); }
             
             window.changeLang(window.curLang);
             window.checkRoute();
-            window.initRealtime(); // Firebase onSnapshot
-            window.trackVisit();
+            window.initRealtime(); // Start Listening to Firebase instantly
+            
+            if(!sessionStorage.getItem('v')){
+                try { addDoc(collection(db, 'visits'), {ts: Date.now()}); sessionStorage.setItem('v','1'); } catch(e){}
+            }
         });
 
     </script>
