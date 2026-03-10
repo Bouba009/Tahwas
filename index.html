@@ -88,6 +88,14 @@
         
         .chart-container { position: relative; height: 300px; width: 100%; }
         .modal-slider { scroll-behavior: smooth; }
+        
+        /* 3-Lines Clamp */
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
@@ -100,7 +108,7 @@
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-4">
                 <i class="fas fa-bars text-2xl cursor-pointer md:hidden" onclick="window.toggleSidebar()"></i>
-                <img id="site-logo" src="" alt="Logo" class="h-10 hidden object-contain"> 
+                <img id="site-logo" src="" alt="Logo" class="h-12 hidden object-contain"> 
                 <h1 id="site-title-text" class="text-3xl font-black text-blue-600">تحواس<span class="text-orange-500">.</span></h1>
             </div>
             <div class="flex items-center gap-4">
@@ -141,15 +149,25 @@
             <div id="trips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </section>
 
-        <!-- Static Sections -->
-        <section id="about-sec" class="bg-white py-12 border-t text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="about">من نحن</h3><p id="about-text" class="text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed whitespace-pre-line">...</p></section>
-        <section id="policy-sec" class="bg-gray-100 py-12 text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="policy">سياسة الخصوصية</h3><p id="policy-text" class="text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed whitespace-pre-line">...</p></section>
-        <section id="location-sec" class="bg-white py-12 text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="location">مقرنا</h3><p id="location-text" class="text-gray-800 font-bold text-xl px-4">...</p></section>
+        <!-- Static Sections with Click to Expand -->
+        <section id="about-sec" class="bg-white py-12 border-t text-center">
+            <h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="about">من نحن</h3>
+            <p id="about-text" class="text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed whitespace-pre-line line-clamp-3 cursor-pointer hover:opacity-80 transition" onclick="this.classList.toggle('line-clamp-3')" title="اضغط للقراءة">...</p>
+        </section>
+        
+        <section id="policy-sec" class="bg-gray-100 py-12 text-center">
+            <h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="policy">سياسة الخصوصية</h3>
+            <p id="policy-text" class="text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed whitespace-pre-line line-clamp-3 cursor-pointer hover:opacity-80 transition" onclick="this.classList.toggle('line-clamp-3')" title="اضغط للقراءة">...</p>
+        </section>
+        
+        <section id="location-sec" class="bg-white py-12 text-center">
+            <h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="location">مقرنا</h3>
+            <p id="location-text" class="text-gray-800 font-bold text-xl px-4">...</p>
+        </section>
 
         <footer id="contact-sec" class="bg-slate-900 text-white py-10 text-center relative">
             <h3 class="text-xl font-bold mb-4" data-key="contact">اتصل بنا</h3>
             <p id="contact-text" class="mb-4 text-lg whitespace-pre-line">...</p>
-            <button onclick="window.forceAdmin()" class="absolute bottom-2 right-2 text-xs opacity-20 hover:opacity-100 text-white">Admin</button>
         </footer>
     </div>
 
@@ -167,10 +185,13 @@
             <h3 class="text-2xl font-black mb-6 text-center text-blue-800" data-key="book_now">حجز</h3>
             <form id="booking-form" class="space-y-4">
                 <input type="hidden" id="b-trip-id"> <input type="hidden" id="b-trip-name">
-                <input type="text" id="b-name" class="w-full border p-3 rounded" required>
-                <input type="tel" id="b-phone" class="w-full border p-3 rounded" required>
-                <div class="flex gap-2"><input type="number" id="b-age" class="w-1/2 border p-3 rounded" required><input type="text" id="b-state" class="w-1/2 border p-3 rounded" required></div>
-                <select id="b-gender" class="w-full border p-3 rounded"></select>
+                <input type="text" id="b-name" class="w-full border p-3 rounded outline-none focus:ring-2 ring-blue-400" required>
+                <input type="tel" id="b-phone" class="w-full border p-3 rounded outline-none focus:ring-2 ring-blue-400" required>
+                <div class="flex gap-2">
+                    <input type="number" id="b-age" class="w-1/2 border p-3 rounded outline-none focus:ring-2 ring-blue-400" required>
+                    <input type="text" id="b-state" class="w-1/2 border p-3 rounded outline-none focus:ring-2 ring-blue-400" required>
+                </div>
+                <select id="b-gender" class="w-full border p-3 rounded outline-none focus:ring-2 ring-blue-400"></select>
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-4 rounded hover:bg-blue-700" data-key="confirm">تأكيد</button>
             </form>
             <button onclick="window.closeModal('booking-modal')" class="w-full text-center mt-3 text-sm text-gray-500 font-bold">إلغاء</button>
@@ -180,14 +201,14 @@
     <!-- REPORT MODAL -->
     <div id="report-modal" class="fixed inset-0 bg-black/80 z-[90] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl w-full max-w-md p-6">
-            <h3 class="font-bold text-red-600 mb-4" data-key="report">إبلاغ</h3>
+            <h3 class="font-bold text-red-600 mb-4" data-key="report">إبلاغ عن مشكلة</h3>
             <form id="report-form" class="space-y-3">
-                <input id="r-name" type="text" class="w-full border p-2 rounded">
-                <input id="r-email" type="email" class="w-full border p-2 rounded">
-                <textarea id="r-desc" class="w-full border p-2 rounded h-24"></textarea>
-                <button type="submit" class="w-full bg-red-500 text-white py-2 rounded" data-key="send">إرسال</button>
+                <input id="r-name" type="text" class="w-full border p-2 rounded outline-none focus:ring-2 ring-red-400" required>
+                <input id="r-email" type="email" class="w-full border p-2 rounded outline-none focus:ring-2 ring-red-400" required>
+                <textarea id="r-desc" class="w-full border p-2 rounded h-24 outline-none focus:ring-2 ring-red-400" required></textarea>
+                <button type="submit" class="w-full bg-red-500 text-white py-2 rounded font-bold" data-key="send">إرسال</button>
             </form>
-            <button onclick="window.closeModal('report-modal')" class="w-full text-center mt-2 text-sm text-gray-500">Close</button>
+            <button onclick="window.closeModal('report-modal')" class="w-full text-center mt-2 text-sm text-gray-500 font-bold">إلغاء</button>
         </div>
     </div>
 
@@ -196,10 +217,9 @@
         <div id="admin-login" class="flex items-center justify-center min-h-screen bg-slate-900">
             <div class="bg-white p-8 rounded-xl shadow-2xl w-96 text-center">
                 <h2 class="text-3xl font-black mb-6">لوحة الإدارة</h2>
-                <input type="text" id="adm-user" placeholder="User: admin" class="w-full border p-3 rounded mb-3">
-                <input type="password" id="adm-pass" placeholder="Pass: abobob123" class="w-full border p-3 rounded mb-6">
+                <input type="text" id="adm-user" placeholder="اسم المستخدم" class="w-full border p-3 rounded mb-3 outline-none">
+                <input type="password" id="adm-pass" placeholder="كلمة المرور" class="w-full border p-3 rounded mb-6 outline-none">
                 <button onclick="window.adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded">دخول</button>
-                <button onclick="location.hash=''; location.reload()" class="block w-full text-center text-xs text-gray-400 mt-4 underline">العودة للموقع</button>
             </div>
         </div>
 
@@ -242,10 +262,11 @@
                 <!-- Requests Table -->
                 <div id="sec-requests" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">سجل الطلبات</h2>
+                    <div class="mb-4"><button onclick="window.deleteSelectedReqs()" class="bg-red-600 text-white px-4 py-2 rounded">حذف المحدد</button></div>
                     <div class="overflow-x-auto bg-white rounded shadow">
                         <table class="w-full text-right text-sm text-gray-600">
                             <thead class="bg-gray-100 text-gray-800">
-                                <tr><th class="p-3 w-10">حذف</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th></tr>
+                                <tr><th class="p-3 w-10">#</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th></tr>
                             </thead>
                             <tbody id="req-list"></tbody>
                         </table>
@@ -294,9 +315,9 @@
 
                 <!-- Manage Trips -->
                 <div id="sec-manage" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات</h2>
-                    <div class="bg-white p-6 rounded-xl shadow">
-                        <div id="manage-list" class="space-y-4"></div>
+                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات (حذف مباشر)</h2>
+                    <div class="bg-white p-4 rounded shadow">
+                        <div id="manage-list" class="space-y-3"></div>
                     </div>
                 </div>
 
@@ -317,18 +338,15 @@
                     <div id="banner-list" class="grid grid-cols-2 gap-4 mt-6"></div>
                 </div>
                 
-                <!-- Content Management (About, Policy, Logo, etc) -->
+                <!-- Content Management -->
                 <div id="sec-content" class="adm-sec hidden">
                      <h2 class="text-3xl font-bold mb-6">إدارة المحتوى واللوجو</h2>
                      <form id="form-content" class="bg-white p-6 rounded-xl shadow space-y-6">
-                        <!-- Logo -->
                         <div class="border p-4 rounded bg-gray-50">
                             <label class="font-bold block mb-2">شعار الموقع (Logo)</label>
                             <input type="file" id="c-logo" accept="image/*" class="w-full border bg-white p-2 rounded">
                             <p class="text-xs text-gray-500 mt-1">اتركه فارغاً إذا لم ترد تغييره.</p>
                         </div>
-                        
-                        <!-- About -->
                         <div class="border p-4 rounded">
                             <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">من نحن (About)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -337,8 +355,6 @@
                                 <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-about-en" class="w-full border p-2 rounded h-24"></textarea></div>
                             </div>
                         </div>
-
-                        <!-- Policy -->
                         <div class="border p-4 rounded bg-gray-50">
                             <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">سياسة الخصوصية (Privacy)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -347,8 +363,6 @@
                                 <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-policy-en" class="w-full border p-2 rounded h-24"></textarea></div>
                             </div>
                         </div>
-
-                        <!-- Location -->
                         <div class="border p-4 rounded">
                             <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">مقرنا (Location)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -357,8 +371,6 @@
                                 <div><label class="text-xs font-bold text-purple-700">EN</label><input type="text" id="c-loc-en" class="w-full border p-2 rounded"></div>
                             </div>
                         </div>
-
-                        <!-- Contact -->
                         <div class="border p-4 rounded bg-gray-50">
                             <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">اتصل بنا (Contact)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -367,7 +379,6 @@
                                 <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-con-en" class="w-full border p-2 rounded h-16"></textarea></div>
                             </div>
                         </div>
-
                         <button type="submit" id="btn-submit-content" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700 transition">حفظ التعديلات ونشرها</button>
                      </form>
                 </div>
@@ -397,6 +408,7 @@
         window.CACHE = { trips: [], banners: [], requests: [], reports: [], visits:[], content: {} };
         window.curLang = localStorage.getItem('lang') || 'ar';
         window.gridCdInterval = null;
+        window.sliderInterval = null;
 
         const LANG = {
             ar:{ home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل بنا",policy:"سياسة الخصوصية",location:"مقرنا",report:"الإبلاغ عن مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة الآن",confirm:"تأكيد التسجيل", price_unit:"دج",start:"الانطلاق",end:"العودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل", ph_name:"الاسم الكامل",ph_phone:"رقم الهاتف",ph_age:"السن",ph_state:"الولاية", gender_m:"ذكر",gender_f:"أنثى", req_pending:"قيد الانتظار", req_confirmed:"تم التأكيد", req_cancelled:"ملغى", day:"يوم", hour:"سا", min:"د", sec:"ث", desc:"وصف المشكلة", email:"البريد الإلكتروني" },
@@ -404,7 +416,6 @@
             en:{ home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Latest Offers",book_now:"Book Now",confirm:"Confirm", price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance", ph_name:"Full Name",ph_phone:"Phone",ph_age:"Age",ph_state:"State", gender_m:"Male",gender_f:"Female", req_pending:"Pending", req_confirmed:"Confirmed", req_cancelled:"Cancelled", day:"D", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" }
         };
 
-        // --- BASE64 CONVERTER ---
         const toBase64 = file => new Promise((res, rej) => {
             const r = new FileReader(); r.readAsDataURL(file);
             r.onload = () => res(r.result); r.onerror = rej;
@@ -515,7 +526,7 @@
                     </div>`;
                 }).join('');
             }
-            window.startGridCountdowns();
+            window.startGridCountdowns(); 
 
             const sl = document.getElementById('hero-slider');
             if(window.CACHE.banners.length > 0){
@@ -617,7 +628,7 @@
             } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
         });
 
-        // Countdowns Logic
+        // Countdowns Logic for Home Grid
         window.startGridCountdowns = function() {
             if(window.gridCdInterval) clearInterval(window.gridCdInterval);
             window.gridCdInterval = setInterval(() => {
@@ -671,7 +682,9 @@
                 document.getElementById('admin-dash').classList.remove('hidden');
                 document.getElementById('admin-dash').classList.add('flex');
                 window.updateStatsDisplay();
-            } else { Swal.fire('خطأ', 'بيانات الدخول غير صحيحة', 'error'); }
+            } else {
+                Swal.fire('خطأ', 'بيانات الدخول غير صحيحة', 'error');
+            }
         };
 
         window.showAdm = (id) => {
@@ -694,6 +707,7 @@
             document.getElementById('stat-month').innerText = v.filter(x => x.ts >= startOfMonth).length;
             document.getElementById('stat-req').innerText = window.CACHE.requests.length;
             document.getElementById('stat-rep').innerText = window.CACHE.reports.length;
+            
             window.renderChart();
         };
 
@@ -717,7 +731,7 @@
             e.preventDefault();
             const btn = document.getElementById('btn-submit-trip'); 
             const origText = btn.innerText;
-            btn.disabled=true; btn.innerText="جاري النشر...";
+            btn.disabled=true; btn.innerText="جاري النشر... (يرجى الانتظار)";
             
             try {
                 const mf = document.getElementById('t-img-main').files[0];
@@ -742,11 +756,15 @@
                 
                 Swal.fire('تم', 'تم نشر الرحلة بنجاح!', 'success');
                 e.target.reset();
-            } catch (error) { Swal.fire('خطأ!', 'حجم الصورة كبير جداً.', 'error'); } 
-            finally { btn.disabled=false; btn.innerText = origText; }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('خطأ!', 'حجم الصورة كبير جداً، يرجى اختيار صورة أصغر.', 'error');
+            } finally {
+                btn.disabled=false; btn.innerText = origText;
+            }
         });
 
-        // MANAGE TRIPS (DIRECT DELETE BUTTON)
+        // MANAGE TRIPS (DIRECT DELETE ICON)
         window.loadManage = function(){
             document.getElementById('manage-list').innerHTML = window.CACHE.trips.map(t => `
                 <div class="flex items-center gap-4 bg-gray-50 p-3 rounded-xl shadow-sm border border-gray-200">
@@ -757,7 +775,7 @@
                     </div>
                     <button onclick="window.editSeats('${t.id}')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 px-3 py-2 rounded-lg font-bold transition">المقاعد (${t.seats})</button>
                     <!-- DIRECT DELETE ICON -->
-                    <button onclick="window.deleteTrip('${t.id}')" class="text-red-600 bg-red-100 hover:bg-red-200 px-4 py-2 rounded-lg transition" title="حذف الرحلة">
+                    <button onclick="window.deleteTrip('${t.id}')" class="text-red-600 bg-red-100 hover:bg-red-200 w-10 h-10 rounded-lg flex items-center justify-center transition" title="حذف الرحلة">
                         <i class="fas fa-trash-alt text-xl"></i>
                     </button>
                 </div>`).join('');
@@ -814,19 +832,21 @@
             document.getElementById('banner-list').innerHTML = window.CACHE.banners.map(b => `
                 <div class="relative rounded-xl overflow-hidden shadow-md group">
                     <img src="${b.img}" class="h-24 w-full object-cover">
-                    <div class="absolute inset-0 bg-black/50 flex items-center justify-center transition">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
                         <button onclick="window.deleteBanner('${b.id}')" class="bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 transition"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>`).join('');
         };
-        window.deleteBanner = async (id) => { if(confirm('تأكيد حذف البانر؟')) await deleteDoc(doc(db, 'banners', id)); };
+        window.deleteBanner = async (id) => {
+            if(confirm('تأكيد حذف البانر؟')) { await deleteDoc(doc(db, 'banners', id)); }
+        };
 
         // REQUESTS
         window.loadReq = function(){
             const l = window.curLang;
             document.getElementById('req-list').innerHTML = window.CACHE.requests.map(r => `
                 <tr class="border-b hover:bg-gray-50">
-                    <td class="p-3"><button onclick="window.deleteReq('${r.id}')" class="text-red-500 bg-red-50 p-2 rounded hover:bg-red-200 transition"><i class="fas fa-trash"></i></button></td>
+                    <td class="p-3"><button onclick="window.deleteReq('${r.id}')" class="text-red-500 bg-red-50 w-8 h-8 rounded hover:bg-red-200 transition flex items-center justify-center"><i class="fas fa-trash"></i></button></td>
                     <td class="p-3 text-xs text-gray-500 font-sans" style="direction:ltr">${new Date(r.ts).toLocaleString()}</td>
                     <td class="p-3 font-bold">${r.name}</td>
                     <td class="p-3 text-blue-600 font-sans" style="direction:ltr">${r.phone}</td>
@@ -853,13 +873,13 @@
                         <div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500 font-sans">(${r.email})</span></div>
                         <p class="text-sm mt-1">${r.desc}</p>
                     </div>
-                    <button onclick="window.deleteReport('${r.id}')" class="text-red-500 bg-red-100 px-4 py-2 rounded-lg hover:bg-red-200 transition"><i class="fas fa-trash"></i></button>
+                    <button onclick="window.deleteReport('${r.id}')" class="text-red-500 bg-red-100 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-red-200 transition"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
         };
-        window.deleteReport = async (id) => { if(confirm('حذف هذا التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
+        window.deleteReport = async (id) => { if(confirm('حذف التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
 
-        // CONTENT MANAGEMENT (ABOUT, POLICY, LOGO)
+        // CONTENT MANAGEMENT
         window.loadContentForm = function() {
             const c = window.CACHE.content || {};
             const fields =['about', 'policy', 'loc', 'con'];
@@ -887,7 +907,7 @@
 
                 const newData = { logo: logoData, ts: Date.now() };
                 const fields = ['about', 'policy', 'loc', 'con'];
-                const langs = ['ar', 'fr', 'en'];
+                const langs =['ar', 'fr', 'en'];
                 fields.forEach(f => {
                     langs.forEach(l => {
                         newData[`${f}_${l}`] = document.getElementById(`c-${f}-${l}`).value;
@@ -902,7 +922,7 @@
                     window.CACHE.content = newData;
                 }
 
-                Swal.fire('تم', 'تم حفظ المحتوى واللوجو بنجاح', 'success');
+                Swal.fire('تم', 'تم حفظ المحتوى بنجاح', 'success');
                 document.getElementById('c-logo').value = '';
             } catch(error) { Swal.fire('خطأ', error.message, 'error'); } 
             finally { btn.disabled=false; btn.innerText=origText; }
