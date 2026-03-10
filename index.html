@@ -26,14 +26,15 @@
         .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* SNAKE MAP */
-        .snake-map-container { position: relative; padding: 40px 0; overflow: hidden; margin-top: 20px; }
+        /* ================== SNAKE MAP & ENVIRONMENTS ================== */
+        .snake-map-container { position: relative; padding: 80px 0; overflow: hidden; margin-top: 20px; border-radius: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.2); }
         .snake-line {
-            position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; margin-left: -20px; z-index: 1;
+            position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; margin-left: -20px; z-index: 10;
             background-image: url("data:image/svg+xml,%3Csvg width='40' height='100' viewBox='0 0 40 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0 Q40 25 20 50 T20 100' fill='none' stroke='%23ffffff' stroke-width='4' stroke-dasharray='8 4'/%3E%3C/svg%3E");
-            background-repeat: repeat-y; background-position: center top; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            background-repeat: repeat-y; background-position: center top;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
-        .snake-item { position: relative; width: 50%; margin-bottom: 60px; clear: both; z-index: 2; }
+        .snake-item { position: relative; width: 50%; margin-bottom: 60px; clear: both; z-index: 20; }
         
         @media (min-width: 768px) {
             html[dir="rtl"] .snake-item:nth-child(odd) { float: right; padding-left: 60px; text-align: left; }
@@ -64,19 +65,23 @@
         .env-anim { animation: float-env 4s ease-in-out infinite alternate; }
         @keyframes float-env { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
 
-        /* Countdown Style for Cards */
+        /* ================== ANIMATED COUNTDOWN ================== */
         .card-countdown {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            color: white; padding: 20px 10px 10px 10px; display: flex; justify-content: center; gap: 15px; direction: ltr;
+            position: absolute; bottom: 15px; left: 5%; right: 5%;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 12px;
+            color: white; padding: 10px; display: flex; justify-content: space-around; align-items: center;
+            direction: ltr; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            animation: float-pulse 2s infinite ease-in-out;
         }
-        .cc-item { text-align: center; line-height: 1.1; }
-        .cc-num { font-size: 1.5rem; font-weight: 900; color: #facc15; font-family: 'Poppins', sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .cc-lbl { font-size: 0.7rem; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
-
-        .countdown-box { background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 8px; text-align: center; min-width: 50px; }
-        .countdown-label { font-size: 10px; opacity: 0.9; }
-        .countdown-digit { font-size: 18px; font-weight: bold; font-family: 'Poppins', sans-serif; }
+        @keyframes float-pulse {
+            0% { transform: translateY(0); box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
+            50% { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.6); border-color: rgba(59, 130, 246, 0.8); }
+            100% { transform: translateY(0); box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
+        }
+        .cc-item { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+        .cc-num { font-size: 1.3rem; font-weight: 900; color: #facc15; font-family: 'Poppins', sans-serif; }
+        .cc-lbl { font-size: 0.7rem; font-weight: bold; opacity: 0.9; margin-top: 4px; text-transform: uppercase; }
 
         .btn-glow { animation: pulse-blue 2s infinite; }
         @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
@@ -136,6 +141,7 @@
             <div id="trips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </section>
 
+        <!-- Static Sections -->
         <section id="about-sec" class="bg-white py-12 border-t text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="about">من نحن</h3><p id="about-text" class="text-gray-600 max-w-2xl mx-auto px-4">...</p></section>
         <section id="policy-sec" class="bg-gray-100 py-12 text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="policy">السياسة</h3><p id="policy-text" class="text-gray-600 max-w-2xl mx-auto px-4">...</p></section>
         <section id="location-sec" class="bg-white py-12 text-center"><h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="location">مقرنا</h3><p id="location-text" class="text-gray-800 font-bold text-xl px-4">...</p></section>
@@ -206,7 +212,7 @@
                     <button onclick="window.showAdm('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الطلبات</button>
                     <button onclick="window.showAdm('reports')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-exclamation-triangle"></i> الشكاوى</button>
                     <button onclick="window.showAdm('add')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-plus"></i> إضافة رحلة</button>
-                    <button onclick="window.showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة الرحلات</button>
+                    <button onclick="window.showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة (حذف)</button>
                     <button onclick="window.showAdm('banners')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-images"></i> البانرات</button>
                     <button onclick="window.showAdm('content')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-edit"></i> المحتوى</button>
                     <button onclick="window.adminLogout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> خروج</button>
@@ -214,6 +220,7 @@
             </aside>
 
             <main class="mr-64 flex-1 p-8 bg-gray-100 min-h-screen">
+                <!-- Stats Section -->
                 <div id="sec-stats" class="adm-sec">
                     <h2 class="text-3xl font-bold mb-6">نظرة عامة</h2>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -232,9 +239,10 @@
                     </div>
                 </div>
 
+                <!-- Requests Table -->
                 <div id="sec-requests" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">سجل الطلبات</h2>
-                    <div class="mb-4"><button onclick="window.deleteSelectedReqs()" class="bg-red-600 text-white px-4 py-2 rounded">حذف المحدد</button></div>
+                    <div class="mb-4"><button onclick="window.deleteSelectedReqs()" class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700">حذف المحدد</button></div>
                     <div class="overflow-x-auto bg-white rounded shadow">
                         <table class="w-full text-right text-sm text-gray-600">
                             <thead class="bg-gray-100 text-gray-800">
@@ -245,12 +253,13 @@
                     </div>
                 </div>
 
+                <!-- Reports Table -->
                 <div id="sec-reports" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">الشكاوى</h2>
-                    <div class="mb-4"><button onclick="window.deleteSelectedReps()" class="bg-red-600 text-white px-4 py-2 rounded">حذف المحدد</button></div>
                     <div id="rep-list" class="bg-white rounded shadow overflow-hidden"></div>
                 </div>
 
+                <!-- Add Trip -->
                 <div id="sec-add" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">إضافة رحلة</h2>
                     <form id="form-add-trip" class="bg-white p-6 rounded shadow space-y-6">
@@ -284,14 +293,15 @@
                     </form>
                 </div>
 
+                <!-- Manage Trips -->
                 <div id="sec-manage" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات</h2>
-                    <div class="bg-white p-4 rounded shadow">
-                        <button onclick="window.deleteSelectedTrips()" class="bg-red-600 text-white px-4 py-2 rounded mb-4">حذف المحدد</button>
-                        <div id="manage-list" class="space-y-2"></div>
+                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات (تعديل المقاعد والحذف)</h2>
+                    <div class="bg-white p-6 rounded-xl shadow">
+                        <div id="manage-list" class="space-y-4"></div>
                     </div>
                 </div>
 
+                <!-- Banners -->
                 <div id="sec-banners" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">البانرات</h2>
                     <div class="bg-white p-4 rounded shadow mb-4 flex flex-col gap-4">
@@ -305,10 +315,10 @@
                             <button id="btn-submit-banner" onclick="window.uploadBanner()" class="bg-blue-600 text-white px-6 rounded">إضافة</button>
                         </div>
                     </div>
-                    <div class="mb-2"><button onclick="window.deleteSelectedBanners()" class="bg-red-600 text-white px-3 py-1 text-sm rounded">حذف المحدد</button></div>
-                    <div id="banner-list" class="grid grid-cols-2 gap-4"></div>
+                    <div id="banner-list" class="grid grid-cols-2 gap-4 mt-6"></div>
                 </div>
                 
+                <!-- Content -->
                 <div id="sec-content" class="adm-sec hidden">
                      <h2 class="text-3xl font-bold mb-6">إدارة المحتوى</h2>
                      <div class="bg-white p-6 rounded"><button onclick="window.loadContentForm(); Swal.fire('Info','ميزة المحتوى متوفرة','info')" class="bg-blue-500 text-white p-2 rounded">تحميل النماذج</button></div>
@@ -335,9 +345,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.CACHE = { trips: [], banners: [], requests: [], reports: [], visits:[], content: {} };
+        // HYBRID SYSTEM STATE
+        window.CACHE = { trips: [], banners:[], requests: [], reports: [], visits:[], content: {} };
         window.curLang = localStorage.getItem('lang') || 'ar';
-        window.sliderInterval = null;
+        window.gridCdInterval = null;
 
         const LANG = {
             ar:{ home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل بنا",policy:"سياسة الخصوصية",location:"مقرنا",report:"الإبلاغ عن مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة الآن",confirm:"تأكيد التسجيل", price_unit:"دج",start:"الانطلاق",end:"العودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل", ph_name:"الاسم الكامل",ph_phone:"رقم الهاتف",ph_age:"السن",ph_state:"الولاية", gender_m:"ذكر",gender_f:"أنثى", req_pending:"قيد الانتظار", req_confirmed:"تم التأكيد", req_cancelled:"ملغى", day:"يوم", hour:"سا", min:"د", sec:"ث", desc:"وصف المشكلة", email:"البريد الإلكتروني" },
@@ -345,6 +356,7 @@
             en:{ home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Latest Offers",book_now:"Book Now",confirm:"Confirm", price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance", ph_name:"Full Name",ph_phone:"Phone",ph_age:"Age",ph_state:"State", gender_m:"Male",gender_f:"Female", req_pending:"Pending", req_confirmed:"Confirmed", req_cancelled:"Cancelled", day:"D", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" }
         };
 
+        // --- BASE64 CONVERTER ---
         const toBase64 = file => new Promise((res, rej) => {
             const r = new FileReader(); r.readAsDataURL(file);
             r.onload = () => res(r.result); r.onerror = rej;
@@ -373,8 +385,9 @@
 
                 localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
 
-            } catch (e) { console.error("Firebase Sync Error:", e); } 
-            finally {
+            } catch (e) {
+                console.error("Firebase Sync Error:", e);
+            } finally {
                 window.loadPublic();
                 if(!document.getElementById('admin-dash').classList.contains('hidden')) window.initAdmin();
             }
@@ -413,18 +426,25 @@
             } else {
                 grid.innerHTML = window.CACHE.trips.map(x => {
                     let title = x[`title_${window.curLang}`] || x.title_ar;
-                    return `<div class="bg-white rounded-xl shadow overflow-hidden cursor-pointer group" onclick="window.openTrip('${x.id}')">
-                        <div class="h-60 relative overflow-hidden">
+                    return `<div class="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer group hover:shadow-2xl transition duration-300" onclick="window.openTrip('${x.id}')">
+                        <div class="h-64 relative overflow-hidden">
                             <img src="${x.mainImg}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                            <span class="absolute top-2 right-2 bg-white px-3 py-1 rounded-full font-bold text-blue-800 shadow z-10">${x.price} ${LANG[window.curLang].price_unit}</span>
+                            <span class="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-1 rounded-full font-black text-blue-800 shadow-md z-10">${x.price} ${LANG[window.curLang].price_unit}</span>
                             
-                            <!-- Countdown centered at the bottom of the image overlay -->
+                            <!-- The Beautiful Animated Countdown inside Image -->
                             <div class="card-countdown" data-date="${x.start}"></div>
                         </div>
-                        <div class="p-4 text-center"><h3 class="font-bold text-xl">${title}</h3><div class="text-xs text-gray-500 mt-4 pt-3 border-t flex justify-between"><span style="direction:ltr"><i class="fas fa-calendar-alt"></i> ${x.start ? x.start.replace('T',' ') : ''}</span><span><i class="fas fa-chair"></i> ${x.seats}</span></div></div>
+                        <div class="p-5 text-center bg-white">
+                            <h3 class="font-black text-xl mb-3 text-gray-800">${title}</h3>
+                            <div class="text-sm font-bold text-gray-500 pt-3 border-t flex justify-between items-center">
+                                <span style="direction:ltr"><i class="fas fa-calendar-alt text-blue-500"></i> ${x.start ? x.start.replace('T',' ') : ''}</span>
+                                <span class="bg-blue-50 px-2 py-1 rounded text-blue-700"><i class="fas fa-chair"></i> ${x.seats}</span>
+                            </div>
+                        </div>
                     </div>`;
                 }).join('');
             }
+            window.startGridCountdowns(); // Trigger Countdowns logic
 
             const sl = document.getElementById('hero-slider');
             if(window.CACHE.banners.length > 0){
@@ -454,17 +474,15 @@
             mapHTML += points.map((p,i) => `<div class="snake-item"><div class="snake-dot"><i class="fas fa-map-marker-alt"></i></div><div class="snake-card"><div class="absolute -top-4 left-1/2 transform -translate-x-1/2 text-3xl drop-shadow-md">${p.ico}</div><h4 class="font-bold mt-4 text-center">${p.txt}</h4></div></div>`).join('');
             mapHTML += `<div style="clear:both"></div></div>`;
 
-            window.startCountdown(t.start, 'countdown-box');
-
             let imgs = `<img src="${t.mainImg}" class="flex-shrink-0 min-w-full h-full object-cover">`;
             if(t.subs) imgs += t.subs.map(s => `<img src="${s}" class="flex-shrink-0 min-w-full h-full object-cover">`).join('');
 
             cont.innerHTML = `
+                <!-- Height 45vh on mobile prevents squeezing -->
                 <div class="w-full md:w-1/3 bg-slate-900 relative h-[45vh] min-h-[45vh] md:min-h-full md:h-full flex-shrink-0 overflow-hidden">
                     <div id="modal-slider" class="flex h-full w-full transition-transform duration-500 ease-in-out">${imgs}</div>
-                    <div class="absolute bottom-0 w-full pt-20 pb-4 px-4 bg-gradient-to-t from-black via-black/80 to-transparent text-white z-10">
-                        <h2 class="text-2xl font-bold text-center drop-shadow-md">${title}</h2>
-                        <div class="flex gap-2 mt-2 justify-center" id="countdown-box" style="direction:ltr"></div>
+                    <div class="absolute bottom-0 w-full pt-20 pb-4 px-4 bg-gradient-to-t from-black via-black/80 to-transparent text-white z-10 text-center">
+                        <h2 class="text-2xl font-bold mb-2">${title}</h2>
                     </div>
                 </div>
                 <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto p-4 md:p-8 flex-1">
@@ -479,10 +497,12 @@
                         <div class="flex-1 text-right text-green-600 font-bold text-sm"><i class="fas fa-shield-alt"></i> ${LANG[l].insurance}</div>
                     </div>
                     ${mapHTML}
+                    <div class="h-24"></div>
                     <div class="mt-8 mb-4 text-center pb-8 pt-4"><button onclick="window.openBook('${t.id}','${title}')" class="btn-glow w-full md:w-auto px-12 py-4 bg-blue-600 text-white font-bold rounded-full shadow-lg text-lg">${LANG[l].book_now}</button></div>
                 </div>
             `;
 
+            // Auto Slider Logic
             const sContainer = document.getElementById('modal-slider');
             const slidesCount = 1 + (t.subs ? t.subs.length : 0);
             let sIdx = 0;
@@ -528,36 +548,24 @@
             } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
         });
 
-        // Countdowns Logic
+        // Countdowns Logic for Home Grid
         window.startGridCountdowns = function() {
-            setInterval(() => {
+            if(window.gridCdInterval) clearInterval(window.gridCdInterval);
+            window.gridCdInterval = setInterval(() => {
                 const now = new Date().getTime();
                 document.querySelectorAll('.card-countdown').forEach(el => {
                     if(!el.dataset.date) return;
                     const dist = new Date(el.dataset.date).getTime() - now;
-                    if(dist < 0) { el.innerHTML = ""; return; }
+                    if(dist < 0) { el.innerHTML = `<div class="text-green-400 font-bold text-sm text-center w-full">انطلقت / Started</div>`; el.style.animation='none'; return; }
                     const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
                     
                     el.innerHTML = `
                         <div class="cc-item"><div class="cc-num">${d}</div><div class="cc-lbl">${LANG[window.curLang].day}</div></div>
                         <div class="cc-item"><div class="cc-num">${h}</div><div class="cc-lbl">${LANG[window.curLang].hour}</div></div>
                         <div class="cc-item"><div class="cc-num">${m}</div><div class="cc-lbl">${LANG[window.curLang].min}</div></div>
-                        <div class="cc-item"><div class="cc-num">${s}</div><div class="cc-lbl">${LANG[window.curLang].sec}</div></div>
+                        <div class="cc-item"><div class="cc-num text-red-400">${s}</div><div class="cc-lbl text-red-300">${LANG[window.curLang].sec}</div></div>
                     `;
                 });
-            }, 1000);
-        };
-        window.startCountdown = function(dateStr, elemId){
-            const el = document.getElementById(elemId); if(!el || !dateStr) return;
-            const target = new Date(dateStr).getTime();
-            window.cdTimer = setInterval(()=>{
-                const dist = target - new Date().getTime();
-                if(dist < 0) { clearInterval(window.cdTimer); el.innerHTML = ""; return; }
-                const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
-                el.innerHTML = `<div class="countdown-box"><div class="countdown-digit">${d}</div><div class="countdown-label">${LANG[window.curLang].day}</div></div>
-                                <div class="countdown-box"><div class="countdown-digit">${h}</div><div class="countdown-label">${LANG[window.curLang].hour}</div></div>
-                                <div class="countdown-box"><div class="countdown-digit">${m}</div><div class="countdown-label">${LANG[window.curLang].min}</div></div>
-                                <div class="countdown-box"><div class="countdown-digit">${s}</div><div class="countdown-label">${LANG[window.curLang].sec}</div></div>`;
             }, 1000);
         };
 
@@ -619,7 +627,7 @@
             e.preventDefault();
             const btn = document.getElementById('btn-submit-trip'); 
             const origText = btn.innerText;
-            btn.disabled=true; btn.innerText="جاري النشر...";
+            btn.disabled=true; btn.innerText="جاري النشر... (يرجى الانتظار)";
             
             try {
                 const mf = document.getElementById('t-img-main').files[0];
@@ -654,39 +662,40 @@
 
             } catch (error) {
                 console.error(error);
-                Swal.fire('خطأ!', error.message, 'error');
+                Swal.fire('خطأ!', 'حجم الصورة كبير جداً، يرجى اختيار صورة أصغر.', 'error');
             } finally {
                 btn.disabled=false; btn.innerText = origText;
             }
         });
 
-        // MANAGE ROBUST DELETE
+        // MANAGE ROBUST DELETE (DIRECT ICON BUTTON)
         window.loadManage = function(){
             document.getElementById('manage-list').innerHTML = window.CACHE.trips.map(t => `
-                <div class="flex items-center gap-2 bg-gray-50 p-2 rounded">
-                    <input type="checkbox" class="trip-chk" value="${t.id}">
-                    <img src="${t.mainImg}" class="w-10 h-10 rounded object-cover">
-                    <span class="flex-1 font-bold">${t.title_ar}</span>
-                    <button onclick="window.editSeats('${t.id}')" class="text-blue-600 text-xs underline bg-blue-100 px-2 py-1 rounded">المقاعد (${t.seats})</button>
+                <div class="flex items-center gap-4 bg-gray-50 p-3 rounded-xl shadow-sm border border-gray-200">
+                    <img src="${t.mainImg}" class="w-16 h-16 rounded-lg object-cover shadow">
+                    <div class="flex-1">
+                        <span class="block font-bold text-lg text-gray-800">${t.title_ar}</span>
+                        <span class="text-sm text-gray-500" style="direction:ltr; display:inline-block">${t.start ? t.start.replace('T', ' ') : ''}</span>
+                    </div>
+                    <button onclick="window.editSeats('${t.id}')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 px-3 py-2 rounded-lg font-bold transition">المقاعد (${t.seats})</button>
+                    <button onclick="window.deleteTrip('${t.id}')" class="text-red-600 bg-red-100 hover:bg-red-200 px-3 py-2 rounded-lg transition" title="حذف الرحلة">
+                        <i class="fas fa-trash-alt text-xl"></i>
+                    </button>
                 </div>`).join('');
         };
         
-        window.deleteSelectedTrips = async () => {
-            const sels = Array.from(document.querySelectorAll('.trip-chk:checked')).map(c => c.value);
-            if(sels.length === 0) return Swal.fire('تنبيه', 'يرجى تحديد رحلة واحدة على الأقل', 'warning');
-            
-            if(await Swal.fire({title: 'تأكيد الحذف؟', showCancelButton: true, confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء'}).then(r => r.isConfirmed)) {
-                Swal.fire({title: 'جاري الحذف...', didOpen: () => { Swal.showLoading() }});
+        window.deleteTrip = async (id) => {
+            if(await Swal.fire({title: 'تأكيد الحذف؟', text: 'لن تتمكن من التراجع!', icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم، احذف', cancelButtonText: 'إلغاء'}).then(r => r.isConfirmed)) {
+                Swal.fire({title: 'جاري الحذف...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
                 try {
-                    for(let id of sels) await deleteDoc(doc(db, 'trips', id));
+                    await deleteDoc(doc(db, 'trips', id));
                     
-                    // Update Cache & UI instantly
-                    window.CACHE.trips = window.CACHE.trips.filter(t => !sels.includes(t.id));
+                    window.CACHE.trips = window.CACHE.trips.filter(t => t.id !== id);
                     localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
                     
                     window.loadManage();
                     window.loadPublic();
-                    Swal.fire('تم', 'تم الحذف بنجاح', 'success');
+                    Swal.fire('تم', 'تم حذف الرحلة بنجاح', 'success');
                 } catch(e) { Swal.fire('خطأ', e.message, 'error'); }
             }
         };
@@ -730,20 +739,23 @@
                 document.getElementById('new-banner').value = '';
                 window.loadBanners();
                 window.loadPublic();
-            } catch(e) { Swal.fire('خطأ', e.message, 'error'); } 
+            } catch(e) { Swal.fire('خطأ', 'فشل الرفع. ربما حجم الصورة كبير جداً.', 'error'); } 
             finally { btn.disabled = false; btn.innerText = orig; }
         };
         
         window.loadBanners = function(){
             document.getElementById('banner-list').innerHTML = window.CACHE.banners.map(b => `
-                <div class="relative"><input type="checkbox" class="ban-chk absolute top-1 left-1 z-10" value="${b.id}"><img src="${b.img}" class="h-20 w-full object-cover rounded"></div>`).join('');
+                <div class="relative rounded-xl overflow-hidden shadow-md group">
+                    <img src="${b.img}" class="h-24 w-full object-cover">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                        <button onclick="window.deleteBanner('${b.id}')" class="bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 transition"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`).join('');
         };
-        window.deleteSelectedBanners = async () => {
-            const sels = Array.from(document.querySelectorAll('.ban-chk:checked')).map(c => c.value);
-            if(sels.length === 0) return;
-            if(confirm('تأكيد الحذف؟')) {
-                for(let id of sels) await deleteDoc(doc(db, 'banners', id));
-                window.CACHE.banners = window.CACHE.banners.filter(b => !sels.includes(b.id));
+        window.deleteBanner = async (id) => {
+            if(confirm('تأكيد حذف البانر؟')) {
+                await deleteDoc(doc(db, 'banners', id));
+                window.CACHE.banners = window.CACHE.banners.filter(b => b.id !== id);
                 window.loadBanners();
                 window.loadPublic();
             }
@@ -771,14 +783,12 @@
             `).join('');
         };
         window.updateReqStatus = async (id, st) => { await updateDoc(doc(db, 'requests', id), {status: st}); window.fetchData(); };
-        
         window.deleteSelectedReqs = async () => {
             const sels = Array.from(document.querySelectorAll('.req-chk:checked')).map(c => c.value);
             if(sels.length === 0) return;
             if(confirm('تأكيد الحذف؟')) {
                 for(let id of sels) await deleteDoc(doc(db, 'requests', id));
-                window.CACHE.requests = window.CACHE.requests.filter(r => !sels.includes(r.id));
-                window.loadReq();
+                window.fetchData().then(window.loadReq);
             }
         };
 
