@@ -80,8 +80,8 @@
             100% { transform: translateY(0); box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
         }
         .cc-item { display: flex; flex-direction: column; align-items: center; line-height: 1; }
-        .cc-num { font-size: 1.3rem; font-weight: 900; color: #facc15; font-family: 'Poppins', sans-serif; }
-        .cc-lbl { font-size: 0.7rem; font-weight: bold; opacity: 0.9; margin-top: 4px; text-transform: uppercase; }
+        .cc-num { font-size: 1.3rem; font-weight: 900; color: #facc15; font-family: 'Poppins', sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .cc-lbl { font-size: 0.7rem; font-weight: bold; opacity: 0.9; margin-top: 4px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 
         .btn-glow { animation: pulse-blue 2s infinite; }
         @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
@@ -255,11 +255,10 @@
                 <!-- Requests Table -->
                 <div id="sec-requests" class="adm-sec hidden">
                     <h2 class="text-3xl font-bold mb-6">سجل الطلبات</h2>
-                    <div class="mb-4"><button onclick="window.deleteSelectedReqs()" class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700">حذف المحدد</button></div>
                     <div class="overflow-x-auto bg-white rounded shadow">
                         <table class="w-full text-right text-sm text-gray-600">
                             <thead class="bg-gray-100 text-gray-800">
-                                <tr><th class="p-3 w-10">#</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th></tr>
+                                <tr><th class="p-3 w-10">حذف</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th></tr>
                             </thead>
                             <tbody id="req-list"></tbody>
                         </table>
@@ -308,9 +307,9 @@
 
                 <!-- Manage Trips -->
                 <div id="sec-manage" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات (حذف مباشر)</h2>
-                    <div class="bg-white p-4 rounded shadow">
-                        <div id="manage-list" class="space-y-3"></div>
+                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات (تعديل وحذف مباشر)</h2>
+                    <div class="bg-white p-6 rounded-xl shadow">
+                        <div id="manage-list" class="space-y-4"></div>
                     </div>
                 </div>
 
@@ -335,11 +334,14 @@
                 <div id="sec-content" class="adm-sec hidden">
                      <h2 class="text-3xl font-bold mb-6">إدارة المحتوى واللوجو</h2>
                      <form id="form-content" class="bg-white p-6 rounded-xl shadow space-y-6">
+                        <!-- Logo -->
                         <div class="border p-4 rounded bg-gray-50">
                             <label class="font-bold block mb-2">شعار الموقع (Logo)</label>
                             <input type="file" id="c-logo" accept="image/*" class="w-full border bg-white p-2 rounded">
                             <p class="text-xs text-gray-500 mt-1">اتركه فارغاً إذا لم ترد تغييره.</p>
                         </div>
+                        
+                        <!-- About -->
                         <div class="border p-4 rounded">
                             <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">من نحن (About)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -348,6 +350,8 @@
                                 <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-about-en" class="w-full border p-2 rounded h-24"></textarea></div>
                             </div>
                         </div>
+
+                        <!-- Policy -->
                         <div class="border p-4 rounded bg-gray-50">
                             <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">سياسة الخصوصية (Privacy)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -356,6 +360,8 @@
                                 <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-policy-en" class="w-full border p-2 rounded h-24"></textarea></div>
                             </div>
                         </div>
+
+                        <!-- Location -->
                         <div class="border p-4 rounded">
                             <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">مقرنا (Location)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -364,6 +370,8 @@
                                 <div><label class="text-xs font-bold text-purple-700">EN</label><input type="text" id="c-loc-en" class="w-full border p-2 rounded"></div>
                             </div>
                         </div>
+
+                        <!-- Contact -->
                         <div class="border p-4 rounded bg-gray-50">
                             <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">اتصل بنا (Contact)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -372,6 +380,7 @@
                                 <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-con-en" class="w-full border p-2 rounded h-16"></textarea></div>
                             </div>
                         </div>
+
                         <button type="submit" id="btn-submit-content" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700 transition">حفظ التعديلات ونشرها</button>
                      </form>
                 </div>
@@ -398,9 +407,10 @@
         const db = getFirestore(app);
 
         // HYBRID SYSTEM STATE
-        window.CACHE = { trips: [], banners: [], requests: [], reports:[], visits:[], content: {} };
+        window.CACHE = { trips: [], banners: [], requests: [], reports: [], visits:[], content: {} };
         window.curLang = localStorage.getItem('lang') || 'ar';
         window.gridCdInterval = null;
+        window.sliderInterval = null;
 
         const LANG = {
             ar:{ home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل بنا",policy:"سياسة الخصوصية",location:"مقرنا",report:"الإبلاغ عن مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة الآن",confirm:"تأكيد التسجيل", price_unit:"دج",start:"الانطلاق",end:"العودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل", ph_name:"الاسم الكامل",ph_phone:"رقم الهاتف",ph_age:"السن",ph_state:"الولاية", gender_m:"ذكر",gender_f:"أنثى", req_pending:"قيد الانتظار", req_confirmed:"تم التأكيد", req_cancelled:"ملغى", day:"يوم", hour:"سا", min:"د", sec:"ث", desc:"وصف المشكلة", email:"البريد الإلكتروني" },
@@ -408,29 +418,10 @@
             en:{ home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Latest Offers",book_now:"Book Now",confirm:"Confirm", price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance", ph_name:"Full Name",ph_phone:"Phone",ph_age:"Age",ph_state:"State", gender_m:"Male",gender_f:"Female", req_pending:"Pending", req_confirmed:"Confirmed", req_cancelled:"Cancelled", day:"D", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" }
         };
 
-        // --- IMAGE COMPRESSOR (Bypass Storage Limitations) ---
-        const compressImage = (file) => {
-            return new Promise((resolve, reject) => {
-                if(!file || !file.type.startsWith('image/')) return resolve('');
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width, height = img.height;
-                        if(width > 800) { height = Math.round((height * 800) / width); width = 800; }
-                        canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.6));
-                    };
-                    img.onerror = reject;
-                };
-                reader.onerror = reject;
-            });
-        };
+        const toBase64 = file => new Promise((res, rej) => {
+            const r = new FileReader(); r.readAsDataURL(file);
+            r.onload = () => res(r.result); r.onerror = rej;
+        });
 
         // --- REAL-TIME LISTENERS ---
         window.initRealtime = function() {
@@ -524,7 +515,7 @@
                             <img src="${x.mainImg}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <span class="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-1 rounded-full font-black text-blue-800 shadow-md z-10">${x.price} ${LANG[window.curLang].price_unit}</span>
                             
-                            <!-- Animated Countdown inside Image -->
+                            <!-- The Animated Countdown inside Image -->
                             <div class="card-countdown" data-date="${x.start}"></div>
                         </div>
                         <div class="p-5 text-center bg-white">
@@ -537,7 +528,7 @@
                     </div>`;
                 }).join('');
             }
-            window.startGridCountdowns(); 
+            window.startGridCountdowns(); // Restart timers for new items
 
             const sl = document.getElementById('hero-slider');
             if(window.CACHE.banners.length > 0){
@@ -640,7 +631,7 @@
             } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
         });
 
-        // Countdowns Logic (For Cards)
+        // Countdowns Logic For Cards
         window.startGridCountdowns = function() {
             if(window.gridCdInterval) clearInterval(window.gridCdInterval);
             window.gridCdInterval = setInterval(() => {
@@ -671,6 +662,7 @@
                 document.getElementById('user-app').classList.add('hidden');
                 document.getElementById('admin-panel').classList.remove('hidden');
                 
+                // Session Check
                 if(sessionStorage.getItem('isAdmin') === 'true') {
                     document.getElementById('admin-login').classList.add('hidden');
                     document.getElementById('admin-dash').classList.remove('hidden');
@@ -718,6 +710,7 @@
             document.getElementById('stat-month').innerText = v.filter(x => x.ts >= startOfMonth).length;
             document.getElementById('stat-req').innerText = window.CACHE.requests.length;
             document.getElementById('stat-rep').innerText = window.CACHE.reports.length;
+            
             window.renderChart();
         };
 
@@ -736,7 +729,7 @@
             }
         }
 
-        // ADD TRIP (Smart Image Compression via Canvas)
+        // ADD TRIP
         document.getElementById('form-add-trip').addEventListener('submit', async e => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit-trip'); 
@@ -748,11 +741,10 @@
                 const gf = document.getElementById('t-guide-img').files[0];
                 const subf = document.querySelectorAll('.sub-img');
                 
-                // Use the custom compressor to bypass 1MB Firestore limit
-                let mI = mf ? await compressImage(mf) : '';
-                let gI = gf ? await compressImage(gf) : '';
+                let mI = mf ? await toBase64(mf) : '';
+                let gI = gf ? await toBase64(gf) : '';
                 let sI =[];
-                for(let f of subf) if(f.files[0]) sI.push(await compressImage(f.files[0]));
+                for(let f of subf) if(f.files[0]) sI.push(await toBase64(f.files[0]));
 
                 await addDoc(collection(db, 'trips'), {
                     title_ar: document.getElementById('t-title-ar').value, title_fr: document.getElementById('t-title-fr').value, title_en: document.getElementById('t-title-en').value,
@@ -769,13 +761,13 @@
                 e.target.reset();
             } catch (error) {
                 console.error(error);
-                Swal.fire('خطأ!', 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.', 'error');
+                Swal.fire('خطأ!', 'حجم الصورة كبير جداً، يرجى اختيار صورة أصغر.', 'error');
             } finally {
                 btn.disabled=false; btn.innerText = origText;
             }
         });
 
-        // MANAGE TRIPS (Direct Delete Button Fix)
+        // MANAGE TRIPS (DIRECT DELETE ICON FIX)
         window.loadManage = function(){
             document.getElementById('manage-list').innerHTML = window.CACHE.trips.map(t => `
                 <div class="flex items-center gap-4 bg-gray-50 p-3 rounded-xl shadow-sm border border-gray-200">
@@ -819,7 +811,6 @@
                 selIn.classList.add('hidden'); txtIn.classList.remove('hidden');
             }
         };
-
         window.uploadBanner = async () => {
             const btn = document.getElementById('btn-submit-banner');
             const orig = btn.innerText;
@@ -832,11 +823,11 @@
 
             btn.disabled = true; btn.innerText = "جاري...";
             try {
-                const b64 = await compressImage(f); // Use compression
+                const b64 = await toBase64(f);
                 await addDoc(collection(db, 'banners'), {img:b64, type:t, val:v, ts: Date.now()});
                 Swal.fire('تم', 'تم رفع البانر بنجاح', 'success');
                 document.getElementById('new-banner').value = '';
-            } catch(e) { Swal.fire('خطأ', 'فشل الرفع.', 'error'); } 
+            } catch(e) { Swal.fire('خطأ', 'فشل الرفع. ربما حجم الصورة كبير جداً.', 'error'); } 
             finally { btn.disabled = false; btn.innerText = orig; }
         };
         
@@ -844,7 +835,7 @@
             document.getElementById('banner-list').innerHTML = window.CACHE.banners.map(b => `
                 <div class="relative rounded-xl overflow-hidden shadow-md group">
                     <img src="${b.img}" class="h-24 w-full object-cover">
-                    <div class="absolute inset-0 bg-black/50 flex items-center justify-center transition">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
                         <button onclick="window.deleteBanner('${b.id}')" class="bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 transition"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>`).join('');
@@ -889,7 +880,7 @@
                 </div>
             `).join('');
         };
-        window.deleteReport = async (id) => { if(confirm('حذف التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
+        window.deleteReport = async (id) => { if(confirm('حذف هذا التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
 
         // CONTENT MANAGEMENT
         window.loadContentForm = function() {
@@ -915,10 +906,10 @@
                 
                 const lf = document.getElementById('c-logo').files[0];
                 let logoData = window.CACHE.content?.logo || "";
-                if(lf) logoData = await compressImage(lf); // Compress Logo too
+                if(lf) logoData = await toBase64(lf);
 
                 const newData = { logo: logoData, ts: Date.now() };
-                const fields = ['about', 'policy', 'loc', 'con'];
+                const fields =['about', 'policy', 'loc', 'con'];
                 const langs =['ar', 'fr', 'en'];
                 fields.forEach(f => {
                     langs.forEach(l => {
