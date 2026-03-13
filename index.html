@@ -3,970 +3,831 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحواس - Tahwas</title>
-    <!-- Libraries -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Aitchikh Consulting</title>
+    <!-- خطوط جوجل (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <!-- أيقونات FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    
     <style>
-        :root { --main-color: #2563eb; }
-        body.font-ar { font-family: 'Tajawal', sans-serif; }
-        body.font-en { font-family: 'Poppins', sans-serif; }
-        
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: var(--main-color); border-radius: 4px; }
-
-        /* LOADING SPINNER */
-        #loader-overlay { position: fixed; inset: 0; background: white; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s; }
-        .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* ================== SNAKE MAP & ENVIRONMENTS ================== */
-        .snake-map-container { position: relative; padding: 80px 0; overflow: hidden; margin-top: 20px; border-radius: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.2); }
-        
-        .snake-line {
-            position: absolute; left: 50%; top: 0; bottom: 0; width: 40px; margin-left: -20px; z-index: 10;
-            background-image: url("data:image/svg+xml,%3Csvg width='40' height='100' viewBox='0 0 40 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0 Q40 25 20 50 T20 100' fill='none' stroke='%23ffffff' stroke-width='4' stroke-dasharray='8 4'/%3E%3C/svg%3E");
-            background-repeat: repeat-y; background-position: center top; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-        }
-        .snake-item { position: relative; width: 50%; margin-bottom: 60px; clear: both; z-index: 20; }
-        
-        @media (min-width: 768px) {
-            html[dir="rtl"] .snake-item:nth-child(odd) { float: right; padding-left: 60px; text-align: left; }
-            html[dir="rtl"] .snake-item:nth-child(even) { float: left; padding-right: 60px; text-align: right; }
-            html[dir="ltr"] .snake-item:nth-child(odd) { float: left; padding-right: 60px; text-align: right; }
-            html[dir="ltr"] .snake-item:nth-child(even) { float: right; padding-left: 60px; text-align: left; }
-        }
-        @media (max-width: 767px) {
-            .snake-line { left: 30px; margin-left: 0; }
-            .snake-item { width: 100%; float: none !important; padding-right: 0 !important; padding-left: 70px !important; text-align: right !important; }
-            html[dir="ltr"] .snake-item { padding-left: 70px !important; text-align: left !important; }
-            .snake-dot { left: 15px !important; right: auto !important; } 
+        :root {
+            --primary: #006233; /* الأخضر الاحترافي */
+            --secondary: #D21034; /* الأحمر الجذاب */
+            --bg-color: #f8f9fa; /* أبيض مائل للرمادي لراحة العين في الخلفيات */
+            --text-color: #333333; /* رمادي داكن للنصوص */
+            --white: #ffffff; /* أبيض ناصع */
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        .snake-card { background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); position: relative; border: 2px solid #e2e8f0; transition: transform 0.3s; backdrop-filter: blur(5px); }
-        .snake-dot { position: absolute; top: 20px; width: 34px; height: 34px; background: white; border: 4px solid; border-radius: 50%; z-index: 30; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; scroll-behavior: smooth; }
+        html[dir="ltr"] body { text-align: left; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        .container { max-width: 1200px; margin: auto; padding: 0 20px; position: relative; z-index: 2;}
+        .section-title { text-align: center; font-size: 2.5rem; color: var(--primary); margin-bottom: 40px; font-weight: 900;}
+        .section-title::after { content: ''; display: block; width: 80px; height: 4px; background: var(--secondary); margin: 10px auto; border-radius: 2px;}
+        section { padding: 80px 0; position: relative; }
 
-        .theme-sahara { background: linear-gradient(180deg, #fef08a 0%, #f59e0b 50%, #d97706 100%); border: 4px solid #b45309; }
-        .theme-sahara .snake-card { border-bottom: 5px solid #d97706; } .theme-sahara .snake-dot { border-color: #d97706; color: #d97706; }
-        .theme-mountain { background: linear-gradient(180deg, #bbf7d0 0%, #22c55e 50%, #15803d 100%); border: 4px solid #14532d; }
-        .theme-mountain .snake-card { border-bottom: 5px solid #166534; } .theme-mountain .snake-dot { border-color: #166534; color: #166534; }
-        .theme-coastal { background: linear-gradient(180deg, #fef3c7 0%, #38bdf8 30%, #0369a1 100%); border: 4px solid #0284c7; }
-        .theme-coastal .snake-card { border-bottom: 5px solid #0284c7; } .theme-coastal .snake-dot { border-color: #0284c7; color: #0284c7; }
-        .theme-historical { background: linear-gradient(180deg, #e5e5e5 0%, #a3a3a3 50%, #737373 100%); border: 4px solid #52525b; }
-        .theme-historical .snake-card { border-bottom: 5px solid #57534e; } .theme-historical .snake-dot { border-color: #57534e; color: #57534e; }
-
-        .env-decor { position: absolute; opacity: 0.85; z-index: 1; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3)); }
-        .env-anim { animation: float-env 4s ease-in-out infinite alternate; }
-        @keyframes float-env { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
-
-        /* ================== ANIMATED COUNTDOWN FOR CARDS ================== */
-        .card-countdown {
-            position: absolute; bottom: 15px; left: 5%; right: 5%;
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.2); border-radius: 12px;
-            color: white; padding: 10px; display: flex; justify-content: space-around; align-items: center;
-            direction: ltr; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            animation: float-pulse 2s infinite ease-in-out;
-            z-index: 20;
+        /* الأزرار */
+        .btn-glow {
+            background: var(--secondary); color: var(--white); font-weight: bold; font-size: 1.2rem;
+            padding: 15px 40px; border: none; border-radius: 30px; cursor: pointer;
+            box-shadow: 0 0 15px rgba(210, 16, 52, 0.4); transition: var(--transition);
         }
-        @keyframes float-pulse {
-            0% { transform: translateY(0); box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
-            50% { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.7); border-color: rgba(59, 130, 246, 0.8); }
-            100% { transform: translateY(0); box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.2); }
-        }
-        .cc-item { display: flex; flex-direction: column; align-items: center; line-height: 1; }
-        .cc-num { font-size: 1.3rem; font-weight: 900; color: #facc15; font-family: 'Poppins', sans-serif; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .cc-lbl { font-size: 0.7rem; font-weight: bold; opacity: 0.9; margin-top: 4px; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+        .btn-glow:hover { box-shadow: 0 0 25px rgba(210, 16, 52, 0.8); transform: translateY(-3px) scale(1.05); }
 
-        .btn-glow { animation: pulse-blue 2s infinite; }
-        @keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } }
+        /* شريط التنقل (Header) - باللون الأبيض ليكون احترافياً */
+        header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); color: var(--primary); position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; max-width: 1200px; margin: auto; }
+        .logo { font-size: 1.8rem; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;}
+        .logo span { color: var(--secondary); font-weight: 700;}
+        .nav-links { display: flex; gap: 20px; align-items: center; font-weight: 600;}
+        .nav-links a { color: var(--text-color); transition: 0.3s; }
+        .nav-links a:hover { color: var(--secondary); }
+        .lang-btn { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 5px 15px; border-radius: 20px; cursor: pointer; transition: 0.3s; font-weight: bold;}
+        .lang-btn:hover { background: var(--primary); color: var(--white); }
+
+        /* ====== السلايدر السينمائي (Hero) ====== */
+        .hero { position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--white); overflow: hidden; margin-top: 0; }
+        .slider-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background: var(--primary);}
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.5s ease-in-out; }
+        .slide.active { opacity: 1; z-index: 1; }
+        .slide-bg { width: 100%; height: 100%; background-size: cover; background-position: center; transform: scale(1.1); transition: transform 6s linear; }
+        .slide.active .slide-bg { transform: scale(1); } /* تأثير الزووم البطيء */
+        /* غطاء داكن فوق الصورة لكي تظهر النصوص البيضاء بوضوح */
+        .hero-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0, 40, 20, 0.6); z-index: 1;}
+        .hero-content { position: relative; z-index: 2; max-width: 800px; padding: 20px; opacity: 0; transform: translateY(30px); transition: all 1s ease 0.5s;}
+        .slide.active + .hero-overlay + .hero-content, .hero-content.show { opacity: 1; transform: translateY(0); }
         
-        .chart-container { position: relative; height: 300px; width: 100%; }
-        .modal-slider { scroll-behavior: smooth; }
+        .hero h1 { font-size: 4rem; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); font-weight: 900;}
+        .hero p { font-size: 1.5rem; margin-bottom: 40px; font-weight: 300; text-shadow: 1px 1px 5px rgba(0,0,0,0.5); }
+
+        /* البطاقات العامة */
+        .grid-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: var(--transition); border: 1px solid rgba(0,0,0,0.02);}
+        .card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
         
-        /* 3-Lines Clamp */
-        .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;  
-            overflow: hidden;
+        /* الخدمات */
+        .service-card { padding: 40px 30px; text-align: center; border-bottom: 4px solid transparent; }
+        .service-card:hover { border-bottom: 4px solid var(--secondary); }
+        .service-card i { font-size: 3.5rem; color: var(--secondary); margin-bottom: 20px; transition: transform 0.3s; }
+        .service-card:hover i { transform: scale(1.2); }
+        .service-card h3 { color: var(--primary); margin-bottom: 15px; font-size: 1.5rem;}
+
+        /* المشاريع والأعمال */
+        .img-card img { width: 100%; height: 220px; object-fit: cover; transition: var(--transition); }
+        .img-card:hover img { transform: scale(1.05); }
+        .card-info { padding: 25px; }
+        .card-info h4 { color: var(--primary); font-size: 1.3rem; margin-bottom: 10px;}
+        .badge { background: rgba(210, 16, 52, 0.1); color: var(--secondary); padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; font-weight: bold;}
+
+        /* الشركاء */
+        .partners-wrap { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; align-items: center;}
+        .partner-logo { width: 150px; height: 100px; background: var(--white); display: flex; align-items: center; justify-content: center; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); filter: grayscale(100%); transition: var(--transition); padding: 15px;}
+        .partner-logo:hover { filter: grayscale(0%); transform: scale(1.05); }
+        .partner-logo img { max-width: 100%; max-height: 100%; object-fit: contain;}
+
+        /* الإحصائيات (الأخضر والأبيض) */
+        .stats-section { background: var(--primary); color: var(--white); text-align: center; padding: 60px 0;}
+        .stat-box i { font-size: 3rem; color: var(--secondary); margin-bottom: 15px; }
+        .stat-box h2 { font-size: 3.5rem; font-weight: 900; margin-bottom: 5px;}
+
+        /* من نحن والاتصال */
+        .flex-wrap { display: flex; gap: 50px; flex-wrap: wrap; align-items: center; }
+        .flex-half { flex: 1; min-width: 300px; }
+        .about-img img { width: 100%; border-radius: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .form-control { width: 100%; padding: 12px 15px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; transition: 0.3s; background: #fafafa;}
+        .form-control:focus { border-color: var(--secondary); outline: none; background: #fff;}
+        .submit-btn { background: var(--primary); color: white; border: none; padding: 15px 20px; width: 100%; border-radius: 8px; font-size: 1.1rem; cursor: pointer; transition: 0.3s; font-weight: bold;}
+        .submit-btn:hover { background: var(--secondary); color: var(--white); }
+
+        /* الفوتر (أخضر داكن مع خط أحمر) */
+        footer { background: #012b17; color: white; padding: 50px 0 20px; text-align: center; border-top: 5px solid var(--secondary);}
+        .socials i { font-size: 1.5rem; margin: 0 10px; cursor: pointer; transition: 0.3s; color: #aaa;}
+        .socials i:hover { color: var(--secondary); }
+
+        /* =========================================
+           لوحة التحكم الاحترافية ADMIN CMS
+        ========================================= */
+        #admin-panel, #admin-login { display: none; background: #f4f6f9; min-height: 100vh; color: #333;}
+        .admin-layout { display: flex; height: 100vh; }
+        .sidebar { width: 280px; background: var(--primary); color: white; display: flex; flex-direction: column; box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 10;}
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px;}
+        .sidebar-header h3 { color: var(--white); }
+        .sidebar a { display: block; padding: 15px 25px; color: #ccc; cursor: pointer; border-left: 4px solid transparent; transition: 0.3s;}
+        .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.1); color: white; border-left: 4px solid var(--secondary); }
+        .sidebar a i { margin-right: 10px; margin-left: 10px; width: 20px; text-align: center;}
+        
+        .admin-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .admin-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 30px; animation: fadeIn 0.4s;}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .admin-title { font-size: 1.5rem; color: var(--primary); margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #eee;}
+        .form-row { display: flex; gap: 20px; margin-bottom: 15px; }
+        .form-row .group { flex: 1; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 0.9rem;}
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem;}
+        th, td { border-bottom: 1px solid #eee; padding: 15px 10px; text-align: right; }
+        html[dir="ltr"] th, html[dir="ltr"] td { text-align: left; }
+        th { background-color: #f8f9fa; color: var(--primary); }
+        .action-btn { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; color: white; font-size: 0.8rem; margin: 2px;}
+        .btn-del { background: var(--secondary); } .btn-edit { background: #3498db; } .btn-add { background: var(--primary); margin-bottom: 15px; display: inline-block;}
+        
+        .item-box { background: #f8f9fa; border: 1px solid #eee; padding: 20px; border-radius: 8px; margin-bottom: 15px; position: relative;}
+        .remove-item { position: absolute; top: 10px; left: 10px; background: var(--secondary); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;}
+        html[dir="ltr"] .remove-item { left: auto; right: 10px; }
+
+        /* Modal العام للاستشارة */
+        .modal { display: none; position: fixed; z-index: 2000; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
+        .modal-content { background: var(--white); margin: 2% auto; padding: 40px; border-radius: 15px; width: 90%; max-width: 600px; position: relative; max-height: 90vh; overflow-y: auto;}
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; color: #888; }
+        html[dir="ltr"] .close-modal { right: auto; left: 20px; }
+
+        @media(max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.5rem; }
+            .admin-layout { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; }
+            .sidebar a { display: inline-block; padding: 10px; border:none;}
+            .form-row { flex-direction: column; gap: 0;}
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-ar transition-colors duration-300">
+<body>
 
-    <div id="loader-overlay"><div class="spinner"></div></div>
-    <script>setTimeout(() => { const l=document.getElementById('loader-overlay'); if(l)l.style.display='none'; }, 4000);</script>
+    <!-- =====================================
+         الموقع الرئيسي MAIN WEBSITE
+    ====================================== -->
+    <div id="main-website">
+        <!-- Header -->
+        <header>
+            <nav>
+                <div class="logo" id="site-logo">Aitchikh<span>Consulting</span></div>
+                <ul class="nav-links">
+                    <li><a href="#hero" class="tr" data-key="nav_home">الرئيسية</a></li>
+                    <li><a href="#services" class="tr" data-key="nav_services">خدماتنا</a></li>
+                    <li><a href="#projects" class="tr" data-key="nav_projects">مشاريعنا</a></li>
+                    <li><a href="#about" class="tr" data-key="nav_about">من نحن</a></li>
+                    <li><a href="#contact" class="tr" data-key="nav_contact">اتصل بنا</a></li>
+                </ul>
+                <div style="display:flex; gap:10px;">
+                    <button class="lang-btn" onclick="toggleLanguage()" id="lang-toggle">FR</button>
+                    <!-- أيقونة الدخول للإدارة -->
+                    <a href="#admin" class="lang-btn" style="border-color:var(--secondary); color:var(--secondary);" title="Admin"><i class="fa-solid fa-lock"></i></a>
+                </div>
+            </nav>
+        </header>
 
-    <!-- Navbar -->
-    <header class="bg-white shadow-md fixed w-full z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <i class="fas fa-bars text-2xl cursor-pointer md:hidden" onclick="window.toggleSidebar()"></i>
-                <img id="site-logo" src="" alt="Logo" class="h-12 hidden object-contain"> 
-                <h1 id="site-title-text" class="text-3xl font-black text-blue-600">تحواس<span class="text-orange-500">.</span></h1>
+        <!-- Hero Section -->
+        <section class="hero" id="hero">
+            <div class="slider-container" id="slider-container">
+                <!-- Slides will be injected by JS -->
             </div>
-            <div class="flex items-center gap-4">
-                <select id="lang-switch" onchange="window.changeLang(this.value)" class="border rounded p-1 text-sm bg-gray-100 outline-none font-bold">
-                    <option value="ar">🇩🇿 العربية</option>
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="en">🇬🇧 English</option>
-                </select>
-                <nav class="hidden md:flex gap-6 font-bold text-gray-600 text-sm">
-                    <a href="#" class="hover:text-blue-600 transition" data-key="home">الرئيسية</a>
-                    <a href="#trips-section" class="hover:text-blue-600 transition" data-key="trips">رحلات</a>
-                    <button onclick="window.openModal('report-modal')" class="text-red-500 font-bold" data-key="report">! مشكلة</button>
-                </nav>
+            <div class="hero-overlay"></div>
+            <div class="hero-content show container">
+                <h1 id="hero-title"></h1>
+                <p id="hero-desc"></p>
+                <button class="btn-glow tr" data-key="btn_join" onclick="openModal()">انضم إلينا</button>
             </div>
-        </div>
-    </header>
-
-    <!-- Sidebar -->
-    <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 pt-20 px-6">
-        <button onclick="window.toggleSidebar()" class="absolute top-4 left-4 text-2xl"><i class="fas fa-times"></i></button>
-        <ul class="space-y-4 font-bold text-lg">
-            <li><a href="#" onclick="window.toggleSidebar()" data-key="home">الرئيسية</a></li>
-            <li><a href="#trips-section" onclick="window.toggleSidebar()" data-key="trips">رحلات</a></li>
-            <li><a href="#about-sec" onclick="window.toggleSidebar()" data-key="about">من نحن</a></li>
-            <li><a href="#contact-sec" onclick="window.toggleSidebar()" data-key="contact">اتصل بنا</a></li>
-        </ul>
-    </div>
-
-    <!-- User Content -->
-    <div id="user-app" class="pt-16">
-        <div id="hero-slider" class="relative h-[450px] bg-slate-900 overflow-hidden">
-             <div class="absolute inset-0 flex items-center justify-center text-white"><i class="fas fa-spinner fa-spin fa-2x"></i></div>
-        </div>
-
-        <section id="trips-section" class="container mx-auto px-4 py-16">
-            <h2 class="text-4xl font-black text-center mb-2" data-key="latest_offers">أحدث العروض</h2>
-            <div class="h-1 w-20 bg-blue-600 mx-auto rounded mb-10"></div>
-            <div id="trips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
         </section>
 
-        <!-- Static Sections with Click to Expand -->
-        <section id="about-sec" class="bg-white py-12 border-t text-center">
-            <h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="about">من نحن</h3>
-            <p id="about-text" class="text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed whitespace-pre-line line-clamp-3 cursor-pointer hover:opacity-80 transition" onclick="this.classList.toggle('line-clamp-3')" title="اضغط للقراءة">...</p>
-        </section>
-        
-        <section id="policy-sec" class="bg-gray-100 py-12 text-center">
-            <h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="policy">سياسة الخصوصية</h3>
-            <p id="policy-text" class="text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed whitespace-pre-line line-clamp-3 cursor-pointer hover:opacity-80 transition" onclick="this.classList.toggle('line-clamp-3')" title="اضغط للقراءة">...</p>
-        </section>
-        
-        <section id="location-sec" class="bg-white py-12 text-center">
-            <h3 class="text-2xl font-bold mb-4 text-blue-600" data-key="location">مقرنا</h3>
-            <p id="location-text" class="text-gray-800 font-bold text-xl px-4">...</p>
+        <!-- Services -->
+        <section id="services" class="container">
+            <h2 class="section-title tr" data-key="title_services">خدماتنا</h2>
+            <div class="grid-wrap" id="services-container"></div>
         </section>
 
-        <footer id="contact-sec" class="bg-slate-900 text-white py-10 text-center relative">
-            <h3 class="text-xl font-bold mb-4" data-key="contact">اتصل بنا</h3>
-            <p id="contact-text" class="mb-4 text-lg whitespace-pre-line">...</p>
+        <!-- Portfolio / Works -->
+        <section id="portfolio" style="background: var(--bg-color);">
+            <div class="container">
+                <h2 class="section-title tr" data-key="title_portfolio">أعمالنا</h2>
+                <div class="grid-wrap" id="portfolio-container"></div>
+            </div>
+        </section>
+
+        <!-- Projects / Success Stories -->
+        <section id="projects" class="container">
+            <h2 class="section-title tr" data-key="title_projects">قصص نجاح</h2>
+            <div class="grid-wrap" id="projects-container"></div>
+        </section>
+
+        <!-- Stats -->
+        <section class="stats-section">
+            <div class="container grid-wrap" id="stats-container"></div>
+        </section>
+
+        <!-- Partners -->
+        <section id="partners" class="container" style="padding-top: 40px;">
+            <h2 class="section-title tr" data-key="title_partners">شركاء النجاح</h2>
+            <div class="partners-wrap" id="partners-container"></div>
+        </section>
+
+        <!-- About Us -->
+        <section id="about" style="background: var(--white);">
+            <div class="container flex-wrap">
+                <div class="flex-half">
+                    <h2 class="section-title" style="text-align: right;" id="about-title"></h2>
+                    <div id="about-text" style="line-height: 1.8; font-size: 1.1rem;"></div>
+                </div>
+                <div class="flex-half about-img">
+                    <img id="about-img" src="" alt="About Us">
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section id="contact" class="container">
+            <h2 class="section-title tr" data-key="title_contact">تواصل معنا</h2>
+            <div class="flex-wrap">
+                <div class="flex-half">
+                    <iframe id="contact-map" src="" width="100%" height="400" style="border:0; border-radius:15px;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+                <div class="flex-half">
+                    <form onsubmit="submitContact(event)">
+                        <input type="text" id="c-name" class="form-control tr-ph" data-key="ph_name" placeholder="الاسم" required>
+                        <input type="tel" id="c-phone" class="form-control tr-ph" data-key="ph_phone" placeholder="الهاتف" required>
+                        <textarea id="c-msg" class="form-control tr-ph" data-key="ph_msg" rows="5" placeholder="الرسالة" required></textarea>
+                        <button type="submit" class="submit-btn tr" data-key="btn_send">إرسال</button>
+                    </form>
+                    <div style="margin-top:20px; color:var(--primary);">
+                        <p><i class="fa-solid fa-phone"></i> <span id="info-phone"></span></p>
+                        <p><i class="fa-solid fa-envelope"></i> <span id="info-email"></span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <h3 id="footer-logo" style="margin-bottom:15px; color:var(--white); text-transform:uppercase;"></h3>
+                <div class="socials">
+                    <i class="fa-brands fa-facebook"></i>
+                    <i class="fa-brands fa-linkedin"></i>
+                    <i class="fa-brands fa-instagram"></i>
+                    <i class="fa-brands fa-x-twitter"></i>
+                </div>
+                <p style="margin-top:20px; font-size:0.9rem; color:#ccc;">&copy; <span id="current-year"></span> Aitchikh Consulting. All Rights Reserved.</p>
+            </div>
         </footer>
-    </div>
 
-    <!-- TRIP MODAL -->
-    <div id="trip-modal" class="fixed inset-0 bg-black/95 z-[70] hidden overflow-y-auto backdrop-blur-md">
-        <div class="min-h-[100dvh] flex justify-center p-0 md:p-10 relative">
-            <div id="trip-content" class="bg-gray-50 w-full max-w-6xl md:rounded-3xl shadow-2xl overflow-hidden relative animate__animated animate__fadeInUp flex flex-col md:flex-row h-[100dvh] md:h-auto"></div>
-            <button onclick="window.closeTripModal()" class="absolute top-4 left-4 md:top-12 md:left-12 z-[80] bg-white/90 backdrop-blur text-red-600 rounded-full p-3 shadow-lg hover:scale-110 transition border border-gray-200"><i class="fas fa-times fa-lg"></i></button>
-        </div>
-    </div>
-
-    <!-- BOOKING MODAL -->
-    <div id="booking-modal" class="fixed inset-0 bg-black/80 z-[80] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md p-8 shadow-2xl border-t-8 border-blue-600 animate__animated animate__zoomIn">
-            <h3 class="text-2xl font-black mb-6 text-center text-blue-800" data-key="book_now">حجز</h3>
-            <form id="booking-form" class="space-y-4">
-                <input type="hidden" id="b-trip-id"> <input type="hidden" id="b-trip-name">
-                <input type="text" id="b-name" class="w-full border p-3 rounded outline-none focus:ring-2 ring-blue-400" required>
-                <input type="tel" id="b-phone" class="w-full border p-3 rounded outline-none focus:ring-2 ring-blue-400" required>
-                <div class="flex gap-2">
-                    <input type="number" id="b-age" class="w-1/2 border p-3 rounded outline-none focus:ring-2 ring-blue-400" required>
-                    <input type="text" id="b-state" class="w-1/2 border p-3 rounded outline-none focus:ring-2 ring-blue-400" required>
-                </div>
-                <select id="b-gender" class="w-full border p-3 rounded outline-none focus:ring-2 ring-blue-400"></select>
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-4 rounded hover:bg-blue-700" data-key="confirm">تأكيد</button>
-            </form>
-            <button onclick="window.closeModal('booking-modal')" class="w-full text-center mt-3 text-sm text-gray-500 font-bold">إلغاء</button>
-        </div>
-    </div>
-
-    <!-- REPORT MODAL -->
-    <div id="report-modal" class="fixed inset-0 bg-black/80 z-[90] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl w-full max-w-md p-6">
-            <h3 class="font-bold text-red-600 mb-4" data-key="report">إبلاغ عن مشكلة</h3>
-            <form id="report-form" class="space-y-3">
-                <input id="r-name" type="text" class="w-full border p-2 rounded outline-none focus:ring-2 ring-red-400" required>
-                <input id="r-email" type="email" class="w-full border p-2 rounded outline-none focus:ring-2 ring-red-400" required>
-                <textarea id="r-desc" class="w-full border p-2 rounded h-24 outline-none focus:ring-2 ring-red-400" required></textarea>
-                <button type="submit" class="w-full bg-red-500 text-white py-2 rounded font-bold" data-key="send">إرسال</button>
-            </form>
-            <button onclick="window.closeModal('report-modal')" class="w-full text-center mt-2 text-sm text-gray-500 font-bold">إلغاء</button>
-        </div>
-    </div>
-
-    <!-- ================= ADMIN PANEL ================= -->
-    <div id="admin-panel" class="hidden min-h-screen bg-gray-100 font-sans" dir="rtl">
-        <div id="admin-login" class="flex items-center justify-center min-h-screen bg-slate-900">
-            <div class="bg-white p-8 rounded-xl shadow-2xl w-96 text-center">
-                <h2 class="text-3xl font-black mb-6">لوحة الإدارة</h2>
-                <input type="text" id="adm-user" placeholder="اسم المستخدم" class="w-full border p-3 rounded mb-3 outline-none">
-                <input type="password" id="adm-pass" placeholder="كلمة المرور" class="w-full border p-3 rounded mb-6 outline-none">
-                <button onclick="window.adminLogin()" class="w-full bg-blue-600 text-white font-bold py-3 rounded w-full">دخول</button>
+        <!-- Popup Form -->
+        <div id="consultModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <h2 style="color:var(--primary); margin-bottom:20px; text-align:center;" class="tr" data-key="modal_title">طلب استشارة</h2>
+                <form onsubmit="submitConsultation(event)">
+                    <input type="text" id="f-name" class="form-control tr-ph" data-key="ph_name" placeholder="الاسم الكامل" required>
+                    <input type="tel" id="f-phone" class="form-control tr-ph" data-key="ph_phone" placeholder="رقم الهاتف" required>
+                    <input type="email" id="f-email" class="form-control tr-ph" data-key="ph_email" placeholder="البريد الإلكتروني" required>
+                    <input type="text" id="f-city" class="form-control tr-ph" data-key="ph_city" placeholder="المدينة / الولاية" required>
+                    <select id="f-service" class="form-control" required>
+                        <!-- Injected via JS -->
+                    </select>
+                    <textarea id="f-desc" class="form-control tr-ph" data-key="ph_desc" rows="3" placeholder="وصف المشروع (اختياري)"></textarea>
+                    <button type="submit" class="submit-btn tr" data-key="btn_send">إرسال الطلب</button>
+                </form>
             </div>
         </div>
+    </div>
 
-        <div id="admin-dash" class="hidden flex">
-            <!-- Sidebar -->
-            <aside class="w-64 bg-slate-900 text-white min-h-screen fixed right-0 h-full overflow-y-auto p-4 z-10">
-                <h2 class="text-xl font-bold mb-8 text-center border-b border-gray-700 pb-4">لوحة التحكم</h2>
-                <nav class="space-y-2 text-sm">
-                    <button onclick="window.showAdm('stats')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-chart-pie"></i> الإحصائيات</button>
-                    <button onclick="window.showAdm('requests')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-users"></i> الطلبات</button>
-                    <button onclick="window.showAdm('reports')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-exclamation-triangle"></i> الشكاوى</button>
-                    <button onclick="window.showAdm('add')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-plus"></i> إضافة رحلة</button>
-                    <button onclick="window.showAdm('manage')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-tasks"></i> إدارة الرحلات</button>
-                    <button onclick="window.showAdm('banners')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-images"></i> البانرات</button>
-                    <button onclick="window.showAdm('content')" class="w-full text-right p-3 hover:bg-slate-700 rounded flex gap-2"><i class="fas fa-edit"></i> المحتوى</button>
-                    <button onclick="window.adminLogout()" class="w-full text-right p-3 text-red-400 hover:bg-slate-700 rounded mt-8"><i class="fas fa-sign-out-alt"></i> تسجيل خروج</button>
-                </nav>
-            </aside>
+    <!-- =====================================
+         شاشة تسجيل الدخول (Admin Login)
+    ====================================== -->
+    <div id="admin-login">
+        <div style="background:white; padding:40px; border-radius:15px; width:100%; max-width:400px; margin: 10vh auto; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+            <h2 style="color:var(--primary); margin-bottom: 25px;"><i class="fa-solid fa-lock" style="color:var(--secondary);"></i> Aitchikh CMS</h2>
+            <input type="text" id="login-user" class="form-control" placeholder="Username (admin)">
+            <input type="password" id="login-pass" class="form-control" placeholder="Password (admin)">
+            <button class="submit-btn" onclick="loginAdmin()">Login</button>
+            <p id="login-err" style="color:red; margin-top:10px; display:none;">Invalid credentials</p>
+            <a href="#" onclick="location.hash=''" style="display:block; margin-top:20px; color:#888;">Back to Website</a>
+        </div>
+    </div>
 
-            <main class="mr-64 flex-1 p-8 bg-gray-100 min-h-screen">
-                <!-- Stats Section -->
-                <div id="sec-stats" class="adm-sec">
-                    <h2 class="text-3xl font-bold mb-6">نظرة عامة</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div onclick="window.showAdm('requests')" class="cursor-pointer bg-green-500 text-white p-6 rounded shadow hover:scale-105 transition">
-                            <h3 class="font-bold">طلبات جديدة</h3><p class="text-4xl mt-2 font-black" id="stat-req">0</p>
-                        </div>
-                        <div onclick="window.showAdm('reports')" class="cursor-pointer bg-red-500 text-white p-6 rounded shadow hover:scale-105 transition">
-                            <h3 class="font-bold">الشكاوى</h3><p class="text-4xl mt-2 font-black" id="stat-rep">0</p>
-                        </div>
-                        <div class="bg-blue-500 text-white p-6 rounded shadow"><h3 class="font-bold">زيارات اليوم</h3><p class="text-4xl mt-2 font-black" id="stat-day">0</p></div>
-                        <div class="bg-indigo-500 text-white p-6 rounded shadow"><h3 class="font-bold">زيارات الشهر</h3><p class="text-4xl mt-2 font-black" id="stat-month">0</p></div>
+    <!-- =====================================
+         لوحة التحكم (Admin Dashboard CMS)
+    ====================================== -->
+    <div id="admin-panel">
+        <div class="admin-layout">
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Aitchikh CMS</h3>
+                    <small>Super Admin</small>
+                </div>
+                <a class="active" onclick="switchTab('dashboard')"><i class="fa-solid fa-chart-line"></i> الإحصائيات</a>
+                <a onclick="switchTab('inbox')"><i class="fa-solid fa-inbox"></i> صندوق الوارد</a>
+                <a onclick="switchTab('general')"><i class="fa-solid fa-gear"></i> إعدادات عامة</a>
+                <a onclick="switchTab('slider')"><i class="fa-solid fa-images"></i> السلايدر (البانر)</a>
+                <a onclick="switchTab('services')"><i class="fa-solid fa-briefcase"></i> الخدمات</a>
+                <a onclick="switchTab('portfolio')"><i class="fa-solid fa-folder-open"></i> المشاريع والأعمال</a>
+                <a onclick="switchTab('about')"><i class="fa-solid fa-address-card"></i> من نحن والأرقام</a>
+                <a onclick="switchTab('partners')"><i class="fa-solid fa-handshake"></i> الشركاء</a>
+                <a onclick="exportImportDB()"><i class="fa-solid fa-database"></i> نسخ احتياطي</a>
+                <a href="#" onclick="logoutAdmin()" style="margin-top:auto; background:var(--secondary); color:white;"><i class="fa-solid fa-power-off"></i> خروج</a>
+            </div>
+            
+            <div class="admin-content" id="admin-content-area">
+                <!-- Tabs will be injected and controlled via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================
+         سكربت JavaScript (الديناميكية والبيانات)
+    ====================================== -->
+    <script>
+        // 1. قاعدة البيانات الافتراضية ثنائية اللغة (Database Schema)
+        const defaultDB = {
+            settings: {
+                logo: "Aitchikh",
+                logoSpan: "Consulting",
+                phone: "+213 555 123 456",
+                email: "contact@aitchikh.com",
+                map: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d102347.16375080063!2d3.161986427320092!3d36.71268305844894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x128e52a514dce1f1%3A0x7d9dfcd0b5a371c6!2sAlgiers!5e0!3m2!1sen!2sdz!4v1700000000000!5m2!1sen!2sdz"
+            },
+            slider:[
+                { img: "https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=1920", title: {ar:"نحوّل أفكارك إلى مشاريع ناجحة", fr:"Transformer vos idées en succès"}, desc: {ar:"استشارات احترافية لمرافقة رواد الأعمال.", fr:"Consulting professionnel pour accompagner les entrepreneurs."} },
+                { img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1920", title: {ar:"استراتيجيات نمو مخصصة", fr:"Stratégies de croissance sur mesure"}, desc: {ar:"نحن نخطط، أنت تنجح.", fr:"Nous planifions, vous réussissez."} },
+                { img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1920", title: {ar:"التحول الرقمي لأعمالك", fr:"Transformation Digitale"}, desc: {ar:"ندخل شركتك إلى عصر التكنولوجيا.", fr:"Faites entrer votre entreprise dans l'ère technologique."} }
+            ],
+            services:[
+                { icon: "fa-lightbulb", title: {ar:"تطوير المشاريع", fr:"Développement de Projets"}, desc: {ar:"بلورة الأفكار لنموذج عمل مربح.", fr:"Concrétiser les idées en modèles rentables."} },
+                { icon: "fa-chart-pie", title: {ar:"دراسة الجدوى", fr:"Étude de Faisabilité"}, desc: {ar:"دراسات اقتصادية ومالية دقيقة.", fr:"Études économiques et financières précises."} },
+                { icon: "fa-rocket", title: {ar:"تأسيس الشركات", fr:"Création d'Entreprises"}, desc: {ar:"مرافقة ميدانية وقانونية للإطلاق.", fr:"Accompagnement juridique et terrain."} },
+                { icon: "fa-globe", title: {ar:"التصدير", fr:"Exportation"}, desc: {ar:"استراتيجيات اختراق الأسواق الدولية.", fr:"Stratégies de pénétration des marchés internationaux."} },
+                { icon: "fa-laptop-code", title: {ar:"التحول الرقمي", fr:"Digitalisation"}, desc: {ar:"رقمنة النشاط التجاري بالكامل.", fr:"Numérisation complète de votre activité."} },
+                { icon: "fa-coins", title: {ar:"تمويل المشاريع", fr:"Recherche de Financement"}, desc: {ar:"تجهيز الملفات وإيجاد مستثمرين.", fr:"Préparation de dossiers et recherche d'investisseurs."} }
+            ],
+            portfolio:[
+                { img: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500", title: {ar:"توقيع شراكات", fr:"Signature de Partenariats"}, desc: {ar:"إدارة المفاوضات", fr:"Gestion des négociations"} },
+                { img: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=500", title: {ar:"ورشة عمل", fr:"Ateliers de Travail"}, desc: {ar:"تدريب رواد الأعمال", fr:"Formation des entrepreneurs"} }
+            ],
+            projects:[
+                { img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500", title: {ar:"إطلاق منصة زاد", fr:"Lancement Plateforme Zad"}, tag: {ar:"تحول رقمي", fr:"Digitalisation"}, desc: {ar:"زيادة المبيعات بنسبة 300%.", fr:"Augmentation des ventes de 300%."} },
+                { img: "https://images.unsplash.com/photo-1664575602554-2087b04935a5?w=500", title: {ar:"مصنع الأمل", fr:"Usine El Amal"}, tag: {ar:"دراسة وتمويل", fr:"Étude & Financement"}, desc: {ar:"تأمين تمويل بقيمة 50 مليون.", fr:"Sécurisation d'un financement de 50 Millions."} }
+            ],
+            partners:[
+                "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
+                "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
+                "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
+            ],
+            about: {
+                title: {ar: "رؤيتنا ومهمتنا", fr: "Notre Vision et Mission"},
+                text: {ar: "<p>نحن <strong>Aitchikh Consulting</strong>، مكتب استشارات رائد متخصص في دعم رواد الأعمال والشركات. نقدم خبرات متراكمة في عالم الأعمال لمساعدة عملائنا على تجاوز التحديات وتحقيق نمو مستدام.</p><p>مهمتنا تمكين الأفكار المبتكرة لتصبح شركات تقود الاقتصاد.</p>", fr: "<p>Nous sommes <strong>Aitchikh Consulting</strong>, un cabinet de conseil leader spécialisé dans le soutien aux entrepreneurs. Nous offrons notre expertise pour vous aider à surmonter les défis.</p><p>Notre mission est de transformer des idées innovantes en entreprises prospères.</p>"},
+                img: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800",
+                stats:[
+                    { icon: "fa-briefcase", num: 150, text: {ar:"مشروع", fr:"Projets"} },
+                    { icon: "fa-users", num: 320, text: {ar:"عميل", fr:"Clients"} },
+                    { icon: "fa-handshake", num: 45, text: {ar:"شراكة", fr:"Partenariats"} },
+                    { icon: "fa-award", num: 12, text: {ar:"سنوات خبرة", fr:"Ans d'Expérience"} }
+                ]
+            },
+            inbox: { requests: [], messages:[] },
+            visitors: 1205
+        };
+
+        // Translations Dictionary
+        const translations = {
+            nav_home: { ar: "الرئيسية", fr: "Accueil" },
+            nav_services: { ar: "خدماتنا", fr: "Services" },
+            nav_projects: { ar: "مشاريعنا", fr: "Projets" },
+            nav_about: { ar: "من نحن", fr: "À Propos" },
+            nav_contact: { ar: "اتصل بنا", fr: "Contact" },
+            btn_join: { ar: "انضم إلينا", fr: "Rejoignez-nous" },
+            title_services: { ar: "خدماتنا", fr: "Nos Services" },
+            title_portfolio: { ar: "أعمالنا", fr: "Nos Réalisations" },
+            title_projects: { ar: "قصص نجاح", fr: "Histoires de Succès" },
+            title_partners: { ar: "شركاء النجاح", fr: "Nos Partenaires" },
+            title_contact: { ar: "تواصل معنا", fr: "Contactez-nous" },
+            ph_name: { ar: "الاسم الكامل", fr: "Nom Complet" },
+            ph_phone: { ar: "رقم الهاتف", fr: "Numéro de Téléphone" },
+            ph_msg: { ar: "الرسالة...", fr: "Votre Message..." },
+            btn_send: { ar: "إرسال", fr: "Envoyer" },
+            modal_title: { ar: "طلب استشارة", fr: "Demande de Consultation" },
+            ph_email: { ar: "البريد الإلكتروني", fr: "Email" },
+            ph_city: { ar: "المدينة / الولاية", fr: "Ville / Wilaya" },
+            ph_desc: { ar: "وصف المشروع (اختياري)", fr: "Description du projet (Optionnel)" }
+        };
+
+        // 2. إدارة الحالة (State Management)
+        let db = JSON.parse(localStorage.getItem('aitchikh_db')) || defaultDB;
+        let currentLang = localStorage.getItem('aitchikh_lang') || 'ar';
+        db.visitors++; // Simulate visitor count
+        saveDB();
+
+        function saveDB() { localStorage.setItem('aitchikh_db', JSON.stringify(db)); }
+        
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // 3. نظام الترجمة (Translation System)
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'fr' : 'ar';
+            localStorage.setItem('aitchikh_lang', currentLang);
+            applyLanguage();
+            renderSite(); // Re-render dynamic content
+        }
+
+        function applyLanguage() {
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('lang-toggle').textContent = currentLang === 'ar' ? 'FR' : 'AR';
+            
+            // Static translations
+            document.querySelectorAll('.tr').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if(translations[key]) el.textContent = translations[key][currentLang];
+            });
+            document.querySelectorAll('.tr-ph').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if(translations[key]) el.placeholder = translations[key][currentLang];
+            });
+        }
+
+        // 4. بناء واجهة الموقع (Render Website)
+        function renderSite() {
+            // General Settings
+            document.getElementById('site-logo').innerHTML = `${db.settings.logo}<span>${db.settings.logoSpan}</span>`;
+            document.getElementById('footer-logo').innerHTML = `${db.settings.logo} <span style="color:var(--secondary);">${db.settings.logoSpan}</span>`;
+            document.getElementById('info-phone').textContent = db.settings.phone;
+            document.getElementById('info-email').textContent = db.settings.email;
+            document.getElementById('contact-map').src = db.settings.map;
+
+            // Hero Slider
+            const sliderContainer = document.getElementById('slider-container');
+            sliderContainer.innerHTML = db.slider.map((s, i) => `
+                <div class="slide ${i === 0 ? 'active' : ''}">
+                    <div class="slide-bg" style="background-image: url('${s.img}')"></div>
+                </div>
+            `).join('');
+            
+            // Hero Text Update
+            updateHeroText(0);
+
+            // Services
+            document.getElementById('services-container').innerHTML = db.services.map(s => `
+                <div class="card service-card">
+                    <i class="fa-solid ${s.icon}"></i>
+                    <h3>${s.title[currentLang]}</h3>
+                    <p>${s.desc[currentLang]}</p>
+                </div>
+            `).join('');
+
+            // Select Options for Modal
+            document.getElementById('f-service').innerHTML = `<option value="">-- ${currentLang==='ar'?'اختر خدمة':'Choisissez un service'} --</option>` + 
+                db.services.map(s => `<option value="${s.title[currentLang]}">${s.title[currentLang]}</option>`).join('');
+
+            // Portfolio
+            document.getElementById('portfolio-container').innerHTML = db.portfolio.map(p => `
+                <div class="card img-card">
+                    <img src="${p.img}">
+                    <div class="card-info">
+                        <h4>${p.title[currentLang]}</h4>
+                        <p>${p.desc[currentLang]}</p>
                     </div>
-                    <div class="bg-white p-6 rounded shadow">
-                        <h3 class="font-bold mb-4 text-gray-700">منحنى الزيارات (30 يوم)</h3>
-                        <div class="chart-container"><canvas id="visitsChart"></canvas></div>
+                </div>
+            `).join('');
+
+            // Projects
+            document.getElementById('projects-container').innerHTML = db.projects.map(p => `
+                <div class="card img-card">
+                    <img src="${p.img}">
+                    <div class="card-info">
+                        <h4>${p.title[currentLang]}</h4>
+                        <span class="badge">${p.tag[currentLang]}</span>
+                        <p style="margin-top:10px;">${p.desc[currentLang]}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Partners
+            document.getElementById('partners-container').innerHTML = db.partners.map(p => `
+                <div class="partner-logo"><img src="${p}"></div>
+            `).join('');
+
+            // About Us
+            document.getElementById('about-title').textContent = db.about.title[currentLang];
+            document.getElementById('about-text').innerHTML = db.about.text[currentLang];
+            document.getElementById('about-img').src = db.about.img;
+
+            // Stats
+            document.getElementById('stats-container').innerHTML = db.about.stats.map(s => `
+                <div class="stat-box">
+                    <i class="fa-solid ${s.icon}"></i>
+                    <h2>${s.num}</h2>
+                    <p>${s.text[currentLang]}</p>
+                </div>
+            `).join('');
+        }
+
+        // 5. وظائف السلايدر (Slider Animation Logic)
+        let currentSlide = 0;
+        let sliderInterval;
+        function updateHeroText(index) {
+            const h1 = document.getElementById('hero-title');
+            const p = document.getElementById('hero-desc');
+            const content = document.querySelector('.hero-content');
+            
+            content.classList.remove('show');
+            setTimeout(() => {
+                h1.textContent = db.slider[index].title[currentLang];
+                p.textContent = db.slider[index].desc[currentLang];
+                content.classList.add('show');
+            }, 500); // Wait for fade out
+        }
+
+        function startSlider() {
+            clearInterval(sliderInterval);
+            sliderInterval = setInterval(() => {
+                if(db.slider.length <= 1) return;
+                let slides = document.querySelectorAll('.slide');
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+                updateHeroText(currentSlide);
+            }, 6000);
+        }
+
+        // 6. النماذج والتواصل (Forms)
+        const modal = document.getElementById('consultModal');
+        function openModal() { modal.style.display = 'block'; }
+        function closeModal() { modal.style.display = 'none'; }
+        window.onclick = function(e) { if (e.target == modal) closeModal(); }
+
+        function submitConsultation(e) {
+            e.preventDefault();
+            db.inbox.requests.push({
+                date: new Date().toLocaleDateString(),
+                name: document.getElementById('f-name').value,
+                phone: document.getElementById('f-phone').value,
+                email: document.getElementById('f-email').value,
+                city: document.getElementById('f-city').value,
+                service: document.getElementById('f-service').value,
+                desc: document.getElementById('f-desc').value
+            });
+            saveDB();
+            alert(currentLang === 'ar' ? "تم إرسال طلبك بنجاح!" : "Demande envoyée avec succès!");
+            closeModal();
+            e.target.reset();
+        }
+
+        function submitContact(e) {
+            e.preventDefault();
+            db.inbox.messages.push({
+                date: new Date().toLocaleDateString(),
+                name: document.getElementById('c-name').value,
+                phone: document.getElementById('c-phone').value,
+                msg: document.getElementById('c-msg').value
+            });
+            saveDB();
+            alert(currentLang === 'ar' ? "تم استلام رسالتك!" : "Message reçu!");
+            e.target.reset();
+        }
+
+
+        // ==========================================
+        // ADMIN CMS LOGIC (نظام إدارة المحتوى)
+        // ==========================================
+        function checkRoute() {
+            const hash = window.location.hash;
+            document.getElementById('main-website').style.display = 'none';
+            document.getElementById('admin-login').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'none';
+
+            if(hash === '#admin') {
+                if(sessionStorage.getItem('aitchikh_admin') === 'true') {
+                    document.getElementById('admin-panel').style.display = 'block';
+                    buildAdminUI();
+                    switchTab('dashboard');
+                } else { document.getElementById('admin-login').style.display = 'block'; }
+            } else {
+                document.getElementById('main-website').style.display = 'block';
+                applyLanguage();
+                renderSite();
+                startSlider();
+            }
+        }
+        window.addEventListener('hashchange', checkRoute);
+        window.addEventListener('load', checkRoute);
+
+        function loginAdmin() {
+            if(document.getElementById('login-user').value === 'admin' && document.getElementById('login-pass').value === 'admin') {
+                sessionStorage.setItem('aitchikh_admin', 'true');
+                window.location.reload();
+            } else { document.getElementById('login-err').style.display = 'block'; }
+        }
+
+        function logoutAdmin() { sessionStorage.removeItem('aitchikh_admin'); window.location.hash = ''; }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.style.display = 'none');
+            document.getElementById(`tab-${tab}`).style.display = 'block';
+            document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // بناء لوحات تحكم الإدارة ديناميكياً
+        function buildAdminUI() {
+            const area = document.getElementById('admin-content-area');
+            area.innerHTML = `
+                <!-- Dashboard -->
+                <div id="tab-dashboard" class="admin-tab">
+                    <h2 class="admin-title">نظرة عامة</h2>
+                    <div class="grid-wrap">
+                        <div class="admin-card" style="text-align:center;"><h3>الزوار</h3><h1 style="color:var(--secondary); font-size:3rem;">${db.visitors}</h1></div>
+                        <div class="admin-card" style="text-align:center;"><h3>الطلبات</h3><h1 style="color:var(--primary); font-size:3rem;">${db.inbox.requests.length}</h1></div>
+                        <div class="admin-card" style="text-align:center;"><h3>الرسائل</h3><h1 style="color:var(--primary); font-size:3rem;">${db.inbox.messages.length}</h1></div>
                     </div>
                 </div>
 
-                <!-- Requests Table -->
-                <div id="sec-requests" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">سجل الطلبات</h2>
-                    <div class="overflow-x-auto bg-white rounded shadow">
-                        <table class="w-full text-right text-sm text-gray-600">
-                            <thead class="bg-gray-100 text-gray-800">
-                                <tr><th class="p-3 w-10">حذف</th><th class="p-3">التاريخ</th><th class="p-3">الاسم</th><th class="p-3">الهاتف</th><th class="p-3">الولاية</th><th class="p-3">الرحلة</th><th class="p-3">الحالة</th></tr>
-                            </thead>
-                            <tbody id="req-list"></tbody>
+                <!-- Inbox -->
+                <div id="tab-inbox" class="admin-tab" style="display:none;">
+                    <h2 class="admin-title">صندوق الوارد (طلبات الاستشارة)</h2>
+                    <div class="admin-card" style="overflow-x:auto;">
+                        <table>
+                            <tr><th>التاريخ</th><th>الاسم</th><th>الهاتف</th><th>الخدمة</th><th>إجراء</th></tr>
+                            ${db.inbox.requests.map((r,i) => `<tr><td>${r.date}</td><td>${r.name}</td><td>${r.phone}</td><td>${r.service}</td><td><button class="action-btn btn-del" onclick="delReq(${i})">حذف</button></td></tr>`).join('')}
                         </table>
                     </div>
                 </div>
 
-                <!-- Reports Table -->
-                <div id="sec-reports" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">الشكاوى</h2>
-                    <div id="rep-list" class="bg-white rounded shadow overflow-hidden"></div>
-                </div>
-
-                <!-- Add Trip -->
-                <div id="sec-add" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إضافة رحلة</h2>
-                    <form id="form-add-trip" class="bg-white p-6 rounded shadow space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b pb-4">
-                            <div><label class="text-xs font-bold text-green-700">AR</label><input id="t-title-ar" class="w-full border p-2 rounded" placeholder="العنوان" required><textarea id="t-prog-ar" class="w-full border p-2 rounded h-20" placeholder="محطات: محطة|ايموجي (مثال: انطلاق|🚩)" required></textarea></div>
-                            <div><label class="text-xs font-bold text-blue-700">FR</label><input id="t-title-fr" class="w-full border p-2 rounded" placeholder="Titre"><textarea id="t-prog-fr" class="w-full border p-2 rounded h-20" placeholder="Arrêts..."></textarea></div>
-                            <div><label class="text-xs font-bold text-purple-700">EN</label><input id="t-title-en" class="w-full border p-2 rounded" placeholder="Title"><textarea id="t-prog-en" class="w-full border p-2 rounded h-20" placeholder="Stops..."></textarea></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="border p-4 rounded bg-gray-50">
-                                <label class="font-bold mb-2 block">التواريخ والمقاعد</label>
-                                <div class="flex gap-2 mb-2"><input id="t-date-start" type="datetime-local" class="w-full border p-2" required><input id="t-date-end" type="date" class="w-full border p-2" required></div>
-                                <input id="t-seats" type="number" placeholder="عدد المقاعد" class="w-full border p-2" required>
-                            </div>
-                            <div class="border p-4 rounded bg-gray-50">
-                                <label class="font-bold mb-2 block">تفاصيل أخرى</label>
-                                <div class="flex gap-2 mb-2"><input id="t-price" type="number" placeholder="سعر" class="w-1/2 border p-2" required><select id="t-transport" class="w-1/2 border p-2"><option value="bus">حافلة</option><option value="plane">طائرة</option></select></div>
-                                <select id="t-theme" class="w-full border p-2"><option value="sahara">صحراوية (Sahara)</option><option value="mountain">جبلية (Mountain)</option><option value="coastal">ساحلية (Coastal)</option><option value="historical">أثرية (Historical)</option></select>
-                            </div>
-                        </div>
-                        <div class="border p-4 rounded bg-blue-50">
-                            <label class="font-bold mb-2 block">المرشد والصور</label>
-                            <div class="flex gap-2 mb-2"><input id="t-guide-name" placeholder="اسم المرشد" class="w-1/2 border p-2"><input id="t-guide-img" type="file" class="w-1/2 text-xs border p-1 bg-white"></div>
-                            <label class="text-xs block font-bold text-red-500 mb-1">صورة رئيسية واحدة + 5 صور ثانوية (السلايدر)</label>
-                            <input id="t-img-main" type="file" accept="image/*" class="w-full mb-2 border bg-white p-1" required>
-                            <div class="grid grid-cols-5 gap-2">
-                                <input type="file" accept="image/*" class="sub-img w-full text-xs border bg-white p-1"><input type="file" accept="image/*" class="sub-img w-full text-xs border bg-white p-1"><input type="file" accept="image/*" class="sub-img w-full text-xs border bg-white p-1"><input type="file" accept="image/*" class="sub-img w-full text-xs border bg-white p-1"><input type="file" accept="image/*" class="sub-img w-full text-xs border bg-white p-1">
-                            </div>
-                        </div>
-                        <button type="submit" id="btn-submit-trip" class="w-full bg-green-600 text-white font-bold py-3 rounded hover:bg-green-700 transition">نشر الرحلة</button>
-                    </form>
-                </div>
-
-                <!-- Manage Trips -->
-                <div id="sec-manage" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">إدارة الرحلات (تعديل وحذف مباشر)</h2>
-                    <div class="bg-white p-6 rounded-xl shadow">
-                        <div id="manage-list" class="space-y-4"></div>
+                <!-- General -->
+                <div id="tab-general" class="admin-tab" style="display:none;">
+                    <div class="admin-card">
+                        <h2 class="admin-title">إعدادات الموقع الأساسية</h2>
+                        <div class="form-row"><div class="group"><label>اللوجو (الكلمة الأولى)</label><input type="text" id="ad-logo1" class="form-control" value="${db.settings.logo}"></div><div class="group"><label>اللوجو (الكلمة الثانية)</label><input type="text" id="ad-logo2" class="form-control" value="${db.settings.logoSpan}"></div></div>
+                        <div class="form-row"><div class="group"><label>رقم الهاتف</label><input type="text" id="ad-phone" class="form-control" value="${db.settings.phone}"></div><div class="group"><label>البريد الإلكتروني</label><input type="text" id="ad-email" class="form-control" value="${db.settings.email}"></div></div>
+                        <label>رابط خريطة جوجل (Embed URL)</label><input type="text" id="ad-map" class="form-control" value="${db.settings.map}">
+                        <button class="submit-btn" onclick="saveGeneral()">حفظ الإعدادات</button>
                     </div>
                 </div>
 
-                <!-- Banners -->
-                <div id="sec-banners" class="adm-sec hidden">
-                    <h2 class="text-3xl font-bold mb-6">البانرات</h2>
-                    <div class="bg-white p-4 rounded shadow mb-4 flex flex-col gap-4">
-                        <div class="flex gap-4">
-                            <input id="new-banner" type="file" accept="image/*" class="w-1/3 border p-2 bg-white">
-                            <select id="ban-type" onchange="window.toggleBanInput()" class="border p-2"><option value="none">بدون رابط</option><option value="url">رابط خارجي</option><option value="trip">رابط لرحلة</option></select>
-                            <div id="ban-input-container" class="flex-1">
-                                <input id="ban-val" type="text" placeholder="الرابط" class="border p-2 w-full hidden">
-                                <select id="ban-trip-select" class="border p-2 w-full hidden"></select>
-                            </div>
-                            <button id="btn-submit-banner" onclick="window.uploadBanner()" class="bg-blue-600 text-white px-6 rounded">إضافة</button>
-                        </div>
-                    </div>
-                    <div id="banner-list" class="grid grid-cols-2 gap-4 mt-6"></div>
-                </div>
-                
-                <!-- Content Management -->
-                <div id="sec-content" class="adm-sec hidden">
-                     <h2 class="text-3xl font-bold mb-6">إدارة المحتوى واللوجو</h2>
-                     <form id="form-content" class="bg-white p-6 rounded-xl shadow space-y-6">
-                        <div class="border p-4 rounded bg-gray-50">
-                            <label class="font-bold block mb-2">شعار الموقع (Logo)</label>
-                            <input type="file" id="c-logo" accept="image/*" class="w-full border bg-white p-2 rounded">
-                            <p class="text-xs text-gray-500 mt-1">اتركه فارغاً إذا لم ترد تغييره.</p>
-                        </div>
-                        <div class="border p-4 rounded">
-                            <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">من نحن (About)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div><label class="text-xs font-bold text-green-700">AR</label><textarea id="c-about-ar" class="w-full border p-2 rounded h-24"></textarea></div>
-                                <div><label class="text-xs font-bold text-blue-700">FR</label><textarea id="c-about-fr" class="w-full border p-2 rounded h-24"></textarea></div>
-                                <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-about-en" class="w-full border p-2 rounded h-24"></textarea></div>
-                            </div>
-                        </div>
-                        <div class="border p-4 rounded bg-gray-50">
-                            <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">سياسة الخصوصية (Privacy)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div><label class="text-xs font-bold text-green-700">AR</label><textarea id="c-policy-ar" class="w-full border p-2 rounded h-24"></textarea></div>
-                                <div><label class="text-xs font-bold text-blue-700">FR</label><textarea id="c-policy-fr" class="w-full border p-2 rounded h-24"></textarea></div>
-                                <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-policy-en" class="w-full border p-2 rounded h-24"></textarea></div>
-                            </div>
-                        </div>
-                        <div class="border p-4 rounded">
-                            <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">مقرنا (Location)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div><label class="text-xs font-bold text-green-700">AR</label><input type="text" id="c-loc-ar" class="w-full border p-2 rounded"></div>
-                                <div><label class="text-xs font-bold text-blue-700">FR</label><input type="text" id="c-loc-fr" class="w-full border p-2 rounded"></div>
-                                <div><label class="text-xs font-bold text-purple-700">EN</label><input type="text" id="c-loc-en" class="w-full border p-2 rounded"></div>
-                            </div>
-                        </div>
-                        <div class="border p-4 rounded bg-gray-50">
-                            <h3 class="font-bold mb-3 text-blue-600 border-b pb-2">اتصل بنا (Contact)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div><label class="text-xs font-bold text-green-700">AR</label><textarea id="c-con-ar" class="w-full border p-2 rounded h-16"></textarea></div>
-                                <div><label class="text-xs font-bold text-blue-700">FR</label><textarea id="c-con-fr" class="w-full border p-2 rounded h-16"></textarea></div>
-                                <div><label class="text-xs font-bold text-purple-700">EN</label><textarea id="c-con-en" class="w-full border p-2 rounded h-16"></textarea></div>
-                            </div>
-                        </div>
-                        <button type="submit" id="btn-submit-content" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700 transition">حفظ التعديلات ونشرها</button>
-                     </form>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <!-- FIREBASE AND JS LOGIC -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-        // FIREBASE CONFIG
-        const firebaseConfig = {
-          apiKey: "AIzaSyCePMwR1Ov1Xknj-1m0FJG-IE3pmSItzzU",
-          authDomain: "thwas-b496b.firebaseapp.com",
-          projectId: "thwas-b496b",
-          storageBucket: "thwas-b496b.firebasestorage.app",
-          messagingSenderId: "435409022648",
-          appId: "1:435409022648:web:85ad4d14546f5d2ccb0e4d"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // HYBRID SYSTEM STATE
-        window.CACHE = { trips: [], banners: [], requests: [], reports: [], visits:[], content: {} };
-        window.curLang = localStorage.getItem('lang') || 'ar';
-        window.gridCdInterval = null;
-        window.sliderInterval = null;
-
-        const LANG = {
-            ar:{ home:"الرئيسية",trips:"رحلات",about:"من نحن",contact:"اتصل بنا",policy:"سياسة الخصوصية",location:"مقرنا",report:"الإبلاغ عن مشكلة",latest_offers:"أحدث العروض",book_now:"سجل في الرحلة الآن",confirm:"تأكيد التسجيل", price_unit:"دج",start:"الانطلاق",end:"العودة",stop:"محطة",transport:"نقل",seats:"مقاعد",guide:"المرشد",insurance:"تأمين صحي شامل", ph_name:"الاسم الكامل",ph_phone:"رقم الهاتف",ph_age:"السن",ph_state:"الولاية", gender_m:"ذكر",gender_f:"أنثى", req_pending:"قيد الانتظار", req_confirmed:"تم التأكيد", req_cancelled:"ملغى", day:"يوم", hour:"سا", min:"د", sec:"ث", desc:"وصف المشكلة", email:"البريد الإلكتروني" },
-            fr:{ home:"Accueil",trips:"Voyages",about:"À propos",contact:"Contact",policy:"Politique",location:"Adresse",report:"Signaler",latest_offers:"Nos Offres",book_now:"Réserver Maintenant",confirm:"Confirmer", price_unit:"DA",start:"Départ",end:"Retour",stop:"Arrêt",transport:"Transport",seats:"Places",guide:"Guide",insurance:"Assurance Santé", ph_name:"Nom Complet",ph_phone:"Téléphone",ph_age:"Âge",ph_state:"Wilaya", gender_m:"Homme",gender_f:"Femme", req_pending:"En attente", req_confirmed:"Confirmé", req_cancelled:"Annulé", day:"J", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" },
-            en:{ home:"Home",trips:"Trips",about:"About",contact:"Contact",policy:"Privacy",location:"Location",report:"Report",latest_offers:"Latest Offers",book_now:"Book Now",confirm:"Confirm", price_unit:"DA",start:"Departure",end:"Return",stop:"Stop",transport:"Transport",seats:"Seats",guide:"Guide",insurance:"Health Insurance", ph_name:"Full Name",ph_phone:"Phone",ph_age:"Age",ph_state:"State", gender_m:"Male",gender_f:"Female", req_pending:"Pending", req_confirmed:"Confirmed", req_cancelled:"Cancelled", day:"D", hour:"H", min:"M", sec:"S", desc:"Description", email:"Email" }
-        };
-
-        // --- SMART IMAGE COMPRESSOR ---
-        window.compressImage = (file) => {
-            return new Promise((resolve, reject) => {
-                if(!file || !file.type.startsWith('image/')) return resolve('');
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width, height = img.height;
-                        const MAX_WIDTH = 800; 
-                        if (width > MAX_WIDTH) {
-                            height = Math.round((height * MAX_WIDTH) / width);
-                            width = MAX_WIDTH;
-                        }
-                        canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.6)); 
-                    };
-                    img.onerror = reject;
-                };
-                reader.onerror = reject;
-            });
-        };
-
-        // --- REAL-TIME LISTENERS ---
-        window.initRealtime = function() {
-            onSnapshot(collection(db, 'trips'), (snapshot) => {
-                window.CACHE.trips = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                localStorage.setItem('th_trips', JSON.stringify(window.CACHE.trips));
-                window.loadPublic();
-                if(sessionStorage.getItem('isAdmin') === 'true') window.loadManage();
-            });
-
-            onSnapshot(collection(db, 'banners'), (snapshot) => {
-                window.CACHE.banners = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                window.loadPublic();
-                if(sessionStorage.getItem('isAdmin') === 'true') window.loadBanners();
-            });
-
-            onSnapshot(query(collection(db, 'requests'), orderBy('ts', 'desc')), (snapshot) => {
-                window.CACHE.requests = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                if(sessionStorage.getItem('isAdmin') === 'true') { window.loadReq(); window.updateStatsDisplay(); }
-            });
-
-            onSnapshot(collection(db, 'reports'), (snapshot) => {
-                window.CACHE.reports = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                if(sessionStorage.getItem('isAdmin') === 'true') { window.loadRep(); window.updateStatsDisplay(); }
-            });
-
-            onSnapshot(collection(db, 'visits'), (snapshot) => {
-                window.CACHE.visits = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                if(sessionStorage.getItem('isAdmin') === 'true') { window.updateStatsDisplay(); window.renderChart(); }
-            });
-
-            onSnapshot(collection(db, 'content'), (snapshot) => {
-                if(!snapshot.empty) { 
-                    window.CACHE.content = snapshot.docs[0].data(); 
-                    window.CACHE.content.docId = snapshot.docs[0].id;
-                    window.changeLang(window.curLang); 
-                    if(sessionStorage.getItem('isAdmin') === 'true') window.loadContentForm();
-                }
-            });
-        };
-
-        // --- PUBLIC FUNCTIONS ---
-        window.changeLang = function(l) {
-            window.curLang = l; localStorage.setItem('lang', l);
-            document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
-            document.body.className = `bg-gray-50 text-gray-800 font-${l === 'ar' ? 'ar' : 'en'}`;
-            
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const k = el.getAttribute('data-key');
-                if(LANG[l][k]) el.innerText = LANG[l][k];
-            });
-
-            if(document.getElementById('b-name')) {
-                document.getElementById('b-name').placeholder = LANG[l].ph_name;
-                document.getElementById('b-phone').placeholder = LANG[l].ph_phone;
-                document.getElementById('b-age').placeholder = LANG[l].ph_age;
-                document.getElementById('b-state').placeholder = LANG[l].ph_state;
-                document.getElementById('r-name').placeholder = LANG[l].ph_name;
-                document.getElementById('r-email').placeholder = LANG[l].email;
-                document.getElementById('r-desc').placeholder = LANG[l].desc;
-                document.getElementById('b-gender').innerHTML = `<option value="male">${LANG[l].gender_m}</option><option value="female">${LANG[l].gender_f}</option>`;
-            }
-
-            if(window.CACHE.content) {
-                document.getElementById('about-text').innerText = window.CACHE.content[`about_${l}`] || '...';
-                document.getElementById('policy-text').innerText = window.CACHE.content[`policy_${l}`] || '...';
-                document.getElementById('location-text').innerText = window.CACHE.content[`loc_${l}`] || '...';
-                document.getElementById('contact-text').innerText = window.CACHE.content[`con_${l}`] || '...';
-            }
-            
-            const savedLogo = window.CACHE.content?.logo;
-            if(savedLogo) {
-                document.getElementById('site-logo').src = savedLogo;
-                document.getElementById('site-logo').classList.remove('hidden');
-                document.getElementById('site-title-text').classList.add('hidden');
-            }
-            window.loadPublic();
-        };
-
-        window.loadPublic = function() {
-            const grid = document.getElementById('trips-grid');
-            if(!grid) return;
-            
-            if(window.CACHE.trips.length === 0) {
-                grid.innerHTML = '<p class="text-center col-span-3 text-gray-400 py-10">لا توجد رحلات حاليا / No Trips available</p>';
-            } else {
-                grid.innerHTML = window.CACHE.trips.map(x => {
-                    let title = x[`title_${window.curLang}`] || x.title_ar;
-                    return `<div class="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer group hover:shadow-2xl transition duration-300 relative" onclick="window.openTrip('${x.id}')">
-                        <div class="h-64 relative overflow-hidden">
-                            <img src="${x.mainImg}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                            <span class="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-1 rounded-full font-black text-blue-800 shadow-md z-10">${x.price} ${LANG[window.curLang].price_unit}</span>
-                            
-                            <!-- The Animated Countdown inside Image -->
-                            <div class="card-countdown" data-date="${x.start}"></div>
-                        </div>
-                        <div class="p-5 text-center bg-white relative z-10">
-                            <h3 class="font-black text-xl mb-3 text-gray-800">${title}</h3>
-                            <div class="text-sm font-bold text-gray-500 pt-3 border-t flex justify-between items-center">
-                                <span style="direction:ltr"><i class="fas fa-calendar-alt text-blue-500"></i> ${x.start ? x.start.replace('T',' ') : ''}</span>
-                                <span class="bg-blue-50 px-2 py-1 rounded text-blue-700"><i class="fas fa-chair"></i> ${x.seats}</span>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
-            }
-            window.startGridCountdowns(); // Restart timers for new items
-
-            const sl = document.getElementById('hero-slider');
-            if(window.CACHE.banners.length > 0){
-                sl.innerHTML = window.CACHE.banners.map((x,i) => `<div onclick="window.clickBanner('${x.type}','${x.val}')" class="absolute inset-0 bg-cover bg-center cursor-pointer transition-opacity duration-1000 ${i===0?'opacity-100':'opacity-0'} slide-item" style="background-image:url('${x.img}')"></div>`).join('');
-                let idx=0; const it=document.querySelectorAll('.slide-item');
-                if(it.length>1) setInterval(()=>{ it[idx].classList.replace('opacity-100','opacity-0'); idx=(idx+1)%it.length; it[idx].classList.replace('opacity-0','opacity-100') },4000);
-            }
-        };
-
-        window.openTrip = function(id) {
-            const t = window.CACHE.trips.find(x => x.id === id); if(!t) return;
-            document.getElementById('trip-modal').classList.remove('hidden');
-            const cont = document.getElementById('trip-content');
-            const l = window.curLang;
-            let title = t[`title_${l}`] || t.title_ar;
-            let prog = t[`prog_${l}`] || t.prog_ar || "";
-            
-            let points = prog.split(/,|،/).map(s => { let p = s.split('|'); return {txt:p[0].trim(), ico:p[1]||'📍'}; });
-            
-            let envDecors = '';
-            if(t.theme === 'sahara') envDecors = `<div class="env-decor" style="top:5%; right:10%; font-size:4rem;">🌴</div><div class="env-decor env-anim" style="top:30%; left:15%; font-size:3rem;">🐪</div><div class="env-decor" style="bottom:20%; right:20%; font-size:5rem;">🏜️</div>`;
-            if(t.theme === 'mountain') envDecors = `<div class="env-decor" style="top:10%; right:5%; font-size:4rem;">🏔️</div><div class="env-decor" style="top:40%; left:10%; font-size:3rem;">🌲</div><div class="env-decor env-anim" style="bottom:10%; right:15%; font-size:5rem;">🏞️</div><div class="env-decor env-anim" style="top:20%; left:30%; font-size:2rem;">🦅</div>`;
-            if(t.theme === 'coastal') envDecors = `<div class="env-decor" style="top:5%; right:15%; font-size:4rem;">🏖️</div><div class="env-decor env-anim" style="top:40%; left:5%; font-size:3rem;">🐬</div><div class="env-decor env-anim" style="bottom:15%; right:10%; font-size:5rem;">🌊</div><div class="env-decor" style="bottom:5%; left:30%; font-size:3rem;">⛵</div>`;
-            if(t.theme === 'historical') envDecors = `<div class="env-decor" style="top:10%; right:10%; font-size:4rem;">🗿</div><div class="env-decor" style="top:50%; left:15%; font-size:3rem;">🏺</div><div class="env-decor env-anim" style="bottom:20%; right:20%; font-size:5rem;">♨️</div><div class="env-decor" style="bottom:5%; left:10%; font-size:4rem;">⛰️</div>`;
-
-            let mapHTML = `<div class="snake-map-container theme-${t.theme}"> ${envDecors} <div class="snake-line"></div>`;
-            mapHTML += points.map((p,i) => `<div class="snake-item"><div class="snake-dot"><i class="fas fa-map-marker-alt"></i></div><div class="snake-card"><div class="absolute -top-4 left-1/2 transform -translate-x-1/2 text-3xl drop-shadow-md">${p.ico}</div><h4 class="font-bold mt-4 text-center">${p.txt}</h4></div></div>`).join('');
-            mapHTML += `<div style="clear:both"></div></div>`;
-
-            let imgs = `<img src="${t.mainImg}" class="flex-shrink-0 min-w-full h-full object-cover">`;
-            if(t.subs) imgs += t.subs.map(s => `<img src="${s}" class="flex-shrink-0 min-w-full h-full object-cover">`).join('');
-
-            cont.innerHTML = `
-                <div class="w-full md:w-1/3 bg-slate-900 relative h-[45vh] min-h-[45vh] md:min-h-full md:h-full flex-shrink-0 overflow-hidden">
-                    <div id="modal-slider" class="flex h-full w-full transition-transform duration-500 ease-in-out">${imgs}</div>
-                    <div class="absolute bottom-0 w-full pt-20 pb-4 px-4 bg-gradient-to-t from-black via-black/80 to-transparent text-white z-10 text-center">
-                        <h2 class="text-2xl font-bold mb-2">${title}</h2>
+                <!-- Slider -->
+                <div id="tab-slider" class="admin-tab" style="display:none;">
+                    <div class="admin-card">
+                        <h2 class="admin-title">إدارة السلايدر</h2>
+                        <button class="action-btn btn-add" onclick="addArrayItem('slider')">+ إضافة شريحة</button>
+                        <div id="ad-slider-list"></div>
+                        <button class="submit-btn" onclick="saveArray('slider')">حفظ السلايدر</button>
                     </div>
                 </div>
-                <div class="w-full md:w-2/3 bg-gray-50 overflow-y-auto p-4 md:p-8 flex-1">
-                    <div class="flex justify-between items-center mb-6 bg-white p-3 rounded shadow">
-                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[l].start}</span><b class="text-blue-600" style="direction:ltr; display:inline-block">${t.start ? t.start.replace('T',' ') : ''}</b></div>
-                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[l].price_unit}</span><b class="text-yellow-500 text-xl">${t.price}</b></div>
-                        <div class="text-center"><span class="block text-xs text-gray-500">${LANG[l].seats}</span><b class="text-red-500">${t.seats}</b></div>
+
+                <!-- Services -->
+                <div id="tab-services" class="admin-tab" style="display:none;">
+                    <div class="admin-card">
+                        <h2 class="admin-title">إدارة الخدمات</h2>
+                        <button class="action-btn btn-add" onclick="addArrayItem('services')">+ إضافة خدمة</button>
+                        <div id="ad-services-list"></div>
+                        <button class="submit-btn" onclick="saveArray('services')">حفظ الخدمات</button>
                     </div>
-                    <div class="flex items-center gap-3 mb-6 bg-blue-50 p-3 rounded border border-blue-200 shadow-sm">
-                        <img src="${t.guideImg || 'https://via.placeholder.com/50'}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow">
-                        <div><p class="text-xs font-bold text-gray-500">${LANG[l].guide}</p><p class="font-bold">${t.guideName || '---'}</p></div>
-                        <div class="flex-1 text-right text-green-600 font-bold text-sm"><i class="fas fa-shield-alt"></i> ${LANG[l].insurance}</div>
+                </div>
+
+                <!-- Portfolio & Projects -->
+                <div id="tab-portfolio" class="admin-tab" style="display:none;">
+                    <div class="admin-card">
+                        <h2 class="admin-title">الأعمال (الصور البسيطة)</h2>
+                        <button class="action-btn btn-add" onclick="addArrayItem('portfolio')">+ إضافة عمل</button>
+                        <div id="ad-portfolio-list"></div>
+                        <button class="submit-btn" onclick="saveArray('portfolio')">حفظ الأعمال</button>
                     </div>
-                    ${mapHTML}
-                    <div class="h-24"></div>
-                    <div class="mt-8 mb-4 text-center pb-8 pt-4"><button onclick="window.openBook('${t.id}','${title}')" class="btn-glow w-full md:w-auto px-12 py-4 bg-blue-600 text-white font-bold rounded-full shadow-lg text-lg">${LANG[l].book_now}</button></div>
+                    <div class="admin-card">
+                        <h2 class="admin-title">قصص النجاح (المشاريع بالنتائج)</h2>
+                        <button class="action-btn btn-add" onclick="addArrayItem('projects')">+ إضافة مشروع</button>
+                        <div id="ad-projects-list"></div>
+                        <button class="submit-btn" onclick="saveArray('projects')">حفظ المشاريع</button>
+                    </div>
+                </div>
+
+                <!-- Partners -->
+                <div id="tab-partners" class="admin-tab" style="display:none;">
+                    <div class="admin-card">
+                        <h2 class="admin-title">إدارة الشركاء (روابط الصور)</h2>
+                        <textarea id="ad-partners" class="form-control" rows="6" placeholder="ضع رابط كل صورة في سطر جديد..."></textarea>
+                        <button class="submit-btn" onclick="savePartners()">حفظ الشركاء</button>
+                    </div>
+                </div>
+
+                <!-- About Us -->
+                <div id="tab-about" class="admin-tab" style="display:none;">
+                    <div class="admin-card">
+                        <h2 class="admin-title">من نحن</h2>
+                        <div class="form-row"><div class="group"><label>العنوان (عربي)</label><input type="text" id="ab-title-ar" class="form-control" value="${db.about.title.ar}"></div><div class="group"><label>العنوان (فرنسي)</label><input type="text" id="ab-title-fr" class="form-control" value="${db.about.title.fr}"></div></div>
+                        <label>النص (عربي - يدعم HTML)</label><textarea id="ab-text-ar" class="form-control" rows="4">${db.about.text.ar}</textarea>
+                        <label>النص (فرنسي - يدعم HTML)</label><textarea id="ab-text-fr" class="form-control" rows="4">${db.about.text.fr}</textarea>
+                        <label>رابط الصورة</label><input type="text" id="ab-img" class="form-control" value="${db.about.img}">
+                        <h3 style="margin:20px 0;">الإحصائيات</h3>
+                        <div id="ad-stats-list"></div>
+                        <button class="submit-btn" onclick="saveAbout()">حفظ قسم من نحن</button>
+                    </div>
                 </div>
             `;
-
-            // Auto Slider Logic
-            const sContainer = document.getElementById('modal-slider');
-            const slidesCount = 1 + (t.subs ? t.subs.length : 0);
-            let sIdx = 0;
-            if(window.sliderInterval) clearInterval(window.sliderInterval);
-            if(slidesCount > 1) {
-                window.sliderInterval = setInterval(() => {
-                    sIdx = (sIdx + 1) % slidesCount;
-                    sContainer.style.transform = `translateX(${window.curLang==='ar' ? sIdx * 100 : -sIdx * 100}%)`;
-                }, 2000); 
-            }
-        };
-
-        window.openBook = (id, tit) => {
-            document.getElementById('b-trip-id').value = id;
-            document.getElementById('b-trip-name').value = tit;
-            document.getElementById('booking-modal').classList.remove('hidden');
-        };
-
-        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
-        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
-        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('translate-x-full');
-        window.closeTripModal = () => { document.getElementById('trip-modal').classList.add('hidden'); if(window.sliderInterval) clearInterval(window.sliderInterval); };
-        window.clickBanner = (t,v) => { if(t==='url') window.open(v,'_blank'); else if(t==='trip') window.openTrip(v); };
-
-        // Submits
-        document.getElementById('booking-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.disabled=true; btn.innerText="...";
-            try {
-                await addDoc(collection(db, 'requests'), { ts: Date.now(), name: document.getElementById('b-name').value, phone: document.getElementById('b-phone').value, age: document.getElementById('b-age').value, state: document.getElementById('b-state').value, gender: document.getElementById('b-gender').value, trip: document.getElementById('b-trip-name').value, status: 'pending' });
-                document.getElementById('booking-modal').classList.add('hidden');
-                Swal.fire('تم', 'تم التسجيل بنجاح', 'success'); 
-            } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
-            finally { btn.disabled=false; btn.innerText=LANG[window.curLang].confirm; e.target.reset(); }
-        });
-
-        document.getElementById('report-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                await addDoc(collection(db, 'reports'), { name: document.getElementById('r-name').value, email: document.getElementById('r-email').value, desc: document.getElementById('r-desc').value, ts: Date.now() });
-                document.getElementById('report-modal').classList.add('hidden');
-                Swal.fire('تم', 'تم الإرسال بنجاح', 'success'); e.target.reset();
-            } catch(error) { Swal.fire('خطأ', error.message, 'error'); }
-        });
-
-        // Countdowns Logic For Cards
-        window.startGridCountdowns = function() {
-            if(window.gridCdInterval) clearInterval(window.gridCdInterval);
-            window.gridCdInterval = setInterval(() => {
-                const now = new Date().getTime();
-                document.querySelectorAll('.card-countdown').forEach(el => {
-                    if(!el.dataset.date) return;
-                    const dist = new Date(el.dataset.date).getTime() - now;
-                    if(dist < 0) { el.innerHTML = `<div class="text-green-400 font-bold text-sm text-center w-full">انطلقت / Started</div>`; el.style.animation='none'; return; }
-                    
-                    const d=Math.floor(dist/(1000*60*60*24)), h=Math.floor((dist%(1000*60*60*24))/(1000*60*60)), m=Math.floor((dist%(1000*60*60))/(1000*60)), s=Math.floor((dist%(1000*60))/1000);
-                    
-                    el.innerHTML = `
-                        <div class="cc-item"><div class="cc-num">${d}</div><div class="cc-lbl">${LANG[window.curLang].day}</div></div>
-                        <div class="cc-item"><div class="cc-num">${h}</div><div class="cc-lbl">${LANG[window.curLang].hour}</div></div>
-                        <div class="cc-item"><div class="cc-num">${m}</div><div class="cc-lbl">${LANG[window.curLang].min}</div></div>
-                        <div class="cc-item"><div class="cc-num text-red-400">${s}</div><div class="cc-lbl text-red-300">${LANG[window.curLang].sec}</div></div>
-                    `;
-                });
-            }, 1000);
-        };
-
-        // ================= ADMIN FUNCTIONS =================
-        
-        window.checkRoute = function() {
-            if(location.hash==='#admin'){
-                document.getElementById('user-app').classList.add('hidden');
-                document.getElementById('admin-panel').classList.remove('hidden');
-                
-                // Session Check
-                if(sessionStorage.getItem('isAdmin') === 'true') {
-                    document.getElementById('admin-login').classList.add('hidden');
-                    document.getElementById('admin-dash').classList.remove('hidden');
-                    document.getElementById('admin-dash').classList.add('flex');
-                    window.updateStatsDisplay();
-                } else {
-                    document.getElementById('admin-login').classList.remove('hidden');
-                    document.getElementById('admin-dash').classList.add('hidden');
-                }
-            } else {
-                document.getElementById('user-app').classList.remove('hidden');
-                document.getElementById('admin-panel').classList.add('hidden');
-            }
-        };
-
-        window.adminLogin = () => {
-            if(document.getElementById('adm-user').value==='admin' && document.getElementById('adm-pass').value==='abobob123') {
-                sessionStorage.setItem('isAdmin', 'true');
-                document.getElementById('admin-login').classList.add('hidden');
-                document.getElementById('admin-dash').classList.remove('hidden');
-                document.getElementById('admin-dash').classList.add('flex');
-                window.updateStatsDisplay();
-            } else {
-                Swal.fire('خطأ', 'بيانات الدخول غير صحيحة', 'error');
-            }
-        };
-
-        window.adminLogout = () => { sessionStorage.removeItem('isAdmin'); location.hash=''; location.reload(); };
-
-        window.showAdm = (id) => {
-            document.querySelectorAll('.adm-sec').forEach(d => d.classList.add('hidden'));
-            document.getElementById('sec-'+id).classList.remove('hidden');
-            if(id === 'manage') window.loadManage();
-            if(id === 'banners') window.loadBanners();
-            if(id === 'requests') window.loadReq();
-            if(id === 'reports') window.loadRep();
-            if(id === 'content') window.loadContentForm();
-        };
-
-        window.updateStatsDisplay = function(){
-            const v = window.CACHE.visits; 
-            const now = new Date();
-            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-
-            document.getElementById('stat-day').innerText = v.filter(x => x.ts >= startOfToday).length;
-            document.getElementById('stat-month').innerText = v.filter(x => x.ts >= startOfMonth).length;
-            document.getElementById('stat-req').innerText = window.CACHE.requests.length;
-            document.getElementById('stat-rep').innerText = window.CACHE.reports.length;
             
-            window.renderChart();
-        };
-
-        window.renderChart = function() {
-            const ctx = document.getElementById('visitsChart');
-            if(ctx) {
-                if(window.myChart) window.myChart.destroy();
-                const labels=[], data=[];
-                const v = window.CACHE.visits;
-                for(let i=29; i>=0; i--){
-                    let d = new Date(); d.setDate(d.getDate()-i);
-                    labels.push(d.getDate());
-                    data.push(v.filter(x => new Date(x.ts).toDateString() === d.toDateString()).length);
-                }
-                window.myChart = new Chart(ctx, {type:'line', data:{labels, datasets:[{label:'Visits', data, borderColor:'#2563eb', tension:0.4}]}});
-            }
-        }
-
-        // ADD TRIP (WITH SMART COMPRESSION)
-        document.getElementById('form-add-trip').addEventListener('submit', async e => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-submit-trip'); 
-            const origText = btn.innerText;
-            btn.disabled=true; btn.innerText="جاري النشر... (سيتم ضغط الصور تلقائياً)";
+            // Render Arrays
+            renderArray('slider',['img', 'title.ar', 'title.fr', 'desc.ar', 'desc.fr']);
+            renderArray('services',['icon', 'title.ar', 'title.fr', 'desc.ar', 'desc.fr']);
+            renderArray('portfolio',['img', 'title.ar', 'title.fr', 'desc.ar', 'desc.fr']);
+            renderArray('projects',['img', 'title.ar', 'title.fr', 'tag.ar', 'tag.fr', 'desc.ar', 'desc.fr']);
             
-            try {
-                const mf = document.getElementById('t-img-main').files[0];
-                const gf = document.getElementById('t-guide-img').files[0];
-                const subf = document.querySelectorAll('.sub-img');
-                
-                if(!mf) throw new Error("الصورة الرئيسية مطلوبة!");
-
-                let mI = await window.compressImage(mf);
-                let gI = gf ? await window.compressImage(gf) : '';
-                let sI =[];
-                for(let f of subf) if(f.files[0]) sI.push(await window.compressImage(f.files[0]));
-
-                await addDoc(collection(db, 'trips'), {
-                    title_ar: document.getElementById('t-title-ar').value, title_fr: document.getElementById('t-title-fr').value, title_en: document.getElementById('t-title-en').value,
-                    prog_ar: document.getElementById('t-prog-ar').value, prog_fr: document.getElementById('t-prog-fr').value, prog_en: document.getElementById('t-prog-en').value,
-                    start: document.getElementById('t-date-start').value,
-                    seats: document.getElementById('t-seats').value,
-                    price: document.getElementById('t-price').value,
-                    theme: document.getElementById('t-theme').value,
-                    guideName: document.getElementById('t-guide-name').value,
-                    mainImg: mI, guideImg: gI, subs: sI, ts: Date.now()
-                });
-                
-                Swal.fire('تم', 'تم نشر الرحلة بنجاح!', 'success');
-                e.target.reset();
-            } catch (error) {
-                console.error(error);
-                Swal.fire('خطأ!', error.message || 'حدث خطأ. تأكد من اتصال الإنترنت.', 'error');
-            } finally {
-                btn.disabled=false; btn.innerText = origText;
-            }
-        });
-
-        // MANAGE TRIPS (DIRECT DELETE ICON)
-        window.loadManage = function(){
-            document.getElementById('manage-list').innerHTML = window.CACHE.trips.map(t => `
-                <div class="flex items-center gap-4 bg-gray-50 p-3 rounded-xl shadow-sm border border-gray-200">
-                    <img src="${t.mainImg}" class="w-16 h-16 rounded-lg object-cover shadow">
-                    <div class="flex-1">
-                        <span class="block font-bold text-lg text-gray-800">${t.title_ar}</span>
-                        <span class="text-sm text-gray-500" style="direction:ltr; display:inline-block">${t.start ? t.start.replace('T', ' ') : ''}</span>
-                    </div>
-                    <button onclick="window.editSeats('${t.id}')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 px-3 py-2 rounded-lg font-bold transition">المقاعد (${t.seats})</button>
-                    <!-- DIRECT DELETE ICON -->
-                    <button onclick="window.deleteTrip('${t.id}')" class="text-red-600 bg-red-100 hover:bg-red-200 w-10 h-10 rounded-lg flex items-center justify-center transition" title="حذف الرحلة">
-                        <i class="fas fa-trash-alt text-xl"></i>
-                    </button>
-                </div>`).join('');
-        };
-        
-        window.deleteTrip = async (id) => {
-            if(confirm('تأكيد حذف هذه الرحلة نهائياً؟')) {
-                try {
-                    await deleteDoc(doc(db, 'trips', id));
-                } catch(e) { alert("خطأ في الحذف: " + e.message); }
-            }
-        };
-        
-        window.editSeats = async (id) => {
-            const n = prompt("تعديل المقاعد إلى:"); 
-            if(n) { await updateDoc(doc(db, 'trips', id), {seats:n}); }
-        };
-
-        // BANNERS
-        window.toggleBanInput = () => {
-            const t = document.getElementById('ban-type').value;
-            const txtIn = document.getElementById('ban-val');
-            const selIn = document.getElementById('ban-trip-select');
-            if(t === 'trip') {
-                txtIn.classList.add('hidden'); selIn.classList.remove('hidden');
-                selIn.innerHTML = window.CACHE.trips.map(tr => `<option value="${tr.id}">${tr.title_ar}</option>`).join('');
-            } else {
-                selIn.classList.add('hidden'); txtIn.classList.remove('hidden');
-            }
-        };
-        
-        window.uploadBanner = async () => {
-            const btn = document.getElementById('btn-submit-banner');
-            const orig = btn.innerText;
-            const f = document.getElementById('new-banner').files[0];
-            const t = document.getElementById('ban-type').value;
-            let v = document.getElementById('ban-val').value;
-            if(t === 'trip') v = document.getElementById('ban-trip-select').value;
-            
-            if(!f) { Swal.fire('تنبيه', 'الرجاء اختيار صورة', 'warning'); return; }
-
-            btn.disabled = true; btn.innerText = "جاري...";
-            try {
-                const b64 = await window.compressImage(f);
-                await addDoc(collection(db, 'banners'), {img:b64, type:t, val:v, ts: Date.now()});
-                Swal.fire('تم', 'تم رفع البانر بنجاح', 'success');
-                document.getElementById('new-banner').value = '';
-            } catch(e) { Swal.fire('خطأ', 'فشل الرفع. ربما حجم الصورة كبير جداً.', 'error'); } 
-            finally { btn.disabled = false; btn.innerText = orig; }
-        };
-        
-        window.loadBanners = function(){
-            document.getElementById('banner-list').innerHTML = window.CACHE.banners.map(b => `
-                <div class="relative rounded-xl overflow-hidden shadow-md group">
-                    <img src="${b.img}" class="h-24 w-full object-cover">
-                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
-                        <button onclick="window.deleteBanner('${b.id}')" class="bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:scale-110 transition"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>`).join('');
-        };
-        window.deleteBanner = async (id) => {
-            if(confirm('تأكيد حذف البانر؟')) { await deleteDoc(doc(db, 'banners', id)); }
-        };
-
-        // REQUESTS
-        window.loadReq = function(){
-            const l = window.curLang;
-            document.getElementById('req-list').innerHTML = window.CACHE.requests.map(r => `
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="p-3"><button onclick="window.deleteReq('${r.id}')" class="text-red-500 bg-red-50 w-8 h-8 rounded hover:bg-red-200 transition flex items-center justify-center"><i class="fas fa-trash"></i></button></td>
-                    <td class="p-3 text-xs text-gray-500 font-sans" style="direction:ltr">${new Date(r.ts).toLocaleString()}</td>
-                    <td class="p-3 font-bold">${r.name}</td>
-                    <td class="p-3 text-blue-600 font-sans" style="direction:ltr">${r.phone}</td>
-                    <td class="p-3">${r.state}</td>
-                    <td class="p-3 text-sm text-gray-600">${r.trip}</td>
-                    <td class="p-3">
-                        <select onchange="window.updateReqStatus('${r.id}', this.value)" class="border rounded p-1 text-xs font-bold ${r.status==='confirmed'?'bg-green-100 text-green-700':(r.status==='cancelled'?'bg-red-100 text-red-700':'bg-yellow-100 text-yellow-700')}">
-                            <option value="pending" ${r.status==='pending'?'selected':''}>${LANG[l].req_pending}</option>
-                            <option value="confirmed" ${r.status==='confirmed'?'selected':''}>${LANG[l].req_confirmed}</option>
-                            <option value="cancelled" ${r.status==='cancelled'?'selected':''}>${LANG[l].req_cancelled}</option>
-                        </select>
-                    </td>
-                </tr>
-            `).join('');
-        };
-        window.updateReqStatus = async (id, st) => { await updateDoc(doc(db, 'requests', id), {status: st}); };
-        window.deleteReq = async (id) => { if(confirm('حذف هذا الطلب؟')) await deleteDoc(doc(db, 'requests', id)); };
-
-        // REPORTS
-        window.loadRep = function(){
-            document.getElementById('rep-list').innerHTML = window.CACHE.reports.map(r => `
-                <div class="p-4 border-b flex items-center justify-between">
-                    <div>
-                        <div class="font-bold text-red-600">${r.name} <span class="text-xs text-gray-500 font-sans">(${r.email})</span></div>
-                        <p class="text-sm mt-1">${r.desc}</p>
-                    </div>
-                    <button onclick="window.deleteReport('${r.id}')" class="text-red-500 bg-red-100 w-10 h-10 rounded-lg flex items-center justify-center hover:bg-red-200 transition"><i class="fas fa-trash"></i></button>
+            // Render Stats
+            document.getElementById('ad-stats-list').innerHTML = db.about.stats.map((s,i) => `
+                <div class="form-row">
+                    <input type="text" id="st-icon-${i}" class="form-control" value="${s.icon}" placeholder="fa-icon">
+                    <input type="number" id="st-num-${i}" class="form-control" value="${s.num}">
+                    <input type="text" id="st-ar-${i}" class="form-control" value="${s.text.ar}" placeholder="AR">
+                    <input type="text" id="st-fr-${i}" class="form-control" value="${s.text.fr}" placeholder="FR">
                 </div>
             `).join('');
-        };
-        window.deleteReport = async (id) => { if(confirm('حذف التبليغ؟')) await deleteDoc(doc(db, 'reports', id)); };
 
-        // CONTENT MANAGEMENT
-        window.loadContentForm = function() {
-            const c = window.CACHE.content || {};
-            const fields =['about', 'policy', 'loc', 'con'];
-            const langs = ['ar', 'fr', 'en'];
-            fields.forEach(f => {
-                langs.forEach(l => {
-                    const el = document.getElementById(`c-${f}-${l}`);
-                    if(el) el.value = c[`${f}_${l}`] || '';
-                });
+            // Render Partners
+            document.getElementById('ad-partners').value = db.partners.join('\n');
+        }
+
+        // Helper to render arrays in Admin
+        function renderArray(key, fields) {
+            const container = document.getElementById(`ad-${key}-list`);
+            container.innerHTML = db[key].map((item, index) => `
+                <div class="item-box" id="box-${key}-${index}">
+                    <button class="remove-item" onclick="removeArrayItem('${key}', ${index})"><i class="fa-solid fa-times"></i></button>
+                    ${fields.map(f => {
+                        let val = f.includes('.') ? item[f.split('.')[0]][f.split('.')[1]] : item[f];
+                        return `<label>${f}</label><input type="text" class="form-control ${key}-input" data-idx="${index}" data-field="${f}" value="${val}">`;
+                    }).join('')}
+                </div>
+            `).join('');
+        }
+
+        function removeArrayItem(key, index) { db[key].splice(index, 1); renderArray(key, getFieldsForKey(key)); }
+        function addArrayItem(key) {
+            let newItem = {};
+            if(key === 'slider') newItem = {img:"", title:{ar:"",fr:""}, desc:{ar:"",fr:""}};
+            if(key === 'services') newItem = {icon:"fa-star", title:{ar:"",fr:""}, desc:{ar:"",fr:""}};
+            if(key === 'portfolio') newItem = {img:"", title:{ar:"",fr:""}, desc:{ar:"",fr:""}};
+            if(key === 'projects') newItem = {img:"", title:{ar:"",fr:""}, tag:{ar:"",fr:""}, desc:{ar:"",fr:""}};
+            db[key].push(newItem);
+            renderArray(key, getFieldsForKey(key));
+        }
+        function getFieldsForKey(key) {
+            if(key==='slider') return['img', 'title.ar', 'title.fr', 'desc.ar', 'desc.fr'];
+            if(key==='services') return['icon', 'title.ar', 'title.fr', 'desc.ar', 'desc.fr'];
+            if(key==='portfolio') return['img', 'title.ar', 'title.fr', 'desc.ar', 'desc.fr'];
+            if(key==='projects') return['img', 'title.ar', 'title.fr', 'tag.ar', 'tag.fr', 'desc.ar', 'desc.fr'];
+        }
+
+        function saveArray(key) {
+            let inputs = document.querySelectorAll(`.${key}-input`);
+            inputs.forEach(inp => {
+                let idx = inp.getAttribute('data-idx');
+                let field = inp.getAttribute('data-field');
+                if(field.includes('.')) {
+                    db[key][idx][field.split('.')[0]][field.split('.')[1]] = inp.value;
+                } else { db[key][idx][field] = inp.value; }
             });
-        };
+            saveDB(); alert("تم الحفظ بنجاح!");
+        }
 
-        document.getElementById('form-content').addEventListener('submit', async e => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-submit-content'); 
-            const origText = btn.innerText;
-            btn.disabled=true; btn.innerText="جاري الحفظ...";
+        function saveGeneral() {
+            db.settings.logo = document.getElementById('ad-logo1').value;
+            db.settings.logoSpan = document.getElementById('ad-logo2').value;
+            db.settings.phone = document.getElementById('ad-phone').value;
+            db.settings.email = document.getElementById('ad-email').value;
+            db.settings.map = document.getElementById('ad-map').value;
+            saveDB(); alert("تم حفظ الإعدادات!");
+        }
+
+        function saveAbout() {
+            db.about.title.ar = document.getElementById('ab-title-ar').value;
+            db.about.title.fr = document.getElementById('ab-title-fr').value;
+            db.about.text.ar = document.getElementById('ab-text-ar').value;
+            db.about.text.fr = document.getElementById('ab-text-fr').value;
+            db.about.img = document.getElementById('ab-img').value;
             
-            try {
-                let docId = window.CACHE.content?.docId;
-                
-                const lf = document.getElementById('c-logo').files[0];
-                let logoData = window.CACHE.content?.logo || "";
-                if(lf) logoData = await window.compressImage(lf);
+            db.about.stats.forEach((s,i) => {
+                s.icon = document.getElementById(`st-icon-${i}`).value;
+                s.num = document.getElementById(`st-num-${i}`).value;
+                s.text.ar = document.getElementById(`st-ar-${i}`).value;
+                s.text.fr = document.getElementById(`st-fr-${i}`).value;
+            });
+            saveDB(); alert("تم حفظ من نحن!");
+        }
 
-                const newData = { logo: logoData, ts: Date.now() };
-                const fields =['about', 'policy', 'loc', 'con'];
-                const langs =['ar', 'fr', 'en'];
-                fields.forEach(f => {
-                    langs.forEach(l => {
-                        newData[`${f}_${l}`] = document.getElementById(`c-${f}-${l}`).value;
-                    });
-                });
+        function savePartners() {
+            db.partners = document.getElementById('ad-partners').value.split('\n').filter(l => l.trim() !== '');
+            saveDB(); alert("تم حفظ الشركاء!");
+        }
 
-                if(docId) {
-                    await updateDoc(doc(db, 'content', docId), newData);
-                } else {
-                    const ref = await addDoc(collection(db, 'content'), newData);
-                    newData.docId = ref.id;
-                    window.CACHE.content = newData;
-                }
+        function delReq(index) { if(confirm("حذف الطلب؟")) { db.inbox.requests.splice(index, 1); saveDB(); buildAdminUI(); switchTab('inbox'); } }
 
-                Swal.fire('تم', 'تم حفظ المحتوى بنجاح', 'success');
-                document.getElementById('c-logo').value = '';
-            } catch(error) { Swal.fire('خطأ', error.message, 'error'); } 
-            finally { btn.disabled=false; btn.innerText=origText; }
-        });
-
-        // INIT Real-Time Listeners On Load
-        window.addEventListener('load', () => {
-            const localTrips = localStorage.getItem('th_trips');
-            if(localTrips) { window.CACHE.trips = JSON.parse(localTrips); window.loadPublic(); }
-            
-            window.changeLang(window.curLang);
-            window.checkRoute();
-            window.initRealtime(); 
-            
-            if(!sessionStorage.getItem('v')){
-                try { addDoc(collection(db, 'visits'), {ts: Date.now()}); sessionStorage.setItem('v','1'); } catch(e){}
+        function exportImportDB() {
+            let action = prompt("اكتب 'export' لتحميل نسخة من الموقع، أو الصق الكود هنا لاسترجاع نسخة سابقة:");
+            if(action === 'export') {
+                prompt("انسخ هذا الكود واحتفظ به في مكان آمن:", JSON.stringify(db));
+            } else if (action && action.length > 100) {
+                try { db = JSON.parse(action); saveDB(); alert("تم الاسترجاع بنجاح!"); window.location.reload(); } 
+                catch(e) { alert("كود غير صالح!"); }
             }
-        });
-
+        }
     </script>
 </body>
 </html>
